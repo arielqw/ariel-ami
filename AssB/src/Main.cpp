@@ -1,6 +1,6 @@
 //============================================================================
 // Name        : AssignmentA.cpp
-// Author      : Ariel Baruch & Ami Oren
+// Author      : Ariel Baruch & Ami Oren 2
 //============================================================================
 
 #include "../include/UniCoffeeShop.h"
