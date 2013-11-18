@@ -12,6 +12,16 @@
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
+
+
+
+struct ProductPrice{
+	double netoPrice;
+	double brutoPrice;
+	ProductPrice():netoPrice(0), brutoPrice(0){}
+};
+
+
 using namespace std;
 
 //Keeps best price for an ingredient
@@ -35,6 +45,7 @@ struct ShoppingListItem{
 	vector<string> ingredients;
 	ShoppingListItem():supplierName(""), ingredients(){}
 };
+
 
 
 /*
@@ -75,6 +86,8 @@ private:
 public:
 	UniCoffeeShop();
 	void start(); //doing what needs to be done
+	ProductPrice getProductPrice(const string& product_name) const;
+	bool updateSupplierIngredient(const string& supplier_name,const string& ingredient_name,double price_to_update );
 };
 
 #endif /* UNICOFFEESHOP_H_ */

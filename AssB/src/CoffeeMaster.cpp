@@ -10,6 +10,11 @@
 #include "Poco/FileChannel.h"
 #include "Poco/Message.h"
 
+#include <iostream>
+
+#include "../include/CoffeeManager.h"
+
+using namespace cv;
 
 using Poco::Logger;
 using Poco::PatternFormatter;
@@ -20,8 +25,31 @@ using Poco::Message;
 
 int main(int argc, char **argv)
 {
+	CoffeeManager manager;
+
+
 //opencv test:
         ImageLoader img1("Lenna.png");
+
+
+        Mat greyscaleMat;
+        ImageOperations imgoper;
+        imgoper.rgb_to_greyscale(img1.getImage(), greyscaleMat);
+
+        Point3_<uchar>* p = img1.getImage().ptr<Point3_<uchar> >(0,0);
+
+        std::cout << (int)p->x << " " << (int)p->y << " " << (int)p->z << std::endl;
+
+        Point_<uchar>* q = greyscaleMat.ptr<Point_<uchar> >(0,0);
+        std::cout << (int)q->x << " " << (int)q->y << " "<< std::endl;
+
+
+
+        imshow(string("ami"), greyscaleMat);
+        waitKey(5000);
+
+        return 1;
+
         img1.displayImage();
 
         ImageOperations opr;

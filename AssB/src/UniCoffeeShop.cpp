@@ -203,6 +203,16 @@ void UniCoffeeShop::start() {
 	printOutput(false);
 }
 
+ProductPrice UniCoffeeShop::getProductPrice(const string& product_name) const {
+	ProductPrice prod;
+	return prod;
+}
+
+bool UniCoffeeShop::updateSupplierIngredient(const string& supplier_name,
+		const string& ingredient_name, double price_to_update) {
+}
+
+
 
 
 
