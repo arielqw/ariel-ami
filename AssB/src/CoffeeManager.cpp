@@ -45,18 +45,31 @@ void CoffeeManager::readFromFile(const string&  filename,vector< vector<string> 
 }
 
 void CoffeeManager::registerEvent(const string& name, const string& product_name, const string& is_VIP) {
-	std::cout<< "registerEvent: "<< name << " " << product_name << " " << is_VIP << std::endl;
+	_customers.registerCustomer(name,product_name,is_VIP);
+
 }
 
 void CoffeeManager::purchaseEvent(const string& customer_image) {
-	std::cout<< "purchaseEvent: "<< customer_image << std::endl;
+	ImgTools image("customers/"+ customer_image);
+
+	vector<Customer*> customersContainer = _customers.detectCustomers(image);
+
+	for (int i = 0; i < customersContainer.size(); ++i) {
+		singleBuy(*(customersContainer[i]));
+	}
 }
 
 void CoffeeManager::updateSupplierIngredientEvent(const string& supplier_name, const string& ingredient_name, const string& price) {
-	std::cout<< "updateSupplierIngredientEvent: "<< supplier_name << " " << ingredient_name << " " << price << std::endl;
+	_shop->updateSupplierIngredient(supplier_name,ingredient_name,price);
 }
 
-void CoffeeManager::singleBuy() {
+void CoffeeManager::singleBuy(Customer& buyer) {
+	MenuItem favoriteItem = _shop->getProductPrice( buyer.getFavoriteProduct() );
+	double total = buyer.computeProductPrice( favoriteItem.brutoPrice );
+	double neto = favoriteItem.netoPrice;
+
+	_revenue += total;
+	_profit += (total-neto);
 }
 
 
@@ -84,6 +97,9 @@ void CoffeeManager::eventHandler(const string& eventFileName) {
 		}
 
 	}
+
+	_customers.saveCostumersCollage();
+	//_customers.
 	//1. readLine
 	//2. called event
 }
@@ -101,6 +117,7 @@ void CoffeeManager::start(const string& productsFileName,const string& suppliers
 	_shop->start();
 
 	eventHandler(eventFileName);
+	_shop->start();
 
 	delete _shop;
 }

@@ -28,7 +28,7 @@ private:
 	void registerEvent(const string& name, const string& product_name, const string& is_VIP);
 	void purchaseEvent(const string& customer_image);
 	void updateSupplierIngredientEvent(const string& supplier_name, const string& ingredient_name, const string& price);
-	void singleBuy();
+	void singleBuy(Customer& buyer);
 
 
 public:

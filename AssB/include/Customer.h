@@ -9,6 +9,7 @@
 #define CUSTOMER_H_
 #include "ImgTools.h"
 #include "UniCoffeeShop.h"
+#include "imageloader.h"
 
 #include <string>
 
@@ -16,7 +17,7 @@ class Customer {
 protected:
 	const std::string _customer_name;
 	const std::string _favoriteProduct;
-	ImgTools* _photo;
+	ImgTools _photo;
 
 public:
 	//Customer();
@@ -24,6 +25,8 @@ public:
 	virtual ~Customer();
 	virtual double computeProductPrice(double originalPrice)=0;
 	std::string getFavoriteProduct() const;
+
+	ImgTools& getPhoto();
 
 };
 

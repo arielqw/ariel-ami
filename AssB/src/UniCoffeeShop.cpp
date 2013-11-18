@@ -207,7 +207,7 @@ void UniCoffeeShop::start() {
 	//readFromFile("Products.conf",this->_productsInput);
 	//readFromFile("Suppliers.conf",this->_suppliersInput);
 
-	bool DEBUG = false;
+	bool DEBUG = true;
 
 	processData();
 	printOutput(DEBUG);

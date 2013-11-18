@@ -8,10 +8,19 @@
 #ifndef IMGTOOLS_H_
 #define IMGTOOLS_H_
 
+#include "imageloader.h"
+#include "imageoperations.h"
+
 class ImgTools {
 public:
-	ImgTools();
+	ImgTools(const std::string& imageFileName);
 	virtual ~ImgTools();
+
+	void show();
+
+private:
+	ImageLoader _loader;
+	cv::Mat _greyScaleImage;
 };
 
 #endif /* IMGTOOLS_H_ */
