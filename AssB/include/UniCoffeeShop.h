@@ -15,12 +15,7 @@
 
 
 
-struct ProductPrice{
-	double netoPrice;
-	double brutoPrice;
-	ProductPrice():netoPrice(0), brutoPrice(0){}
-};
-
+const double LABOR_COST = 0.25;
 
 using namespace std;
 
@@ -35,8 +30,9 @@ struct AuctionWinner{
 //Keeps a final menu item
 struct MenuItem{
 	string itemName;
-	double itemPrice;
-	MenuItem():itemName(""), itemPrice(0){}
+	double netoPrice;
+	double brutoPrice;
+	MenuItem():itemName(""),netoPrice(0), brutoPrice(0){}
 };
 
 //Keeps a final Shopping List item
@@ -54,8 +50,8 @@ struct ShoppingListItem{
 class UniCoffeeShop {
 private:
 
-	vector< vector<string> > _productsInput;  // keeping input files to class
-	vector< vector<string> > _suppliersInput; //..
+	vector< vector<string> >& _productsInput;  // keeping input files to class
+	vector< vector<string> >& _suppliersInput; //..
 
 	vector<MenuItem> 			_menuOutput;
 	vector<ShoppingListItem> 	_shoppingListOutput;
@@ -84,10 +80,11 @@ private:
 	void printOutput(bool debug) const;
 
 public:
-	UniCoffeeShop();
+	//UniCoffeeShop();
+	UniCoffeeShop(vector< vector<string> >& productsInput,vector< vector<string> >& suppliersInput);
 	void start(); //doing what needs to be done
-	ProductPrice getProductPrice(const string& product_name) const;
-	bool updateSupplierIngredient(const string& supplier_name,const string& ingredient_name,double price_to_update );
+	MenuItem getProductPrice(const string& product_name) const;
+	bool updateSupplierIngredient(const string& supplier_name,const string& ingredient_name,const string& price_to_update );
 };
 
 #endif /* UNICOFFEESHOP_H_ */

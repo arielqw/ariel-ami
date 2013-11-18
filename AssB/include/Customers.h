@@ -8,7 +8,9 @@
 #ifndef CUSTOMERS_H_
 #define CUSTOMERS_H_
 #include <vector>
-#include "Customer.h"
+
+#include "RegularCustomer.h"
+#include "VipCustomer.h"
 #include "ImgTools.h"
 
 class Customers {

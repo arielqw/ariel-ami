@@ -7,9 +7,11 @@
 
 #include "../include/Customer.h"
 
-Customer::Customer() {
-	// TODO Auto-generated constructor stub
+//Customer::Customer() {
+//}
 
+Customer::Customer(const string& customer_name,const string& favoriteProduct):_customer_name(customer_name),_favoriteProduct(favoriteProduct) {
+	//TODO: read images and load it to photo.
 }
 
 Customer::~Customer() {
@@ -17,6 +19,7 @@ Customer::~Customer() {
 }
 
 std::string Customer::getFavoriteProduct() const {
+	return _favoriteProduct;
 }
 
 

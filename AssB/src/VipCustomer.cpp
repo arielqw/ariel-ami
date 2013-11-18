@@ -7,7 +7,7 @@
 
 #include "../include/VipCustomer.h"
 
-VipCustomer::VipCustomer() {
+VipCustomer::VipCustomer(const string& customer_name,const string& favorite_product):Customer(customer_name,favorite_product) {
 	// TODO Auto-generated constructor stub
 
 }
@@ -17,6 +17,7 @@ VipCustomer::~VipCustomer() {
 }
 
 double VipCustomer::computeProductPrice(double originalPrice) {
+	return originalPrice*0.8;
 }
 
 

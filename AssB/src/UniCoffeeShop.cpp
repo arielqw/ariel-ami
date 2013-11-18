@@ -1,5 +1,6 @@
 
 #include "../include/UniCoffeeShop.h"
+/*
 
 void UniCoffeeShop::splitString(const string& str,char delimiter, vector<string>& output){
 	string tmp="";
@@ -42,7 +43,7 @@ void UniCoffeeShop::writeToFile(const string& filename , const string& str) cons
 	}
 	else	cout << "Unable to open file";
 }
-
+*/
 
 void UniCoffeeShop::printMatrix(const vector< vector<string> >& matrix) const{
 	for (unsigned int i = 0; i < matrix.size(); ++i) {
@@ -106,6 +107,10 @@ AuctionWinner UniCoffeeShop::getAuctionWinner(const string& ingredient) const
 }
 
 void UniCoffeeShop::processData() {
+	//reset data for re-built purposes
+	_shoppingListOutput.clear();
+	_menuOutput.clear();
+
 	/* going throught Products, finding lowest price for all it's ingredients
 	 * if the final price (that calculatePrice() returns) fits the demands:
 	 * 1. add the product to the menu output
@@ -137,7 +142,7 @@ void UniCoffeeShop::processData() {
 				//1. create menuItem and add to the menuList
 				MenuItem menuItem;
 				menuItem.itemName 	= _productsInput[i][0];
-				menuItem.itemPrice 	= priceWithFees;
+				menuItem.brutoPrice 	= priceWithFees;
 				_menuOutput.push_back(menuItem);
 
 				//iterate over winners and create and add the winners to the shoppinglist
@@ -154,7 +159,7 @@ void UniCoffeeShop::processData() {
 
 double UniCoffeeShop::calculatePrice(double priceBeforeFee){
 
-	return (priceBeforeFee+1)*1.5;
+	return (priceBeforeFee+LABOR_COST)*1.5;
 }
 
 
@@ -166,7 +171,7 @@ void UniCoffeeShop::printOutput(bool debug) const
 
      for (unsigned int i = 0; i < _menuOutput.size(); ++i) {
              char priceStr[10];
-             sprintf(priceStr,"%.2f", _menuOutput[i].itemPrice);
+             sprintf(priceStr,"%.2f", _menuOutput[i].brutoPrice);
              outputStrA += _menuOutput[i].itemName +"," + priceStr + "\n";
      }
 
@@ -186,30 +191,50 @@ void UniCoffeeShop::printOutput(bool debug) const
      if (outputStrB.size() > 0) outputStrB.erase(outputStrB.size()-1); //deleting the last \n
 
 
-     writeToFile(string("Menu.out"), 			outputStrA);
-     writeToFile(string("ShoppingList.out"), 	outputStrB);
+    // writeToFile(string("Menu.out"), 			outputStrA);
+    // writeToFile(string("ShoppingList.out"), 	outputStrB);
 
      if(debug){
          cout<< "Menu:\n" + outputStrA + "\nShoppingList:\n" + outputStrB << endl;
      }
 }
+//UniCoffeeShop::UniCoffeeShop(){};
 
-UniCoffeeShop::UniCoffeeShop(): _productsInput(),_suppliersInput(),_menuOutput(),_shoppingListOutput() {}
+UniCoffeeShop::UniCoffeeShop(vector< vector<string> >& productsInput,vector< vector<string> >& suppliersInput):
+		_productsInput(productsInput),_suppliersInput(suppliersInput),_menuOutput(),_shoppingListOutput() {}
 
 void UniCoffeeShop::start() {
-	readFromFile("Products.conf",this->_productsInput);
-	readFromFile("Suppliers.conf",this->_suppliersInput);
+	//readFromFile("Products.conf",this->_productsInput);
+	//readFromFile("Suppliers.conf",this->_suppliersInput);
+
+	bool DEBUG = false;
+
 	processData();
-	printOutput(false);
+	printOutput(DEBUG);
 }
 
-ProductPrice UniCoffeeShop::getProductPrice(const string& product_name) const {
-	ProductPrice prod;
-	return prod;
+MenuItem UniCoffeeShop::getProductPrice(const string& product_name) const {
+	MenuItem retProd;
+
+	bool found = false;
+	for (int i = 0; !found && i < _menuOutput.size(); ++i) {
+		if(_menuOutput[i].itemName == product_name){
+			retProd = _menuOutput[i];
+			found = true;
+		}
+	}
+	return retProd;
 }
 
-bool UniCoffeeShop::updateSupplierIngredient(const string& supplier_name,
-		const string& ingredient_name, double price_to_update) {
+bool UniCoffeeShop::updateSupplierIngredient(const string& supplier_name, const string& ingredient_name, const string& price_to_update) {
+	for (int i = 0; i < _suppliersInput.size(); ++i) {
+		if(_suppliersInput[i][0] == supplier_name && _suppliersInput[i][1] == ingredient_name){
+			_suppliersInput[i][2] = price_to_update;
+			processData();
+			return true;
+		}
+	}
+	return false;
 }
 
 

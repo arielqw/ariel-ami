@@ -25,8 +25,10 @@ using Poco::Message;
 
 int main(int argc, char **argv)
 {
+	//TODO: throw error if args <4 (first = home path)
 	CoffeeManager manager;
 
+	manager.start( std::string(argv[1]) , std::string(argv[2]) , std::string(argv[3]) );
 
 //opencv test:
         ImageLoader img1("Lenna.png");
