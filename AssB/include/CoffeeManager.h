@@ -10,7 +10,8 @@
 
 
 
-
+//#include "Log.h"
+#include "AppLogger.h"
 #include "Customers.h"
 #include "UniCoffeeShop.h"
 
@@ -22,7 +23,7 @@ private:
 	Customers _customers;
 
 	void splitString(const string& str,char delimiter, vector<string>& output);
-	void readFromFile(const string&  filename,vector< vector<string> >& table);
+	void readFromFile(const string&  filename,vector< vector<string> >& table, char delimiter);
 
 	void eventHandler(const string& eventFileName);
 	void registerEvent(const string& name, const string& product_name, const string& is_VIP);
@@ -34,7 +35,7 @@ private:
 public:
 	CoffeeManager();
 	virtual ~CoffeeManager();
-	void start(const string& productsFileName,const string& suppliersFileName,const string& eventFileName);
+	void start(const string& confFileName, const string& productsFileName,const string& suppliersFileName,const string& eventFileName);
 
 };
 

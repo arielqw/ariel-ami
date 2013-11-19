@@ -1,4 +1,4 @@
-#include "../include/LoggerWrapper.h"
+
 //for opencv
 #include "../include/imageloader.h"
 #include "../include/imageoperations.h"
@@ -13,15 +13,11 @@ using namespace cv;
 
 int main(int argc, char **argv)
 {
-	LoggerWrapper log;
-	log.init();
 
-	Logger::get("ConsoleLogger").error("ami");
-
-	//TODO: throw error if args <4 (first = home path)
+	//TODO: throw error if args <5 (first = home path)
 	CoffeeManager manager;
 
-	manager.start( std::string(argv[1]) , std::string(argv[2]) , std::string(argv[3]) );
+	manager.start( std::string(argv[1]), std::string(argv[2]) , std::string(argv[3]) , std::string(argv[4]) );
 
 	/*
 //opencv test:

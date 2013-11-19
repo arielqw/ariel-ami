@@ -18,6 +18,8 @@ public:
 
 	void show();
 
+	cv::Mat& getImage(bool isColor);
+
 private:
 	ImageLoader _loader;
 	cv::Mat _greyScaleImage;

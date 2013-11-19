@@ -5,6 +5,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include "opencv2/objdetect/objdetect.hpp"
+
 class ImageOperations
 {
 public:
@@ -14,6 +16,8 @@ public:
     void copy_paste_image(const cv::Mat& src, cv::Mat& dst, int xLocation);
     /** Resize original picture into the dimension of image destination */
     void resize(const cv::Mat& src, cv::Mat& dst);
+
+    bool isFaceInPhoto(const cv::Mat& photo, const cv::Mat& face);
 };
 
 #endif

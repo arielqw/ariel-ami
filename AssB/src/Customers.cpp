@@ -4,7 +4,6 @@
  *  Created on: Nov 17, 2013
  *      Author: amio
  */
-#include "Poco/Logger.h"
 #include "../include/Customers.h"
 
 using Poco::Logger;
@@ -19,9 +18,20 @@ Customers::~Customers() {
 	// TODO Auto-generated destructor stub
 }
 
-std::vector<Customer*> Customers::detectCustomers(const ImgTools& image) const {
+std::vector<Customer*> Customers::detectCustomers(ImgTools& image) {
+
+	cv::CascadeClassifier face_cascade("haarcascade_frontalface_alt.xml");
+	std::vector<cv::Rect> faces;
+	face_cascade.detectMultiScale( image.getImage(false), faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, cv::Size(30, 30) );
+
+
+
+	//TODO: check if the rects contain faces of customers
 
 }
+
+
+
 
 Customer& Customers::registerCustomer(const std::string& customer_name, const std::string& favorite_product,const std::string& isVIP) {
 	Customer* customer;
@@ -33,12 +43,6 @@ Customer& Customers::registerCustomer(const std::string& customer_name, const st
 	}
 
 	m_customers.push_back(customer);
-
-	for (int i = 0; i < m_customers.size(); ++i) {
-
-		Logger::get("log").debug(m_customers[i]->getFavoriteProduct());
-	}
-
 }
 
 void Customers::saveCostumersCollage() {

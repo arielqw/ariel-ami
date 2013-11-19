@@ -25,4 +25,8 @@ void ImgTools::show() {
     cv::waitKey(5000);
 }
 
-
+cv::Mat& ImgTools::getImage(bool isColor)
+{
+	if (isColor)	return _loader.getImage();
+	return _greyScaleImage;
+}

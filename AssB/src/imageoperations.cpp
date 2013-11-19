@@ -2,7 +2,10 @@
 
 void ImageOperations::rgb_to_greyscale(const cv::Mat& src, cv::Mat& dst)
 {
-    cv::cvtColor(src,dst,CV_RGB2GRAY);
+    cv::cvtColor(src,dst,CV_BGR2GRAY);
+
+    //optional sharpening
+    cv::equalizeHist(dst,dst);
 }
 
 
@@ -19,3 +22,9 @@ void ImageOperations::copy_paste_image(const cv::Mat& original, cv::Mat& destina
     cv::Mat imageROI (destination, roi);
     original.copyTo(imageROI);
 }
+
+
+
+
+
+

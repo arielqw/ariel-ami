@@ -144,7 +144,7 @@ void UniCoffeeShop::processData() {
 				menuItem.itemName 	= _productsInput[i][0];
 				menuItem.brutoPrice 	= priceWithFees;
 				_menuOutput.push_back(menuItem);
-
+				//TODO: logger message Product added/removed
 				//iterate over winners and create and add the winners to the shoppinglist
 				for (unsigned int k = 0; k < container.size(); ++k) {
 					addIngredientToShoppingList(container[k]);

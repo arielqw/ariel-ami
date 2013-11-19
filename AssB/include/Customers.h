@@ -12,6 +12,7 @@
 #include "RegularCustomer.h"
 #include "VipCustomer.h"
 #include "ImgTools.h"
+#include "AppLogger.h"
 
 class Customers {
 private:
@@ -19,7 +20,7 @@ private:
 public:
 	Customers();
 	virtual ~Customers();
-	std::vector<Customer* > detectCustomers(const ImgTools& image) const;
+	std::vector<Customer* > detectCustomers(ImgTools& image);
 	Customer& registerCustomer(const std::string& customer_name, const std::string& favorite_product,const std::string& isVIP);
 
 	void saveCostumersCollage();

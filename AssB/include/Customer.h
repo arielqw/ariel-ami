@@ -28,6 +28,10 @@ public:
 
 	ImgTools& getPhoto();
 
+	const std::string getCustomerName() const {
+		return _customer_name;
+	}
+
 };
 
 #endif /* CUSTOMER_H_ */
