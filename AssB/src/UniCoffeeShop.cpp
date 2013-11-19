@@ -143,6 +143,7 @@ void UniCoffeeShop::processData() {
 				MenuItem menuItem;
 				menuItem.itemName 	= _productsInput[i][0];
 				menuItem.brutoPrice 	= priceWithFees;
+				menuItem.netoPrice 	= priceSum;
 				_menuOutput.push_back(menuItem);
 				//TODO: logger message Product added/removed
 				//iterate over winners and create and add the winners to the shoppinglist
@@ -207,7 +208,7 @@ void UniCoffeeShop::start() {
 	//readFromFile("Products.conf",this->_productsInput);
 	//readFromFile("Suppliers.conf",this->_suppliersInput);
 
-	bool DEBUG = true;
+	bool DEBUG = false;
 
 	processData();
 	printOutput(DEBUG);

@@ -16,10 +16,10 @@ public:
 	ImgTools(const std::string& imageFileName);
 	virtual ~ImgTools();
 
-	void show();
+	void show() const;
 
 	cv::Mat& getImage(bool isColor);
-
+	bool compareAFace(const cv::Rect& rect, const ImgTools& face) const;
 private:
 	ImageLoader _loader;
 	cv::Mat _greyScaleImage;

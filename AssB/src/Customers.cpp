@@ -18,14 +18,23 @@ Customers::~Customers() {
 	// TODO Auto-generated destructor stub
 }
 
-std::vector<Customer*> Customers::detectCustomers(ImgTools& image) {
+void Customers::detectCustomers(ImgTools& image,std::vector<Customer*>& foundCustomers) {
 
 	cv::CascadeClassifier face_cascade("haarcascade_frontalface_alt.xml");
 	std::vector<cv::Rect> faces;
-	face_cascade.detectMultiScale( image.getImage(false), faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, cv::Size(30, 30) );
+	face_cascade.detectMultiScale( image.getImage(false), faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE );
 
 
+	for (int i = 0; i < faces.size(); ++i) {
+		bool customerFound = false;
 
+		for (int j = 0; !customerFound && j < m_customers.size(); ++j) {
+			if( image.compareAFace(faces[i] , m_customers[j]->getPhoto()) ){
+				foundCustomers.push_back(m_customers[j]);
+				customerFound = true;
+			}
+		}
+	}
 	//TODO: check if the rects contain faces of customers
 
 }
@@ -48,7 +57,7 @@ Customer& Customers::registerCustomer(const std::string& customer_name, const st
 void Customers::saveCostumersCollage() {
 	for (int i = 0; i < m_customers.size(); ++i) {
 
-		m_customers[i]->getPhoto().show();
+		//m_customers[i]->getPhoto().show();
 	}
 }
 

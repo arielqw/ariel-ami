@@ -58,9 +58,12 @@ void CoffeeManager::registerEvent(const string& name, const string& product_name
 }
 
 void CoffeeManager::purchaseEvent(const string& customer_image) {
+	CAppLogger::Instance().Log("custome message: ","purchasing: "+customer_image,Poco::Message::PRIO_DEBUG);
+
 	ImgTools image("customers/"+ customer_image);
 
-	vector<Customer*> customersContainer = _customers.detectCustomers(image);
+	vector<Customer*> customersContainer;
+	_customers.detectCustomers(image, customersContainer);
 
 	for (int i = 0; i < customersContainer.size(); ++i) {
 		singleBuy(*(customersContainer[i]));
@@ -85,7 +88,7 @@ void CoffeeManager::singleBuy(Customer& buyer) {
 		_profit += (total-neto);
 	}
 	else{ //not found
-		CAppLogger::Instance().Log("Purchase messages","Costumer "+buyer.getCustomerName()+"failed to purchase "+favoriteItem.itemName,Poco::Message::PRIO_WARNING);
+		CAppLogger::Instance().Log("Purchase messages","Costumer "+buyer.getCustomerName()+" failed to purchase "+favoriteItem.itemName,Poco::Message::PRIO_WARNING);
 	}
 }
 
