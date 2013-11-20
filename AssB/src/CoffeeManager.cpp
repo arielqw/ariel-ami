@@ -65,16 +65,17 @@ void CoffeeManager::purchaseEvent(const string& customer_image) {
 	vector<Customer*> customersContainer;
 	_customers.detectCustomers(image, customersContainer);
 
-	for (int i = 0; i < customersContainer.size(); ++i) {
+	for (unsigned int i = 0; i < customersContainer.size(); ++i) {
 		singleBuy(*(customersContainer[i]));
 	}
 }
 
 void CoffeeManager::updateSupplierIngredientEvent(const string& supplier_name, const string& ingredient_name, const string& price) {
-	_shop->updateSupplierIngredient(supplier_name,ingredient_name,price);
-	std::string numOfChangedProducts;
-	//TODO: num of products changed.
-	CAppLogger::Instance().Log("Supplier price change","Supplier "+supplier_name+" changed the price of "+ingredient_name+"\nProducts updated: "+numOfChangedProducts,Poco::Message::PRIO_NOTICE);
+	int numOfChangedProducts = _shop->updateSupplierIngredient(supplier_name,ingredient_name,price);
+	char c_numOfChangedProducts[10];
+	sprintf(c_numOfChangedProducts,"%d",numOfChangedProducts);
+
+	CAppLogger::Instance().Log("Supplier price change","Supplier "+supplier_name+" changed the price of "+ingredient_name+"\nProducts updated: "+c_numOfChangedProducts,Poco::Message::PRIO_NOTICE);
 }
 
 void CoffeeManager::singleBuy(Customer& buyer) {
@@ -103,7 +104,7 @@ void CoffeeManager::eventHandler(const string& eventFileName) {
 	readFromFile(eventFileName,eventsList,',');
 
 	//going through each line
-	for (int i = 0; i < eventsList.size(); ++i) {
+	for (unsigned int i = 0; i < eventsList.size(); ++i) {
 		std::string event = eventsList[i][0];
 		if(event == "register"){
 			registerEvent(eventsList[i][1], eventsList[i][2], eventsList[i][3]);
@@ -123,6 +124,16 @@ void CoffeeManager::eventHandler(const string& eventFileName) {
 	//1. readLine
 	//2. called event
 }
+
+void CoffeeManager::calcRevenueAndProfit() const {
+	char c_revenue[10];
+	char c_profit[10];
+	sprintf(c_revenue,"%.2f",_revenue);
+	sprintf(c_profit,"%.2f",_profit);
+
+	CAppLogger::Instance().Log("End of simulation","The total revenue is "+std::string(c_revenue)+", while the total profit is "+std::string(c_profit),Poco::Message::PRIO_WARNING);
+}
+
 
 void CoffeeManager::start(const string& confFileName, const string& productsFileName,const string& suppliersFileName,const string& eventFileName) {
 
@@ -163,12 +174,9 @@ void CoffeeManager::start(const string& confFileName, const string& productsFile
 
 	eventHandler(eventFileName);
 
-	char c_revenue[10];
-	char c_profit[10];
-	sprintf(c_revenue,"%.2f",_revenue);
-	sprintf(c_profit,"%.2f",_profit);
+	_customers.saveCostumersCollage();
 
-	CAppLogger::Instance().Log("End of simulation","The total revenue is "+std::string(c_revenue)+", while the total profit is "+std::string(c_profit),Poco::Message::PRIO_WARNING);
+	calcRevenueAndProfit();
 
 	delete _shop;
 }

@@ -12,7 +12,7 @@
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
-
+#include "AppLogger.h"
 
 
 const double LABOR_COST = 0.25;
@@ -32,7 +32,8 @@ struct MenuItem{
 	string itemName;
 	double netoPrice;
 	double brutoPrice;
-	MenuItem():itemName(""),netoPrice(0), brutoPrice(0){}
+	bool on;
+	MenuItem():itemName(""),netoPrice(0), brutoPrice(0),on(false){}
 };
 
 //Keeps a final Shopping List item
@@ -62,7 +63,7 @@ private:
 	void splitString(const string& str,char delimiter, vector<string>& output);
 
 	//Processing input and saving to suitable output vectores
-	void processData();
+	int processData(bool firstRun);
 
 	//for debug'ing purposes
 	void printMatrix(const vector< vector<string> >& matrix) const;
@@ -84,7 +85,7 @@ public:
 	UniCoffeeShop(vector< vector<string> >& productsInput,vector< vector<string> >& suppliersInput);
 	void start(); //doing what needs to be done
 	MenuItem getProductPrice(const string& product_name) const;
-	bool updateSupplierIngredient(const string& supplier_name,const string& ingredient_name,const string& price_to_update );
+	int updateSupplierIngredient(const string& supplier_name,const string& ingredient_name,const string& price_to_update );
 };
 
 #endif /* UNICOFFEESHOP_H_ */

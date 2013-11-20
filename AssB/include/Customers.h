@@ -21,7 +21,7 @@ public:
 	Customers();
 	virtual ~Customers();
 	void detectCustomers(ImgTools& image,std::vector<Customer*>& foundCustomers);
-	Customer& registerCustomer(const std::string& customer_name, const std::string& favorite_product,const std::string& isVIP);
+	void registerCustomer(const std::string& customer_name, const std::string& favorite_product,const std::string& isVIP);
 
 	void saveCostumersCollage();
 };

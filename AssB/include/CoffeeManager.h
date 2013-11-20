@@ -30,6 +30,7 @@ private:
 	void purchaseEvent(const string& customer_image);
 	void updateSupplierIngredientEvent(const string& supplier_name, const string& ingredient_name, const string& price);
 	void singleBuy(Customer& buyer);
+	void calcRevenueAndProfit() const;
 
 
 public:

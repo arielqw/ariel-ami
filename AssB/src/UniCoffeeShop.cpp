@@ -106,10 +106,11 @@ AuctionWinner UniCoffeeShop::getAuctionWinner(const string& ingredient) const
     return winner;
 }
 
-void UniCoffeeShop::processData() {
+int UniCoffeeShop::processData(bool firstRun) {
+	int changedProductsCounter =0;
 	//reset data for re-built purposes
 	_shoppingListOutput.clear();
-	_menuOutput.clear();
+	//_menuOutput.clear();
 
 	/* going throught Products, finding lowest price for all it's ingredients
 	 * if the final price (that calculatePrice() returns) fits the demands:
@@ -138,6 +139,54 @@ void UniCoffeeShop::processData() {
 		//if we found best prices for all ingredients:
 		if (!noAuctionWinner){
 			double priceWithFees = calculatePrice(priceSum); //calculating price (with labor and profit)
+			bool productFound = false;
+			//1. lookup for Product in Menu
+			//		if found -> update price and make changes
+			for (unsigned int j = 0;!productFound && j < _menuOutput.size(); ++j) {
+				if(_productsInput[i][0] == _menuOutput[j].itemName){
+					if(priceWithFees <= 5){
+						//wasn't on the menu ->adding to the menu
+						if(!_menuOutput[j].on){
+							CAppLogger::Instance().Log("Product addition/removal from the menu due to price change (previous item)","Product "+_menuOutput[j].itemName+" was added from the menu.",Poco::Message::PRIO_WARNING);
+						}
+						else{// was on the menu & price changed
+							if(_menuOutput[j].netoPrice != priceSum){
+								changedProductsCounter++;
+							}
+						}
+						_menuOutput[j].on = true;
+					}
+					else{
+						//was on the menu -> removing from the menu
+						if(_menuOutput[j].on){
+							CAppLogger::Instance().Log("Product addition/removal from the menu due to price change (previous item)","Product "+_menuOutput[j].itemName+" was removed from the menu.",Poco::Message::PRIO_WARNING);
+						}
+						_menuOutput[j].on = false;
+					}
+
+					//update price
+					_menuOutput[j].brutoPrice 	= priceWithFees;
+					_menuOutput[j].netoPrice 	= priceSum;
+					productFound = true;
+				}
+			}
+			//2. if not found -> add it to menu
+
+			if(!productFound){
+				if(priceWithFees <= 5){
+					MenuItem menuItem;
+					menuItem.itemName 	= _productsInput[i][0];
+					menuItem.brutoPrice 	= priceWithFees;
+					menuItem.netoPrice 	= priceSum;
+					menuItem.on = true;
+
+					if(!firstRun){
+						CAppLogger::Instance().Log("Product addition/removal from the menu due to price change (previous item)","Product "+menuItem.itemName+" was added from the menu.",Poco::Message::PRIO_WARNING);
+					}
+					_menuOutput.push_back(menuItem);
+				}
+			}
+			/*
 			if (priceWithFees <= 5){
 				//1. create menuItem and add to the menuList
 				MenuItem menuItem;
@@ -145,17 +194,18 @@ void UniCoffeeShop::processData() {
 				menuItem.brutoPrice 	= priceWithFees;
 				menuItem.netoPrice 	= priceSum;
 				_menuOutput.push_back(menuItem);
-				//TODO: logger message Product added/removed
 				//iterate over winners and create and add the winners to the shoppinglist
 				for (unsigned int k = 0; k < container.size(); ++k) {
 					addIngredientToShoppingList(container[k]);
 				}
 
 			}
+			*/
 		}
 
 	}
-
+	//std::cout<< "changedProductsCounter: "<< changedProductsCounter <<std::endl;
+	return changedProductsCounter;
 }
 
 double UniCoffeeShop::calculatePrice(double priceBeforeFee){
@@ -171,9 +221,11 @@ void UniCoffeeShop::printOutput(bool debug) const
     string outputStrA;
 
      for (unsigned int i = 0; i < _menuOutput.size(); ++i) {
+    	 if(_menuOutput[i].on){
              char priceStr[10];
              sprintf(priceStr,"%.2f", _menuOutput[i].brutoPrice);
              outputStrA += _menuOutput[i].itemName +"," + priceStr + "\n";
+    	 }
      }
 
      if (outputStrA.size() > 0) outputStrA.erase(outputStrA.size()-1);     //deleting the last \n
@@ -210,7 +262,7 @@ void UniCoffeeShop::start() {
 
 	bool DEBUG = false;
 
-	processData();
+	processData(true);
 	printOutput(DEBUG);
 }
 
@@ -218,7 +270,7 @@ MenuItem UniCoffeeShop::getProductPrice(const string& product_name) const {
 	MenuItem retProd;
 
 	bool found = false;
-	for (int i = 0; !found && i < _menuOutput.size(); ++i) {
+	for (unsigned int i = 0; !found && i < _menuOutput.size(); ++i) {
 		if(_menuOutput[i].itemName == product_name){
 			retProd = _menuOutput[i];
 			found = true;
@@ -227,15 +279,14 @@ MenuItem UniCoffeeShop::getProductPrice(const string& product_name) const {
 	return retProd;
 }
 
-bool UniCoffeeShop::updateSupplierIngredient(const string& supplier_name, const string& ingredient_name, const string& price_to_update) {
-	for (int i = 0; i < _suppliersInput.size(); ++i) {
+int UniCoffeeShop::updateSupplierIngredient(const string& supplier_name, const string& ingredient_name, const string& price_to_update) {
+	for (unsigned int i = 0; i < _suppliersInput.size(); ++i) {
 		if(_suppliersInput[i][0] == supplier_name && _suppliersInput[i][1] == ingredient_name){
 			_suppliersInput[i][2] = price_to_update;
-			processData();
-			return true;
+			return processData(false);
 		}
 	}
-	return false;
+	return 0;
 }
 
 

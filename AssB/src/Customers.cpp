@@ -20,29 +20,28 @@ Customers::~Customers() {
 
 void Customers::detectCustomers(ImgTools& image,std::vector<Customer*>& foundCustomers) {
 
-	cv::CascadeClassifier face_cascade("haarcascade_frontalface_alt.xml");
+	cv::CascadeClassifier face_cascade("/usr/local/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml");
 	std::vector<cv::Rect> faces;
 	face_cascade.detectMultiScale( image.getImage(false), faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE );
 
 
-	for (int i = 0; i < faces.size(); ++i) {
+	for (unsigned int i = 0; i < faces.size(); ++i) {
 		bool customerFound = false;
 
-		for (int j = 0; !customerFound && j < m_customers.size(); ++j) {
+		for (unsigned int j = 0; !customerFound && j < m_customers.size(); ++j) {
 			if( image.compareAFace(faces[i] , m_customers[j]->getPhoto()) ){
 				foundCustomers.push_back(m_customers[j]);
 				customerFound = true;
 			}
 		}
 	}
-	//TODO: check if the rects contain faces of customers
 
 }
 
 
 
 
-Customer& Customers::registerCustomer(const std::string& customer_name, const std::string& favorite_product,const std::string& isVIP) {
+void Customers::registerCustomer(const std::string& customer_name, const std::string& favorite_product,const std::string& isVIP) {
 	Customer* customer;
 	if(isVIP == "1"){
 		customer = new VipCustomer(customer_name,favorite_product);
@@ -55,10 +54,50 @@ Customer& Customers::registerCustomer(const std::string& customer_name, const st
 }
 
 void Customers::saveCostumersCollage() {
-	for (int i = 0; i < m_customers.size(); ++i) {
+	ImageOperations photoshop;
 
-		//m_customers[i]->getPhoto().show();
+	int lowestHeight =-1;
+	int lowestWidth;
+	int photo_height;
+
+	//getting lowest height for collage dimentions
+	for (unsigned int i = 0; i < m_customers.size(); ++i) {
+		photo_height = m_customers[i]->getPhoto().getImage(true).rows;
+		if( (lowestHeight == -1) || photo_height < lowestHeight){
+			lowestHeight = photo_height;
+			lowestWidth = m_customers[i]->getPhoto().getImage(true).cols;
+		}
 	}
+
+	//get desired canvas width
+	int canvas_width =0;
+	for (unsigned int i = 0; i < m_customers.size(); ++i) {
+		cv::Mat img = m_customers[i]->getPhoto().getImage(false);
+		canvas_width += img.cols*(lowestHeight/lowestWidth);
+	}
+
+	//1.create a blank image
+	cv::Mat collage(lowestHeight,canvas_width,CV_8UC3,cv::Scalar(255,255,255));
+
+	int xPosition =0;
+
+	//2. paste each costumer image to it
+	for (unsigned int i = 0; i < m_customers.size(); ++i) {
+		cv::Mat photo = m_customers[i]->getPhoto().getImage(true);
+		int proportionalWidth = photo.cols*(lowestHeight/lowestWidth);
+
+		cv::Mat resizedImg(lowestHeight,proportionalWidth,CV_8UC3,cv::Scalar(255,255,255));
+
+		photoshop.resize( m_customers[i]->getPhoto().getImage(true),resizedImg );
+		photoshop.copy_paste_image(resizedImg,collage,xPosition);
+		xPosition += proportionalWidth;
+	}
+
+	//3. write to file 'collage.tiff'
+
+    //TODO:try catch
+    imwrite("collage.tiff", collage);
+
 }
 
 
