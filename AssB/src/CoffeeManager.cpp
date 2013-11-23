@@ -79,17 +79,17 @@ void CoffeeManager::updateSupplierIngredientEvent(const string& supplier_name, c
 }
 
 void CoffeeManager::singleBuy(Customer& buyer) {
-	MenuItem favoriteItem = _shop->getProductPrice( buyer.getFavoriteProduct() );
-	if(favoriteItem.itemName != ""){ //found
-		double total = buyer.computeProductPrice( favoriteItem.brutoPrice );
-		double neto = favoriteItem.netoPrice;
-		CAppLogger::Instance().Log("Purchase messages","Costumer "+buyer.getCustomerName()+" purchased "+favoriteItem.itemName,Poco::Message::PRIO_WARNING);
+	MenuItem* favoriteItem = _shop->getProductPrice( buyer.getFavoriteProduct() );
+	if(favoriteItem->getName() != ""){ //found
+		double total = buyer.computeProductPrice( favoriteItem->getBrutoPrice() );
+		double neto = favoriteItem->getNetoPrice();
+		CAppLogger::Instance().Log("Purchase messages","Costumer "+buyer.getCustomerName()+" purchased "+favoriteItem->getName(),Poco::Message::PRIO_WARNING);
 
 		_revenue += total;
 		_profit += (total-neto);
 	}
 	else{ //not found
-		CAppLogger::Instance().Log("Purchase messages","Costumer "+buyer.getCustomerName()+" failed to purchase "+favoriteItem.itemName,Poco::Message::PRIO_WARNING);
+		CAppLogger::Instance().Log("Purchase messages","Costumer "+buyer.getCustomerName()+" failed to purchase "+favoriteItem->getName(),Poco::Message::PRIO_WARNING);
 	}
 }
 
@@ -159,8 +159,6 @@ void CoffeeManager::start(const string& confFileName, const string& productsFile
 
 	CAppLogger::Instance( LOG_FILE_NAME,LOGGER_FILE_PRIORITY,LOGGER_CONSOLE_PRIORITY );
 
-	CAppLogger::Instance().Log("myTitle","LOG_FILE_NAME: "+LOG_FILE_NAME,Poco::Message::PRIO_INFORMATION);
-
 
 	vector< vector<string> > productsInput;
 	vector< vector<string> > suppliersInput;
@@ -168,9 +166,9 @@ void CoffeeManager::start(const string& confFileName, const string& productsFile
 	readFromFile(productsFileName,productsInput,',');
 	readFromFile(suppliersFileName,suppliersInput,',');
 
-	_shop = new UniCoffeeShop(productsInput,suppliersInput);
+	_shop = new UniCoffeeShop();
 
-	_shop->start();
+	_shop->start(productsInput,suppliersInput);
 
 	eventHandler(eventFileName);
 

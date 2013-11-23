@@ -17,7 +17,6 @@ CAppLogger::CAppLogger(
 {
 	// We tell the vector how much elements we it'll have - its more efficient.
 	mLoggers.resize(ELoggersCount);
-
 	// Build the loggers
 	mLoggers[ELoggerConsole] =
 		&Logger::create("Log.Console", LoggingFactory::defaultFactory().createChannel("ConsoleChannel"), minConsolePriority);
@@ -94,7 +93,7 @@ void CAppLogger::Log(const std::string& title,const std::string& content, Poco::
 
 	Message msg;
 	msg.setPriority(inPriority);
-
+	//TODO: masasa: no need for logger titles, only Bold comments.
 	msg.setText(title+" ("+level+")"+'\n'+content);
 
 	vector<Logger*>::iterator iterator;

@@ -25,13 +25,13 @@ private:
         enum ELogger
         {
                 ELoggerFile             = 0,
-                ELoggerConsole,
+                   ELoggerConsole,
 
                 ELoggersCount
-        };
+            };
 
         CAppLogger(
-        		const std::string& logFileName,
+             		const std::string& logFileName,
         		Poco::Message::Priority minFilePriority,
         		Poco::Message::Priority minConsolePriority);
 
@@ -52,7 +52,7 @@ public:
                 if (firstCall)
                 {
                         firstCall = false;
-                        instance.Log("Message","Starting new log session.", Poco::Message::PRIO_DEBUG);
+                        //instance.Log("Message","Starting new log session.", Poco::Message::PRIO_DEBUG);
                 }
 
 

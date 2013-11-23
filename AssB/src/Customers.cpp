@@ -73,18 +73,18 @@ void Customers::saveCostumersCollage() {
 	int canvas_width =0;
 	for (unsigned int i = 0; i < m_customers.size(); ++i) {
 		cv::Mat img = m_customers[i]->getPhoto().getImage(false);
-		canvas_width += img.cols*(lowestHeight/lowestWidth);
+		canvas_width += lowestHeight*(img.cols/img.rows);
 	}
 
 	//1.create a blank image
 	cv::Mat collage(lowestHeight,canvas_width,CV_8UC3,cv::Scalar(255,255,255));
 
 	int xPosition =0;
-
+	//TODO: check if need ratio to be double
 	//2. paste each costumer image to it
 	for (unsigned int i = 0; i < m_customers.size(); ++i) {
 		cv::Mat photo = m_customers[i]->getPhoto().getImage(true);
-		int proportionalWidth = photo.cols*(lowestHeight/lowestWidth);
+		int proportionalWidth = lowestHeight*(photo.cols/photo.rows);
 
 		cv::Mat resizedImg(lowestHeight,proportionalWidth,CV_8UC3,cv::Scalar(255,255,255));
 

@@ -12,80 +12,30 @@
 #include <fstream>
 #include <iostream>
 #include <stdlib.h>
-#include "AppLogger.h"
 
+#include "Suppliers.h"
+#include "MenuItems.h"
+#include "Ingredients.h"
 
 const double LABOR_COST = 0.25;
 
 using namespace std;
 
-//Keeps best price for an ingredient
-struct AuctionWinner{
-	string ingridientName;
-	string supplierName;
-	double winningPrice;
-	AuctionWinner():ingridientName(""), supplierName(""),winningPrice(0){}
-};
-
-//Keeps a final menu item
-struct MenuItem{
-	string itemName;
-	double netoPrice;
-	double brutoPrice;
-	bool on;
-	MenuItem():itemName(""),netoPrice(0), brutoPrice(0),on(false){}
-};
-
-//Keeps a final Shopping List item
-struct ShoppingListItem{
-	string supplierName;
-	vector<string> ingredients;
-	ShoppingListItem():supplierName(""), ingredients(){}
-};
-
-
-
-/*
- * 1st generation BGU coffee shop
- */
 class UniCoffeeShop {
 private:
-
-	vector< vector<string> >& _productsInput;  // keeping input files to class
-	vector< vector<string> >& _suppliersInput; //..
-
-	vector<MenuItem> 			_menuOutput;
-	vector<ShoppingListItem> 	_shoppingListOutput;
-
-	void readFromFile(const string&  filename,vector< vector<string> >& table);
-	void writeToFile(const string& filename , const string& str ) const;
-
-	void splitString(const string& str,char delimiter, vector<string>& output);
-
-	//Processing input and saving to suitable output vectores
-	int processData(bool firstRun);
-
-	//for debug'ing purposes
-	void printMatrix(const vector< vector<string> >& matrix) const;
-	double calculatePrice(double priceBeforeFee);
-
-	//Finding best price for an ingredient
-	AuctionWinner getAuctionWinner(const string& ingredient) const;
-
-	//Updates ShopingListOutput with a suitable supplier
-	void addIngredientToShoppingList(const AuctionWinner& winner);
-
-	//two uses:
-	//1. prints to files
-	//2. prints to console (debug'ing purposes)
-	void printOutput(bool debug) const;
+	MenuItems _menuItems;
+	Suppliers _suppliers;
+	Ingredients _ingredients;
+	void processProducts(const vector< vector<string> >& productsInput);
+	void processSuppliers(const vector< vector<string> >& suppliersInput);
+//	Suppliers _suppliers;
 
 public:
-	//UniCoffeeShop();
-	UniCoffeeShop(vector< vector<string> >& productsInput,vector< vector<string> >& suppliersInput);
-	void start(); //doing what needs to be done
-	MenuItem getProductPrice(const string& product_name) const;
-	int updateSupplierIngredient(const string& supplier_name,const string& ingredient_name,const string& price_to_update );
+	UniCoffeeShop();
+	virtual ~UniCoffeeShop();
+	void start(vector< vector<string> >& productsInput,vector< vector<string> >& suppliersInput);
+	int updateSupplierIngredient(const string& supplier_name,const string& ingredient_name,const string& price);
+	MenuItem* getProductPrice(const string& product_name);
 };
 
 #endif /* UNICOFFEESHOP_H_ */
