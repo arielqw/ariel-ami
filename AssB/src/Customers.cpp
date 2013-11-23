@@ -11,6 +11,13 @@ using Poco::Logger;
 
 Customers::Customers() {
 	// TODO Auto-generated constructor stub
+	for (int i = 0; i < m_customers.size(); ++i) {
+		if(m_customers[i] != 0){
+			delete m_customers[i];
+			m_customers[i] =0;
+		}
+
+	}
 
 }
 
