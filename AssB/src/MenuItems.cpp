@@ -5,7 +5,7 @@
  *      Author: arielbar
  */
 
-#include "../include/MenuItems.h"
+#include "MenuItems.h"
 #include <iostream>
 MenuItems::MenuItems() {
 	// TODO Auto-generated constructor stub

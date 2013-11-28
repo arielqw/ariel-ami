@@ -1,12 +1,12 @@
 
 //for opencv
-#include "../include/imageloader.h"
-#include "../include/imageoperations.h"
+#include "imageloader.h"
+#include "imageoperations.h"
 
 
 #include <iostream>
 
-#include "../include/CoffeeManager.h"
+#include "CoffeeManager.h"
 
 using namespace cv;
 

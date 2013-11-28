@@ -5,7 +5,7 @@
  *      Author: amio
  */
 
-#include "../include/RegularCustomer.h"
+#include "RegularCustomer.h"
 
 //RegularCustomer::RegularCustomer()
 //{

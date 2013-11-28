@@ -8,7 +8,7 @@
 #ifndef VIPCUSTOMER_H_
 #define VIPCUSTOMER_H_
 
-#include "../include/Customer.h"
+#include "Customer.h"
 
 class VipCustomer: public Customer {
 public:

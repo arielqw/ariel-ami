@@ -5,7 +5,7 @@
  *      Author: arielbar
  */
 
-#include "../include/Suppliers.h"
+#include "Suppliers.h"
 
 
 Suppliers::Suppliers() {

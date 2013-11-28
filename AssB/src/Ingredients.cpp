@@ -5,7 +5,7 @@
  *      Author: arielbar
  */
 
-#include "../include/Ingredients.h"
+#include "Ingredients.h"
 #include <iostream>
 Ingredients::Ingredients() {
 	// TODO Auto-generated constructor stub

@@ -5,7 +5,7 @@
  *      Author: arielbar
  */
 
-#include "../include/SellingIngredient.h"
+#include "SellingIngredient.h"
 
 SellingIngredient::SellingIngredient(Ingredient* ingridient):_ingredient(ingridient),_price(0) {
 

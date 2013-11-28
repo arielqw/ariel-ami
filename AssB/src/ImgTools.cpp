@@ -5,7 +5,7 @@
  *      Author: amio
  */
 
-#include "../include/ImgTools.h"
+#include "ImgTools.h"
 #include <iostream>
 ImgTools::ImgTools(const std::string& imageFileName):_loader(imageFileName){
 	// TODO Auto-generated constructor stub

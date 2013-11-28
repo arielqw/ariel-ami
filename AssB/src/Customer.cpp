@@ -5,7 +5,7 @@
  *      Author: amio
  */
 
-#include "../include/Customer.h"
+#include "Customer.h"
 
 //Customer::Customer() {
 //}

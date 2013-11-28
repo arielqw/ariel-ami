@@ -5,7 +5,7 @@
  *      Author: amio
  */
 
-#include "../include/VipCustomer.h"
+#include "VipCustomer.h"
 
 VipCustomer::VipCustomer(const string& customer_name,const string& favorite_product):Customer(customer_name,favorite_product) {
 	// TODO Auto-generated constructor stub

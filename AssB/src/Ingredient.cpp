@@ -5,7 +5,7 @@
  *      Author: arielbar
  */
 
-#include "../include/Ingredient.h"
+#include "Ingredient.h"
 
 #include <iostream>
 

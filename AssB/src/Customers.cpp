@@ -4,7 +4,7 @@
  *  Created on: Nov 17, 2013
  *      Author: amio
  */
-#include "../include/Customers.h"
+#include "Customers.h"
 
 using Poco::Logger;
 

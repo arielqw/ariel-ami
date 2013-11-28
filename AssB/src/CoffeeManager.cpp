@@ -5,9 +5,9 @@
  *      Author: amio
  */
 
-#include "../include/CoffeeManager.h"
+#include "CoffeeManager.h"
 
-CoffeeManager::CoffeeManager():_profit(0),_revenue(0) {
+CoffeeManager::CoffeeManager():_revenue(0), _profit(0) {
 	// TODO Auto-generated constructor stub
 
 

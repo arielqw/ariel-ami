@@ -5,7 +5,7 @@
  *      Author: arielbar
  */
 
-#include "../include/MenuItem.h"
+#include "MenuItem.h"
 #include <iostream>
 
 MenuItem::MenuItem(const string& name):_name(name),_itemIngredients(),_brutoPrice(-1),_netoPrice(-1),_onMenu(false) {

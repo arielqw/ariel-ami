@@ -1,4 +1,4 @@
-#include "../include/imageoperations.h"
+#include "imageoperations.h"
 
 void ImageOperations::rgb_to_greyscale(const cv::Mat& src, cv::Mat& dst)
 {

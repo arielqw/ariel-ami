@@ -5,7 +5,7 @@
  *      Author: arielbar
  */
 
-#include "../include/Supplier.h"
+#include "Supplier.h"
 #include <iostream>
 Supplier::Supplier(const string& supname):_name(supname),_sellingCounter(0),_supplierIngredients() {
 
