@@ -7,7 +7,7 @@
 
 #include "../include/CoffeeManager.h"
 
-CoffeeManager::CoffeeManager() {
+CoffeeManager::CoffeeManager():_profit(0),_revenue(0) {
 	// TODO Auto-generated constructor stub
 
 
