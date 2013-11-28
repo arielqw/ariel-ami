@@ -57,44 +57,12 @@ CAppLogger::~CAppLogger(void)
 	}
 }
 
-void CAppLogger::Log(const std::string& title,const std::string& content, Poco::Message::Priority inPriority/* = Poco::Message::PRIO_INFORMATION*/)
+void CAppLogger::Log(const std::string& inLogString, Poco::Message::Priority inPriority/* = Poco::Message::PRIO_INFORMATION*/)
 {
-	std::string level;
-
-	switch(inPriority){
-		case Poco::Message::PRIO_CRITICAL:
-			level = "critical";
-			break;
-		case Poco::Message::PRIO_DEBUG:
-			level = "debug";
-			break;
-		case Poco::Message::PRIO_ERROR:
-			level = "error";
-			break;
-		case Poco::Message::PRIO_FATAL:
-			level = "fatal";
-			break;
-		case Poco::Message::PRIO_INFORMATION:
-			level = "information";
-			break;
-		case Poco::Message::PRIO_NOTICE:
-			level = "notice";
-			break;
-		case Poco::Message::PRIO_TRACE:
-			level = "trace";
-			break;
-		case Poco::Message::PRIO_WARNING:
-			level = "warning";
-			break;
-		default:
-			level = "n/a";
-			break;
-	}
-
 	Message msg;
 	msg.setPriority(inPriority);
 	//TODO: masasa: no need for logger titles, only Bold comments.
-	msg.setText(title+" ("+level+")"+'\n'+content);
+	msg.setText(inLogString);
 
 	vector<Logger*>::iterator iterator;
 	for(iterator = mLoggers.begin();
@@ -110,6 +78,6 @@ void CAppLogger::Log(const std::string& title,const std::string& content, Poco::
 
 void CAppLogger::Log(const std::ostringstream& inLogString, Poco::Message::Priority inPriority/* = Poco::Message::PRIO_INFORMATION*/)
 {
-	Log("",inLogString.str(), inPriority);
+	Log(inLogString.str(), inPriority);
 }
 

@@ -13,21 +13,19 @@ Supplier::Supplier(const string& supname):_name(supname),_sellingCounter(0),_sup
 
 Supplier::~Supplier() {
 	// TODO Auto-generated destructor stub
-	for (unsigned int i = 0; i < _supplierIngredients.size(); ++i) {
-		if(_supplierIngredients[i] != 0){
-			delete _supplierIngredients[i];
-		}
-		_supplierIngredients[i] = 0;
+	for (std::vector<SellingIngredient*>::iterator it = _supplierIngredients.begin(); it != _supplierIngredients.end(); ++it){
+		delete * it;
 	}
+	_supplierIngredients.clear();
+
+
 }
 
 bool Supplier::addIngredient(Ingredient* ingredient,double price) {
-//	std::cout << "pushing "<<ingredient.getName() << std::endl;
 	SellingIngredient* sellingIngredient = new SellingIngredient(ingredient);
 	sellingIngredient->setPrice(price);
   	_supplierIngredients.push_back(sellingIngredient);
-//	std::cout << _supplierIngredients.size() << std::endl;
-	//_prices.push_back(price);
+
 	return true;
 }
 
@@ -46,9 +44,11 @@ void Supplier::updateIngredient(const string& ingredient_name, double price) {
 
 void Supplier::print() const {
 
+	std::ostringstream debugStr;
 	for (unsigned int j = 0; j < _supplierIngredients.size(); ++j) {
-		std::cout << "\t"<< _supplierIngredients[j]->getName() << "("<< _supplierIngredients[j]->getPrice() << ")"<<std::endl;
+		debugStr << "\t"<< _supplierIngredients[j]->getName() << "("<< _supplierIngredients[j]->getPrice() << ")"<<std::endl;
 	}
+	CAppLogger::Instance().Log(debugStr, Poco::Message::PRIO_TRACE);
 }
 
 string Supplier::getName() const {

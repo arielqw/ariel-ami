@@ -11,26 +11,23 @@ using Poco::Logger;
 
 Customers::Customers() {
 	// TODO Auto-generated constructor stub
-	for (int i = 0; i < m_customers.size(); ++i) {
-		if(m_customers[i] != 0){
-			delete m_customers[i];
-			m_customers[i] =0;
-		}
-
-	}
-
 }
 
 Customers::~Customers() {
 	// TODO Auto-generated destructor stub
+
+	for (std::vector<Customer*>::iterator it = m_customers.begin(); it != m_customers.end(); ++it){
+		delete * it;
+	}
+	m_customers.clear();
 }
 
 void Customers::detectCustomers(ImgTools& image,std::vector<Customer*>& foundCustomers) {
 
-	cv::CascadeClassifier face_cascade("/usr/local/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml");
+	//TODO: hate ariel
+	cv::CascadeClassifier face_cascade("/usr/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml");
 	std::vector<cv::Rect> faces;
 	face_cascade.detectMultiScale( image.getImage(false), faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE );
-
 
 	for (unsigned int i = 0; i < faces.size(); ++i) {
 		bool customerFound = false;
@@ -63,16 +60,16 @@ void Customers::registerCustomer(const std::string& customer_name, const std::st
 void Customers::saveCostumersCollage() {
 	ImageOperations photoshop;
 
-	int lowestHeight =-1;
-	int lowestWidth;
-	int photo_height;
+	int lowestHeight 	=-1;
+	//int lowestWidth 	= 0;
+	int photo_height 	= 0;
 
 	//getting lowest height for collage dimentions
 	for (unsigned int i = 0; i < m_customers.size(); ++i) {
 		photo_height = m_customers[i]->getPhoto().getImage(true).rows;
 		if( (lowestHeight == -1) || photo_height < lowestHeight){
 			lowestHeight = photo_height;
-			lowestWidth = m_customers[i]->getPhoto().getImage(true).cols;
+			//lowestWidth = m_customers[i]->getPhoto().getImage(true).cols;
 		}
 	}
 

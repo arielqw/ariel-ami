@@ -6,7 +6,8 @@
  */
 
 #include "../include/Suppliers.h"
-#include <iostream>
+
+
 Suppliers::Suppliers() {
 	// TODO Auto-generated constructor stub
 
@@ -14,12 +15,10 @@ Suppliers::Suppliers() {
 
 Suppliers::~Suppliers() {
 	// TODO Auto-generated destructor stub
-	for (unsigned int i = 0; i < m_suppliers.size(); ++i) {
-			if(m_suppliers[i] != 0){
-				delete m_suppliers[i];
-			}
-			m_suppliers[i] =0;
+	for (std::vector<Supplier*>::iterator it = m_suppliers.begin(); it != m_suppliers.end(); ++it){
+		delete * it;
 	}
+	m_suppliers.clear();
 }
 
 bool Suppliers::add(const string& supplier_name, const string& ingredient_name,
@@ -47,13 +46,14 @@ bool Suppliers::updateSupplierIngredient(const string& supplier_name,
 }
 
 void Suppliers::print() const {
-	std::cout << "***************** Suppliers ******************" << std::endl;
+	std::ostringstream debugStr;
+	debugStr <<  "***************** Suppliers ******************" << endl;
 	for (unsigned int i = 0; i < m_suppliers.size(); ++i) {
-		std::cout<< m_suppliers[i]->getName() << ": "<<std::endl;
+		debugStr << m_suppliers[i]->getName() << std::endl;
 		m_suppliers[i]->print();
-		std::cout  << std::endl;
 	}
-	std::cout << "**********************************************" << std::endl;
+	debugStr << "**********************************************" << endl;
+	CAppLogger::Instance().Log(debugStr, Poco::Message::PRIO_TRACE);
 }
 
 

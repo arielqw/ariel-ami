@@ -41,8 +41,8 @@ void CoffeeManager::readFromFile(const string&  filename,vector< vector<string> 
 		myfile.close();
 	}
 	else{
-		//cout << "Unable to open file";
-		CAppLogger::Instance().Log("Error: producers/suppliers/configuration file not found",filename+" not found.",Poco::Message::PRIO_CRITICAL);
+		//"Unable to open file";
+		CAppLogger::Instance().Log(filename+" not found.",Poco::Message::PRIO_CRITICAL);
 	}
 }
 
@@ -53,17 +53,21 @@ void CoffeeManager::registerEvent(const string& name, const string& product_name
 	if(is_VIP == "1"){
 		isVIPstr= "VIP";
 	}
-	CAppLogger::Instance().Log("Customer Registration","New "+isVIPstr+" Costumer registered - "+name+", Favorite product - "+product_name+".",Poco::Message::PRIO_NOTICE);
+	CAppLogger::Instance().Log("New "+isVIPstr+" Costumer registered - "+name+", Favorite product - "+product_name+".",Poco::Message::PRIO_NOTICE);
 
 }
 
 void CoffeeManager::purchaseEvent(const string& customer_image) {
-	CAppLogger::Instance().Log("custome message: ","purchasing: "+customer_image,Poco::Message::PRIO_DEBUG);
+	CAppLogger::Instance().Log("purchasing: "+customer_image,Poco::Message::PRIO_TRACE);
 
 	ImgTools image("customers/"+ customer_image);
 
 	vector<Customer*> customersContainer;
 	_customers.detectCustomers(image, customersContainer);
+
+	ostringstream debugStr;
+	debugStr << "detected " << customersContainer.size() << " customers in photo";
+	CAppLogger::Instance().Log(debugStr, Poco::Message::PRIO_DEBUG);
 
 	for (unsigned int i = 0; i < customersContainer.size(); ++i) {
 		singleBuy(*(customersContainer[i]));
@@ -72,10 +76,12 @@ void CoffeeManager::purchaseEvent(const string& customer_image) {
 
 void CoffeeManager::updateSupplierIngredientEvent(const string& supplier_name, const string& ingredient_name, const string& price) {
 	int numOfChangedProducts = _shop->updateSupplierIngredient(supplier_name,ingredient_name,price);
-	char c_numOfChangedProducts[10];
-	sprintf(c_numOfChangedProducts,"%d",numOfChangedProducts);
 
-	CAppLogger::Instance().Log("Supplier price change","Supplier "+supplier_name+" changed the price of "+ingredient_name+"\nProducts updated: "+c_numOfChangedProducts,Poco::Message::PRIO_NOTICE);
+	std::ostringstream debugStr;
+	debugStr << "Supplier " << supplier_name <<
+				" changed the price of " << ingredient_name << endl <<
+				"Products updated: " << numOfChangedProducts;
+	CAppLogger::Instance().Log(debugStr, Poco::Message::PRIO_NOTICE);
 }
 
 void CoffeeManager::singleBuy(Customer& buyer) {
@@ -83,13 +89,13 @@ void CoffeeManager::singleBuy(Customer& buyer) {
 	if(favoriteItem->getName() != ""){ //found
 		double total = buyer.computeProductPrice( favoriteItem->getBrutoPrice() );
 		double neto = favoriteItem->getNetoPrice();
-		CAppLogger::Instance().Log("Purchase messages","Costumer "+buyer.getCustomerName()+" purchased "+favoriteItem->getName(),Poco::Message::PRIO_WARNING);
+		CAppLogger::Instance().Log("Costumer "+buyer.getCustomerName()+" purchased "+favoriteItem->getName(),Poco::Message::PRIO_WARNING);
 
 		_revenue += total;
 		_profit += (total-neto);
 	}
 	else{ //not found
-		CAppLogger::Instance().Log("Purchase messages","Costumer "+buyer.getCustomerName()+" failed to purchase "+favoriteItem->getName(),Poco::Message::PRIO_WARNING);
+		CAppLogger::Instance().Log("Costumer "+buyer.getCustomerName()+" failed to purchase "+favoriteItem->getName(),Poco::Message::PRIO_WARNING);
 	}
 }
 
@@ -131,7 +137,7 @@ void CoffeeManager::calcRevenueAndProfit() const {
 	sprintf(c_revenue,"%.2f",_revenue);
 	sprintf(c_profit,"%.2f",_profit);
 
-	CAppLogger::Instance().Log("End of simulation","The total revenue is "+std::string(c_revenue)+", while the total profit is "+std::string(c_profit),Poco::Message::PRIO_WARNING);
+	CAppLogger::Instance().Log("The total revenue is "+std::string(c_revenue)+", while the total profit is "+std::string(c_profit),Poco::Message::PRIO_WARNING);
 }
 
 

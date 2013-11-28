@@ -10,7 +10,6 @@
 #include <vector>
 #include <string>
 #include <fstream>
-#include <iostream>
 #include <stdlib.h>
 
 #include "Suppliers.h"

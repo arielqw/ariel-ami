@@ -6,7 +6,9 @@
  */
 
 #include "../include/Ingredient.h"
+
 #include <iostream>
+
 Ingredient::Ingredient(const string& ingname):_name(ingname) {
 
 }
@@ -15,11 +17,11 @@ Ingredient::~Ingredient() {
 	// TODO Auto-generated destructor stub
 }
 
-Supplier* Ingredient::pickBestSupplier() {
-	Supplier* bestSupplier;
+void Ingredient::pickBestSupplier() {
+	Supplier* bestSupplier = NULL;
 	if(_availableSuppliers.size() ==0){
 		//TODO: throw error if no supplier
-		return bestSupplier;
+		return;
 	}
 	bestSupplier = _availableSuppliers[0];
 
@@ -30,7 +32,7 @@ Supplier* Ingredient::pickBestSupplier() {
 	}
 	this->_chosenSupplier = bestSupplier;
 	bestSupplier->incSellingCounter();
-	return bestSupplier;
+
 }
 
 bool Ingredient::operator ==(const Ingredient& other) const {
@@ -49,16 +51,21 @@ void Ingredient::addMenuItem(MenuItem* menuItem) {
 	_usedInTheseMenuItems.push_back(menuItem);
 }
 
-string Ingredient::getName() {
+string Ingredient::getName() const{
 	return _name;
 }
 
+
+
 void Ingredient::print() const {
-	std::cout << this->_name <<std::endl;
+
+	std::ostringstream debugStr;
+	debugStr << this->_name <<std::endl;
 	for (unsigned int i = 0; i < this->_usedInTheseMenuItems.size(); ++i) {
-		std::cout << "\t";
+		debugStr << "\t";
 		this->_usedInTheseMenuItems[i]->print();
 	}
+	CAppLogger::Instance().Log(debugStr, Poco::Message::PRIO_TRACE);
 }
 
 int Ingredient::updateMyMenuItems() {
@@ -67,7 +74,6 @@ int Ingredient::updateMyMenuItems() {
 		itemchanges+=_usedInTheseMenuItems[i]->calculatePrice();
 	}
 	return itemchanges;
-	//std::cout << "items changed: " << itemchanges << std::endl;
 }
 
 

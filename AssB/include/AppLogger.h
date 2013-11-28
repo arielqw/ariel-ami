@@ -65,7 +65,7 @@ public:
 
         }
         // Write to log a STL string.
-        void Log(const std::string& title,const std::string& content, Poco::Message::Priority inPriority/* = Poco::Message::PRIO_INFORMATION*/);
+        void Log(const std::string& inLogString, Poco::Message::Priority inPriority/* = Poco::Message::PRIO_INFORMATION*/);
         // Write to log a STL string stream.
         void Log(const std::ostringstream& inLogString, Poco::Message::Priority inPriority/* = Poco::Message::PRIO_INFORMATION*/);
 

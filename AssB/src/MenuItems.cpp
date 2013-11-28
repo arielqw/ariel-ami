@@ -14,12 +14,10 @@ MenuItems::MenuItems() {
 
 MenuItems::~MenuItems() {
 	// TODO Auto-generated destructor stub
-	for (unsigned int i = 0; i < m_menuItems.size(); ++i) {
-		if(m_menuItems[i] != 0){
-			delete m_menuItems[i];
-		}
-		m_menuItems[i]=0;
+	for (std::vector<MenuItem*>::iterator it = m_menuItems.begin(); it != m_menuItems.end(); ++it){
+		delete * it;
 	}
+	m_menuItems.clear();
 }
 
 MenuItem* MenuItems::getMenuItem(const string& name) {
@@ -38,11 +36,13 @@ MenuItem* MenuItems::getMenuItem(const string& name) {
 
 
 void MenuItems::print() const {
-	std::cout << "*****************Menu Items ******************" << std::endl;
+	std::ostringstream debugStr;
+	debugStr << "*****************Menu Items ******************" << std::endl;
 	for (unsigned int i = 0; i < m_menuItems.size(); ++i) {
 		m_menuItems[i]->print();
 	}
-	std::cout << "**********************************************" << std::endl;
+	debugStr << "**********************************************" << std::endl;
+	CAppLogger::Instance().Log(debugStr, Poco::Message::PRIO_TRACE);
 }
 
 void MenuItems::update() {

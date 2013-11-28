@@ -12,6 +12,7 @@ class SellingIngredient;
 
 #include "SellingIngredient.h"
 #include "Ingredient.h"
+#include "AppLogger.h"
 
 #include <string>
 #include <vector>

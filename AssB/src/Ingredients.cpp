@@ -14,9 +14,10 @@ Ingredients::Ingredients() {
 
 Ingredients::~Ingredients() {
 	// TODO Auto-generated destructor stub
-	for (unsigned int i = 0; i < m_ingredients.size(); ++i) {
-			delete m_ingredients[i];
+	for (std::vector<Ingredient*>::iterator it = m_ingredients.begin(); it != m_ingredients.end(); ++it){
+		delete * it;
 	}
+	m_ingredients.clear();
 }
 
 Ingredient* Ingredients::getIngredient(const string& ingredient_name) {
@@ -39,11 +40,13 @@ void Ingredients::update() {
 }
 
 void Ingredients::print() const {
-	std::cout << "***************** Ingredients ******************" << std::endl;
+	std::ostringstream debugStr;
+	debugStr << "***************** Ingredients ******************" << std::endl;
 	for (unsigned int i = 0; i < m_ingredients.size(); ++i) {
 		m_ingredients[i]->print();
 	}
-	std::cout << "**********************************************" << std::endl;
+	debugStr << "**********************************************" << std::endl;
+	CAppLogger::Instance().Log(debugStr, Poco::Message::PRIO_TRACE);
 }
 
 

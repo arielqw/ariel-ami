@@ -8,6 +8,7 @@
 #ifndef INGREDIENT_H_
 #define INGREDIENT_H_
 
+#include "AppLogger.h"
 #include "Supplier.h"
 #include "MenuItem.h"
 #include <string>
@@ -32,9 +33,9 @@ public:
 
 	void addSupplier(Supplier* supplier);
 	void addMenuItem(MenuItem* menuItem);
-	Supplier* pickBestSupplier();
+	void pickBestSupplier();
 	double getPrice() const;
-	string getName();
+	string getName() const;
 
 	void print() const;
 	int updateMyMenuItems();

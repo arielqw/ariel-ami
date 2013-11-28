@@ -1,5 +1,4 @@
 #include "../include/imageloader.h"
-#include <iostream>
 
 using namespace cv;
 using namespace std;
@@ -15,7 +14,7 @@ ImageLoader::ImageLoader(const string& fileName)
 {
   if (!m_image.data)
   {
-    cout << "Failed loading " << fileName << endl;
+	  CAppLogger::Instance().Log("Failed loading "+fileName, Poco::Message::PRIO_TRACE);
   }
 }
 

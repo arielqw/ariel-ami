@@ -56,35 +56,37 @@ void MenuItem::addIngridient(Ingredient* ingridient) {
 int MenuItem::logChange(double brutoPrice) const {
 	if( isOnMenu() ){
 		if(brutoPrice <= 5){
-			//std::cout << this->_name << "\t price changed, stil on menu" << std::endl;
 			//inc number of items changed (and stayed on the menu)
 			return 1;
 		}
 		else{
-			CAppLogger::Instance().Log("Product addition/removal from the menu due to price change (previous item)","Product "+this->_name+" was removed from the menu.",Poco::Message::PRIO_WARNING);		}
+			CAppLogger::Instance().Log("Product "+this->_name+" was removed from the menu.",Poco::Message::PRIO_WARNING);		}
 	}
 	else{
 		if(brutoPrice <= 5){
-			CAppLogger::Instance().Log("Product addition/removal from the menu due to price change (previous item)","Product "+this->_name+" was added from the menu.",Poco::Message::PRIO_WARNING);		}
+			CAppLogger::Instance().Log("Product "+this->_name+" was added from the menu.",Poco::Message::PRIO_WARNING);		}
 	}
 	return 0;
 }
 
 void MenuItem::print() const {
+	std::ostringstream debugStr;
 	if(this->isOnMenu()){
-		std::cout << "[x] ";
+		debugStr << "[x] ";
 	}
 	else{
-		std::cout << "[ ] ";
+		debugStr << "[ ] ";
 	}
-	std::cout << this->_name  << "\t" << this->_brutoPrice << " (" << this->_netoPrice << ") { ";
+	debugStr << this->_name  << "\t" << this->_brutoPrice << " (" << this->_netoPrice << ") { ";
 	for (unsigned int i = 0; i < this->_itemIngredients.size(); ++i) {
-		std::cout << this->_itemIngredients[i]->getName() ;
+		debugStr << this->_itemIngredients[i]->getName() ;
 		if(i != _itemIngredients.size()-1){
-			std::cout << ", ";
+			debugStr << ", ";
 		}
 	}
-	std::cout << "}" << std::endl<< std::endl ;
+	debugStr << " }" << std::endl;
+
+	CAppLogger::Instance().Log(debugStr,Poco::Message::PRIO_TRACE);
 }
 
 string MenuItem::getName() const {

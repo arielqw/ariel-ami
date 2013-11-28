@@ -8,6 +8,7 @@
 #ifndef SUPPLIERS_H_
 #define SUPPLIERS_H_
 #include "Supplier.h"
+#include "AppLogger.h"
 #include <vector>
 
 class Suppliers {
