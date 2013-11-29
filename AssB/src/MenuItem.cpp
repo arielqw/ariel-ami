@@ -38,7 +38,7 @@ int MenuItem::calculatePrice() {
 	if((this->_netoPrice != -1) && this->_brutoPrice != ((cost + 0.25)*1.5)){
 		changed += logChange((cost + 0.25)*1.5);
 	}
-	this->_netoPrice = cost;
+	this->_netoPrice = cost+0.25;
 	this->_brutoPrice = (cost + 0.25)*1.5;
 	if(_brutoPrice <= 5){
 		this->_onMenu = true;

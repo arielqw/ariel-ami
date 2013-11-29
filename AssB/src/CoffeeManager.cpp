@@ -86,7 +86,7 @@ void CoffeeManager::updateSupplierIngredientEvent(const string& supplier_name, c
 
 void CoffeeManager::singleBuy(Customer& buyer) {
 	MenuItem* favoriteItem = _shop->getProductPrice( buyer.getFavoriteProduct() );
-	if(favoriteItem->getName() != ""){ //found
+	if(favoriteItem->isOnMenu()){ //found
 		double total = buyer.computeProductPrice( favoriteItem->getBrutoPrice() );
 		double neto = favoriteItem->getNetoPrice();
 		CAppLogger::Instance().Log("Costumer "+buyer.getCustomerName()+" purchased "+favoriteItem->getName(),Poco::Message::PRIO_WARNING);
