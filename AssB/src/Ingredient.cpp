@@ -9,8 +9,19 @@
 
 #include <iostream>
 
-Ingredient::Ingredient(const string& ingname):_name(ingname) {
+Ingredient::Ingredient(const string& ingname):
+		_name(ingname), _chosenSupplier(NULL), _availableSuppliers(), _usedInTheseMenuItems() {
+}
 
+Ingredient::Ingredient(const Ingredient& other):
+		_name(other._name), _chosenSupplier(NULL), _availableSuppliers(), _usedInTheseMenuItems(){
+	//unreachable
+	Ingredient(other._name);
+}
+
+Ingredient& Ingredient::operator =(const Ingredient& other) {
+	//unreachable
+	return *this;
 }
 
 Ingredient::~Ingredient() {

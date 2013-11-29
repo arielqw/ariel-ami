@@ -1,7 +1,9 @@
 
 #include "UniCoffeeShop.h"
 
-UniCoffeeShop::UniCoffeeShop(){}
+UniCoffeeShop::UniCoffeeShop():_menuItems(), _suppliers(), _ingredients(){
+
+}
 
 
 void UniCoffeeShop::processProducts(const vector<vector<string> >& productsInput) {

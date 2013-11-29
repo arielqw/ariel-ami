@@ -7,11 +7,20 @@
 
 #include "CoffeeManager.h"
 
-CoffeeManager::CoffeeManager():_revenue(0), _profit(0) {
+CoffeeManager::CoffeeManager():_revenue(0), _profit(0), _shop(NULL), _customers() {
 	// TODO Auto-generated constructor stub
 
-
 }
+
+CoffeeManager::CoffeeManager(const CoffeeManager& other):_revenue(0), _profit(0), _shop(NULL), _customers() {
+	//unreachble
+}
+
+CoffeeManager& CoffeeManager::operator =(const CoffeeManager& other) {
+	//unreachble
+	return *this;
+}
+
 void CoffeeManager::splitString(const string& str,char delimiter, vector<string>& output){
 	string tmp="";
 
@@ -139,6 +148,7 @@ void CoffeeManager::calcRevenueAndProfit() const {
 
 	CAppLogger::Instance().Log("The total revenue is "+std::string(c_revenue)+", while the total profit is "+std::string(c_profit),Poco::Message::PRIO_WARNING);
 }
+
 
 
 void CoffeeManager::start(const string& confFileName, const string& productsFileName,const string& suppliersFileName,const string& eventFileName) {

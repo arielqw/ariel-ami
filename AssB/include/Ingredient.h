@@ -22,6 +22,9 @@ using namespace std;
 
 class Ingredient {
 private:
+	Ingredient(const Ingredient& other);
+	Ingredient& operator=(const Ingredient& other);
+
 	string _name;
 	Supplier* _chosenSupplier;
 	vector< Supplier* > _availableSuppliers;

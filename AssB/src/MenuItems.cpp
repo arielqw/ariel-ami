@@ -7,7 +7,7 @@
 
 #include "MenuItems.h"
 #include <iostream>
-MenuItems::MenuItems() {
+MenuItems::MenuItems():m_menuItems() {
 	// TODO Auto-generated constructor stub
 
 }

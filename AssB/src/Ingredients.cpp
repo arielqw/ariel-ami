@@ -7,7 +7,7 @@
 
 #include "Ingredients.h"
 #include <iostream>
-Ingredients::Ingredients() {
+Ingredients::Ingredients():m_ingredients() {
 	// TODO Auto-generated constructor stub
 
 }

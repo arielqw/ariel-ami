@@ -11,6 +11,17 @@ SellingIngredient::SellingIngredient(Ingredient* ingridient):_ingredient(ingridi
 
 }
 
+SellingIngredient::SellingIngredient(const SellingIngredient& other):_ingredient(NULL),_price(0) {
+	//unreachable
+
+}
+
+SellingIngredient& SellingIngredient::operator =(
+		const SellingIngredient& other) {
+	//unreachable
+	return *this;
+}
+
 SellingIngredient::~SellingIngredient() {
 	// TODO Auto-generated destructor stub
 }

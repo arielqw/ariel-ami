@@ -17,6 +17,9 @@
 
 class CoffeeManager {
 private:
+	CoffeeManager(const CoffeeManager& other);
+	CoffeeManager& operator=(const CoffeeManager& other);
+
 	double _revenue;
 	double _profit;
 	UniCoffeeShop* _shop;

@@ -18,6 +18,7 @@ SimUniCoffeeShop: bin/Main.o bin/AppLogger.o bin/imageoperations.o bin/MenuItem.
 	
 	@echo 'Finished building target: SimUniCoffeeShop'
 	@echo ' '
+	
 
 # Depends on the source and header files
 bin/AppLogger.o: src/AppLogger.cpp

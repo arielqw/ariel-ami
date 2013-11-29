@@ -9,7 +9,7 @@
 using Poco::Logger;
 
 
-Customers::Customers() {
+Customers::Customers():m_customers() {
 	// TODO Auto-generated constructor stub
 }
 
@@ -25,8 +25,9 @@ Customers::~Customers() {
 void Customers::detectCustomers(ImgTools& image,std::vector<Customer*>& foundCustomers) {
 
 	//TODO: hate ariel
-	cv::CascadeClassifier face_cascade("/usr/local/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml");
-	//cv::CascadeClassifier face_cascade("/usr/local/OpenCV/haarcascades/haarcascade_frontalface_alt.xml");
+	//cv::CascadeClassifier face_cascade("/usr/local/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml");
+	//cv::CascadeClassifier face_cascade("/usr/share/OpenCV/haarcascades/haarcascade_frontalface_alt.xml");
+	cv::CascadeClassifier face_cascade("haarcascade_frontalface_alt.xml");
 	std::vector<cv::Rect> faces;
 	face_cascade.detectMultiScale( image.getImage(false), faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE );
 
@@ -78,7 +79,7 @@ void Customers::saveCostumersCollage() {
 	int canvas_width =0;
 	for (unsigned int i = 0; i < m_customers.size(); ++i) {
 		cv::Mat img = m_customers[i]->getPhoto().getImage(false);
-		canvas_width += lowestHeight*(img.cols/img.rows);
+		canvas_width += ((int)( ( (double)lowestHeight) * ( ( (double)img.cols)/( (double)img.rows) ) ));
 	}
 
 	//1.create a blank image

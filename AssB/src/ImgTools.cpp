@@ -7,7 +7,7 @@
 
 #include "ImgTools.h"
 #include <iostream>
-ImgTools::ImgTools(const std::string& imageFileName):_loader(imageFileName){
+ImgTools::ImgTools(const std::string& imageFileName):_loader(imageFileName),_greyScaleImage(){
 	// TODO Auto-generated constructor stub
 	ImageOperations oper;
 	oper.rgb_to_greyscale(_loader.getImage(), _greyScaleImage);

@@ -13,7 +13,7 @@ using namespace std;
 CAppLogger::CAppLogger(
 		const std::string& logFileName 				/*= "log.log"*/,
 		Poco::Message::Priority minFilePriority 	/*= Poco::Message::PRIO_INFORMATION*/,
-		Poco::Message::Priority minConsolePriority	/*= Poco::Message::PRIO_INFORMATION*/)
+		Poco::Message::Priority minConsolePriority	/*= Poco::Message::PRIO_INFORMATION*/):mLoggers()
 {
 	// We tell the vector how much elements we it'll have - its more efficient.
 	mLoggers.resize(ELoggersCount);

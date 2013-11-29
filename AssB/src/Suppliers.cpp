@@ -8,7 +8,7 @@
 #include "Suppliers.h"
 
 
-Suppliers::Suppliers() {
+Suppliers::Suppliers():m_suppliers() {
 	// TODO Auto-generated constructor stub
 
 }

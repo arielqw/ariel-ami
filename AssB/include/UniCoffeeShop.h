@@ -27,7 +27,7 @@ private:
 	Ingredients _ingredients;
 	void processProducts(const vector< vector<string> >& productsInput);
 	void processSuppliers(const vector< vector<string> >& suppliersInput);
-//	Suppliers _suppliers;
+
 
 public:
 	UniCoffeeShop();

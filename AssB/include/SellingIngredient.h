@@ -15,6 +15,9 @@ using namespace std;
 
 class SellingIngredient {
 private:
+	SellingIngredient(const SellingIngredient& other);
+	SellingIngredient& operator=(const SellingIngredient& other);
+
 	Ingredient* _ingredient;
 	double _price;
 public:
