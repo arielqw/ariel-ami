@@ -28,6 +28,8 @@ private:
 	MenuItems _menuItems;
 	Suppliers _suppliers;
 	Ingredients _ingredients;
+
+	//process the data from the input files
 	void processProducts(const vector< vector<string> >& productsInput);
 	void processSuppliers(const vector< vector<string> >& suppliersInput);
 
@@ -35,8 +37,13 @@ private:
 public:
 	UniCoffeeShop();
 	virtual ~UniCoffeeShop();
+
+	//initializes the coffeeshop and its services
 	void start(vector< vector<string> >& productsInput,vector< vector<string> >& suppliersInput);
+
+	//updates the coffeeshop of a change in an ingredient's price
 	int updateSupplierIngredient(const string& supplier_name,const string& ingredient_name,const string& price);
+
 	MenuItem* getProductPrice(const string& product_name);
 };
 

@@ -20,7 +20,10 @@ public:
 	MenuItems();
 	virtual ~MenuItems();
 
+	//searches for a menu item and returns it. creates it if it doesnt exist
 	MenuItem* getMenuItem(const string& name);
+
+	//initial update for calculating prices for menuitems for the first time
 	void update();
 
 	void print() const;

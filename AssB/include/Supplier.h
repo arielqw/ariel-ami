@@ -35,7 +35,11 @@ public:
 	virtual ~Supplier();
 	bool operator == (const Supplier& other) const;
 
+	//creates a "selling ingredient" from the ingredeint and pushes it to list
+	//return true if succeeds
 	bool addIngredient(Ingredient* ingredient,double price);
+
+	//updates the matching "selling ingredient" and updates it price
 	void updateIngredient(const string& ingredient_name,double price);
 
 	void print() const;

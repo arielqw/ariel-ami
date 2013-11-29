@@ -21,12 +21,6 @@ Suppliers::~Suppliers() {
 	m_suppliers.clear();
 }
 
-bool Suppliers::add(const string& supplier_name, const string& ingredient_name,
-		double price) {
-	return true;
-}
-
-
 Supplier* Suppliers::getSupplier(const string& name) {
 	//if ingredient exists -> return it
 	for (unsigned int i = 0; i < m_suppliers.size(); ++i) {
@@ -40,10 +34,6 @@ Supplier* Suppliers::getSupplier(const string& name) {
 	return supplier;
 }
 
-bool Suppliers::updateSupplierIngredient(const string& supplier_name,
-		string& ingredient_name, double price) {
-	return true;
-}
 
 void Suppliers::print() const {
 	std::ostringstream debugStr;

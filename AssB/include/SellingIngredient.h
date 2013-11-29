@@ -21,8 +21,8 @@ private:
 	SellingIngredient(const SellingIngredient& other);
 	SellingIngredient& operator=(const SellingIngredient& other);
 
-	Ingredient* _ingredient;
-	double _price;
+	Ingredient* _ingredient;	//the ingredient reffered to
+	double _price;	//the price of the ingredient of a specific supplier
 public:
 	SellingIngredient(Ingredient* ingridient);
 	virtual ~SellingIngredient();

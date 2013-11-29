@@ -45,12 +45,6 @@ void UniCoffeeShop::start(vector< vector<string> >& productsInput,vector< vector
 	_menuItems.print();
 	_ingredients.print();
 
-	//updateSupplierIngredient("tara","milk","9");
-	//updateSupplierIngredient("tnuva","milk","9");
-	//updateSupplierIngredient("coca cola","coca cola","0.2");
-
-
-
 }
 
 int UniCoffeeShop::updateSupplierIngredient(const string& supplier_name, const string& ingredient_name, const string& price) {
@@ -63,6 +57,7 @@ int UniCoffeeShop::updateSupplierIngredient(const string& supplier_name, const s
 	changeIngredient->pickBestSupplier();
 	double ingredientBestPrice_after = changeIngredient->getPrice();
 
+	//updates the menu if needed
 	if(ingredientBestPrice_before != ingredientBestPrice_after ){
 		return changeIngredient->updateMyMenuItems();
 	}

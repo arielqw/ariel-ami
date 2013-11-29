@@ -15,7 +15,7 @@
  */
 class RegularCustomer: public Customer {
 public:
-	//RegularCustomer();
+
 	RegularCustomer(const string& customer_name,const string& favorite_product);
 	virtual ~RegularCustomer();
 	double computeProductPrice(double originalPrice);

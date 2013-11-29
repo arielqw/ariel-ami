@@ -21,9 +21,8 @@ public:
 	Suppliers();
 	virtual ~Suppliers();
 
-	bool add(const string& supplier_name,const string& ingredient_name,double price);
+	//returns the matching supplier. creates it if it doesnt exist
 	Supplier* getSupplier(const string& name);
-	bool updateSupplierIngredient(const string& supplier_name, string& ingredient_name, double price);
 
 	void print() const;
 };
