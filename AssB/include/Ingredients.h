@@ -10,6 +10,9 @@
 #include "Ingredient.h"
 #include <vector>
 
+/*
+ * this class holds all the ingredients that are known by the coffeeshop
+ */
 class Ingredients {
 private:
 	vector < Ingredient* > m_ingredients;

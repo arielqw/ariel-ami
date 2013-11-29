@@ -13,6 +13,9 @@
 
 using namespace std;
 
+/*
+ * a potential item that can be inside the menu that is provided for the coffee shop's customers
+ */
 class MenuItem {
 private:
 	string _name;
@@ -29,7 +32,10 @@ public:
 	int calculatePrice();
 	void addIngridient(Ingredient* ingridient);
 
+	//log of any menuitem that was added/removed from the menu
+	//and return the number of menuitems on the menu that changed their price but stayed on the menu
 	int logChange(double brutoPrice) const;
+
 	void print() const;
 	string getName() const;
 };

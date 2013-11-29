@@ -61,7 +61,7 @@ void CAppLogger::Log(const std::string& inLogString, Poco::Message::Priority inP
 {
 	Message msg;
 	msg.setPriority(inPriority);
-	//TODO: masasa: no need for logger titles, only Bold comments.
+
 	msg.setText(inLogString);
 
 	vector<Logger*>::iterator iterator;

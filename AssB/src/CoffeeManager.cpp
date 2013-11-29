@@ -8,7 +8,6 @@
 #include "CoffeeManager.h"
 
 CoffeeManager::CoffeeManager():_revenue(0), _profit(0), _shop(NULL), _customers() {
-	// TODO Auto-generated constructor stub
 
 }
 
@@ -78,6 +77,7 @@ void CoffeeManager::purchaseEvent(const string& customer_image) {
 	debugStr << "detected " << customersContainer.size() << " customers in photo";
 	CAppLogger::Instance().Log(debugStr, Poco::Message::PRIO_DEBUG);
 
+	//iterates over customers found in picture and tries to make a purchase for any single one of them
 	for (unsigned int i = 0; i < customersContainer.size(); ++i) {
 		singleBuy(*(customersContainer[i]));
 	}
@@ -110,7 +110,7 @@ void CoffeeManager::singleBuy(Customer& buyer) {
 
 
 CoffeeManager::~CoffeeManager() {
-	// TODO Auto-generated destructor stub
+	
 }
 
 void CoffeeManager::eventHandler(const string& eventFileName) {
@@ -133,14 +133,11 @@ void CoffeeManager::eventHandler(const string& eventFileName) {
 
 	}
 
-
 	_customers.saveCostumersCollage();
-	//_customers.
-	//1. readLine
-	//2. called event
+
 }
 
-void CoffeeManager::calcRevenueAndProfit() const {
+void CoffeeManager::logRevenueAndProfit() const {
 	char c_revenue[10];
 	char c_profit[10];
 	sprintf(c_revenue,"%.2f",_revenue);
@@ -156,6 +153,8 @@ void CoffeeManager::start(const string& confFileName, const string& productsFile
 
 	vector< vector<string> > confInput;
 	readFromFile(confFileName, confInput, '=');
+
+	//////// Init Logger //////////////////////////
 
 	std::string LOG_FILE_NAME = "app.log";
 	Poco::Message::Priority LOGGER_FILE_PRIORITY = Poco::Message::PRIO_INFORMATION;
@@ -175,6 +174,8 @@ void CoffeeManager::start(const string& confFileName, const string& productsFile
 
 	CAppLogger::Instance( LOG_FILE_NAME,LOGGER_FILE_PRIORITY,LOGGER_CONSOLE_PRIORITY );
 
+	//////// Init Logger end //////////////////////////
+
 
 	vector< vector<string> > productsInput;
 	vector< vector<string> > suppliersInput;
@@ -186,11 +187,12 @@ void CoffeeManager::start(const string& confFileName, const string& productsFile
 
 	_shop->start(productsInput,suppliersInput);
 
+	//read through the file events and run them realtime
 	eventHandler(eventFileName);
 
 	_customers.saveCostumersCollage();
 
-	calcRevenueAndProfit();
+	logRevenueAndProfit();
 
 	delete _shop;
 }

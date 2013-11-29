@@ -8,12 +8,12 @@
 #include "MenuItems.h"
 #include <iostream>
 MenuItems::MenuItems():m_menuItems() {
-	// TODO Auto-generated constructor stub
+	
 
 }
 
 MenuItems::~MenuItems() {
-	// TODO Auto-generated destructor stub
+	
 	for (std::vector<MenuItem*>::iterator it = m_menuItems.begin(); it != m_menuItems.end(); ++it){
 		delete * it;
 	}

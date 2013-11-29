@@ -13,6 +13,9 @@
 #include "MenuItem.h"
 using namespace std;
 
+/*
+ * binds an ingrediant to its price at the seller's
+ */
 class SellingIngredient {
 private:
 	SellingIngredient(const SellingIngredient& other);

@@ -25,24 +25,25 @@ Ingredient& Ingredient::operator =(const Ingredient& other) {
 }
 
 Ingredient::~Ingredient() {
-	// TODO Auto-generated destructor stub
+	
 }
 
 void Ingredient::pickBestSupplier() {
 	Supplier* bestSupplier = NULL;
 	if(_availableSuppliers.size() ==0){
-		//TODO: throw error if no supplier
+		//matandro said on the forum it cannot happen
+		CAppLogger::Instance().Log("pickBestSupplier: ingredient not found", Poco::Message::PRIO_DEBUG );
 		return;
 	}
 	bestSupplier = _availableSuppliers[0];
 
+	//iterate over all of this ingredient's suppliers and save the cheapest one
 	for (unsigned int i = 1; i < _availableSuppliers.size(); ++i) {
 		if(_availableSuppliers[i]->getIngridientPrice(this->_name) < bestSupplier->getIngridientPrice(this->_name)){
 			bestSupplier = _availableSuppliers[i];
 		}
 	}
 	this->_chosenSupplier = bestSupplier;
-	bestSupplier->incSellingCounter();
 
 }
 
@@ -67,7 +68,6 @@ string Ingredient::getName() const{
 }
 
 
-
 void Ingredient::print() const {
 
 	std::ostringstream debugStr;
@@ -81,6 +81,7 @@ void Ingredient::print() const {
 
 int Ingredient::updateMyMenuItems() {
 	int itemchanges= 0;
+	//iterate over this ingredient's menu items and update them
 	for (unsigned int i = 0; i < _usedInTheseMenuItems.size(); ++i) {
 		itemchanges+=_usedInTheseMenuItems[i]->calculatePrice();
 	}

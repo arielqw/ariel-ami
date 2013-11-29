@@ -20,6 +20,9 @@ const double LABOR_COST = 0.25;
 
 using namespace std;
 
+/*
+ * the coffeeshop itself
+ */
 class UniCoffeeShop {
 private:
 	MenuItems _menuItems;

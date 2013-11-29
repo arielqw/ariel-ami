@@ -10,6 +10,9 @@
 
 #include "Customer.h"
 
+/*
+ * a type of customer
+ */
 class VipCustomer: public Customer {
 public:
 	VipCustomer(const string& customer_name,const string& favorite_product);

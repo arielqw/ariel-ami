@@ -23,7 +23,7 @@ SellingIngredient& SellingIngredient::operator =(
 }
 
 SellingIngredient::~SellingIngredient() {
-	// TODO Auto-generated destructor stub
+	
 }
 
 string SellingIngredient::getName() {

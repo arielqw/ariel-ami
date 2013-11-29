@@ -10,6 +10,9 @@
 
 #include "Customer.h"
 
+/*
+ * a type of customer
+ */
 class RegularCustomer: public Customer {
 public:
 	//RegularCustomer();

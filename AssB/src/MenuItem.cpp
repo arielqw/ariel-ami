@@ -9,11 +9,11 @@
 #include <iostream>
 
 MenuItem::MenuItem(const string& name):_name(name),_itemIngredients(),_brutoPrice(-1),_netoPrice(-1),_onMenu(false) {
-	// TODO Auto-generated constructor stub
+	
 }
 
 MenuItem::~MenuItem() {
-	// TODO Auto-generated destructor stub
+	
 }
 
 double MenuItem::getBrutoPrice() const {
@@ -30,12 +30,16 @@ bool MenuItem::isOnMenu() const {
 
 
 int MenuItem::calculatePrice() {
-	int changed = 0;
+	int changed = 0;	//num
 	double cost = 0;
+	//iterate over all of this menu item's ingredients and sum up the cumulative cost
 	for (unsigned int i = 0; i < _itemIngredients.size(); ++i) {
 		cost += _itemIngredients[i]->getPrice();
 	}
+	//if a change in the menu item's price has occurred check if it was just added to the menu
+	//or just removed from the menu and log accordingly
 	if((this->_netoPrice != -1) && this->_brutoPrice != ((cost + 0.25)*1.5)){
+		// add 1 for each menu item that was just added to the menu
 		changed += logChange((cost + 0.25)*1.5);
 	}
 	this->_netoPrice = cost+0.25;
@@ -56,7 +60,7 @@ void MenuItem::addIngridient(Ingredient* ingridient) {
 int MenuItem::logChange(double brutoPrice) const {
 	if( isOnMenu() ){
 		if(brutoPrice <= 5){
-			//inc number of items changed (and stayed on the menu)
+			//inc number of menu items which their price changed and but still they stayed on the menu
 			return 1;
 		}
 		else{

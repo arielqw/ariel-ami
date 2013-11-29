@@ -39,6 +39,7 @@ public:
         ~CAppLogger(void);
 
         // The one and only application logger is accessible through this method
+        //first call initializes
         static CAppLogger& Instance(
         		const std::string& logFileName = "log.log",
         		Poco::Message::Priority minFilePriority 	= Poco::Message::PRIO_INFORMATION,

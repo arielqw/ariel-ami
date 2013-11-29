@@ -7,12 +7,12 @@
 
 #include "Supplier.h"
 #include <iostream>
-Supplier::Supplier(const string& supname):_name(supname),_sellingCounter(0),_supplierIngredients() {
+Supplier::Supplier(const string& supname):_name(supname),_supplierIngredients() {
 
 }
 
 Supplier::~Supplier() {
-	// TODO Auto-generated destructor stub
+	
 	for (std::vector<SellingIngredient*>::iterator it = _supplierIngredients.begin(); it != _supplierIngredients.end(); ++it){
 		delete * it;
 	}
@@ -61,13 +61,12 @@ double Supplier::getIngridientPrice(const string& ingridient_name) const {
 			return _supplierIngredients[i]->getPrice();
 		}
 	}
-	//TODO: throw exception
+	//matandro said on the forum it cannot happen
+	CAppLogger::Instance().Log("getIngridientPrice: ingredient not found", Poco::Message::PRIO_DEBUG );
 	return -1;
 }
 
-void Supplier::incSellingCounter() {
-	_sellingCounter++;
-}
+
 
 
 

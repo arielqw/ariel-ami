@@ -3,9 +3,6 @@
 void ImageOperations::rgb_to_greyscale(const cv::Mat& src, cv::Mat& dst)
 {
     cv::cvtColor(src,dst,CV_BGR2GRAY);
-
-    //optional sharpening
-    //cv::equalizeHist(dst,dst);
 }
 
 

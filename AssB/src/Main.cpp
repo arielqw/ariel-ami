@@ -15,7 +15,6 @@ int main(int argc, char **argv)
 {
 	if (argc < 5)
 	{
-		//TODO: throw error if args <5 (first = home path)
 		cout << "not enough arguments. exiting..." << endl;
 		return 0;
 	}

@@ -10,6 +10,9 @@
 #include "MenuItem.h"
 #include <vector>
 
+/*
+ * all the menu items that are known to the coffeeshop
+ */
 class MenuItems {
 private:
 	vector < MenuItem* > m_menuItems;

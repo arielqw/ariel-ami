@@ -11,6 +11,9 @@
 #include "AppLogger.h"
 #include <vector>
 
+/*
+ * represents all the suppliers known to the coffeeshop
+ */
 class Suppliers {
 private:
 	vector< Supplier* > m_suppliers;

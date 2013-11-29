@@ -9,12 +9,12 @@
 
 
 Suppliers::Suppliers():m_suppliers() {
-	// TODO Auto-generated constructor stub
+	
 
 }
 
 Suppliers::~Suppliers() {
-	// TODO Auto-generated destructor stub
+	
 	for (std::vector<Supplier*>::iterator it = m_suppliers.begin(); it != m_suppliers.end(); ++it){
 		delete * it;
 	}
@@ -26,7 +26,7 @@ bool Suppliers::add(const string& supplier_name, const string& ingredient_name,
 	return true;
 }
 
-//TODO: check if can use impletments to avoid copy code..
+
 Supplier* Suppliers::getSupplier(const string& name) {
 	//if ingredient exists -> return it
 	for (unsigned int i = 0; i < m_suppliers.size(); ++i) {

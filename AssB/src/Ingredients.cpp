@@ -8,12 +8,12 @@
 #include "Ingredients.h"
 #include <iostream>
 Ingredients::Ingredients():m_ingredients() {
-	// TODO Auto-generated constructor stub
+	
 
 }
 
 Ingredients::~Ingredients() {
-	// TODO Auto-generated destructor stub
+	
 	for (std::vector<Ingredient*>::iterator it = m_ingredients.begin(); it != m_ingredients.end(); ++it){
 		delete * it;
 	}

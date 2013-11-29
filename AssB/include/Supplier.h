@@ -20,11 +20,13 @@ class SellingIngredient;
 
 using namespace std;
 
+/*
+ * represents a suuplier that proivedes ingredients to the coffeeshop
+ */
 class Supplier {
 private:
 
 	string _name;
-	int _sellingCounter;
 
 	vector< SellingIngredient* > _supplierIngredients;
 
@@ -39,7 +41,6 @@ public:
 	void print() const;
 	string getName() const;
 	double getIngridientPrice(const string& ingridient_name) const;
-	void incSellingCounter();
 };
 
 #endif /* SUPPLIER_H_ */

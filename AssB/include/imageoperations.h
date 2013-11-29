@@ -17,7 +17,6 @@ public:
     /** Resize original picture into the dimension of image destination */
     void resize(const cv::Mat& src, cv::Mat& dst);
 
-    bool isFaceInPhoto(const cv::Mat& photo, const cv::Mat& face);
 };
 
 #endif
