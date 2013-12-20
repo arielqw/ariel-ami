@@ -1,0 +1,68 @@
+<OrderList>
+	<Orders>
+		<Order id="1">
+			<DeliveryAddress>
+				<x>1</x>
+				<y>1</y>
+			</DeliveryAddress>
+			<Dishes>
+				<Dish>
+					<name>pizza</name>
+					<quantity>2</quantity>
+				</Dish>
+				<Dish>
+					<name>pasta</name>
+					<quantity>3</quantity>
+				</Dish>
+				<Dish>
+					<name>fishsticks</name>
+					<quantity>4</quantity>
+				</Dish>
+			</Dishes>
+		</Order>
+		<Order id="2">
+			<DeliveryAddress>
+				<x>2</x>
+				<y>2</y>
+			</DeliveryAddress>
+			<Dishes>
+				<Dish>
+					<name>hamburger</name>
+					<quantity>2</quantity>
+				</Dish>
+				<Dish>
+					<name>rice</name>
+					<quantity>3</quantity>
+				</Dish>
+				<Dish>
+					<name>fried potato</name>
+					<quantity>2</quantity>
+				</Dish>
+				<Dish>
+					<name>fried beans</name>
+					<quantity>2</quantity>
+				</Dish>
+			</Dishes>
+		</Order>
+		<Order id="3">
+			<DeliveryAddress>
+				<x>4</x>
+				<y>5</y>
+			</DeliveryAddress>
+			<Dishes>
+				<Dish>
+					<name>humus</name>
+					<quantity>1</quantity>
+				</Dish>
+				<Dish>
+					<name>fried beans</name>
+					<quantity>1</quantity>
+				</Dish>
+				<Dish>
+					<name>pizza</name>
+					<quantity>3</quantity>
+				</Dish>
+			</Dishes>
+		</Order>
+	</Orders>
+</OrderList>
