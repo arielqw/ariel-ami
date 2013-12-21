@@ -8,12 +8,37 @@ public class Order
 		_id = id;
 		_address = address;
 		_ordersOfDish = ordersOfDish;
+		_difficulty = 0;
+
+		_status = OrderStatus.INCOMPLETE;
 	}
 	
 	private int _id;
 	private DeliveryAddress _address;
+	private int _difficulty;
 	List<OrderOfDish> _ordersOfDish;
+	private Order.OrderStatus _status;
 	
+	public List<OrderOfDish> get_ordersOfDish() {
+		return _ordersOfDish;
+	}
+
+
+	public int get_difficulty() {
+		return _difficulty;
+	}
+
+
+	public Order.OrderStatus get_status() {
+		return _status;
+	}
+
+
+	public void set_status(Order.OrderStatus _status) {
+		this._status = _status;
+	}
+
+
 	public enum OrderStatus {
 		INCOMPLETE,
 		INPROGRESS,
@@ -32,5 +57,17 @@ public class Order
 		builder.append("\n\t====================================================================================================================\n");
 
 		return builder.toString();
+	}
+
+
+	public void setDifficulty(int tmpDifficulty) {
+		// TODO Auto-generated method stub
+		_difficulty = tmpDifficulty;
+	}
+
+
+	public String getName() {
+		// TODO Auto-generated method stub
+		return _ordersOfDish.toString();
 	}
 }

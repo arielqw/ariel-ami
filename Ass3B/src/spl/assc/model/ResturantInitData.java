@@ -13,6 +13,20 @@ public class ResturantInitData
 		_warehouse = warehouse;
 	}
 	
+	public List<RunnableChef> get_chefs() {
+		return _chefs;
+	}
+
+
+	public List<RunnableDeliveryPerson> get_deliveryGuys() {
+		return _deliveryGuys;
+	}
+
+
+	public Warehouse get_warehouse() {
+		return _warehouse;
+	}
+
 	private List<RunnableChef> _chefs;
 	private List<RunnableDeliveryPerson> _deliveryGuys;
 	private Warehouse _warehouse;

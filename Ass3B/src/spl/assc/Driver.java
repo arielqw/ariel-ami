@@ -1,5 +1,6 @@
 package spl.assc;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,15 +29,17 @@ public class Driver
 		
 		
 		Menu menu = XMLParser.parseMenu("Menu.xml");
-		LOGGER.info(menu.toString());	
+		LOGGER.fine(menu.toString());	
 
 		OrderQueue orderQueue = new OrderQueue(XMLParser.parseOrderList("OrdersList.xml"));
-		LOGGER.info(orderQueue.toString());
+		LOGGER.fine(orderQueue.toString());
 			
 		ResturantInitData resturant = XMLParser.parseResturant("InitialData.xml");
-		LOGGER.info(resturant.toString());
+		LOGGER.fine(resturant.toString());
 		
-		new Management(resturant, menu, orderQueue);
+		Management manager = new Management(resturant, menu, orderQueue);
+		manager.start();
+		//Semaphore
 
 	}
 	

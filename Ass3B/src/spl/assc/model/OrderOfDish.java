@@ -9,11 +9,26 @@ public class OrderOfDish
 	
 	private String _name;
 	private int _quantity;
+	private Dish _dish;
 	
+
+	public Dish get_dish() {
+		return _dish;
+	}
+	
+	public void setDish(Dish dish){
+		_dish = dish;
+	}
+
 
 	@Override
 	public String toString()
 	{
 		return String.format("%s:%d", _name, _quantity);
+	}
+
+	public String getName() {
+		// TODO Auto-generated method stub
+		return _name;
 	}
 }

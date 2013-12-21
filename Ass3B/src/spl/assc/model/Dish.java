@@ -28,6 +28,11 @@ public class Dish
 	private List<Ingredient> 	_ingredients;
 	
 	
+	public int get_difficultyRating() {
+		return _difficultyRating;
+	}
+
+
 	@Override
 	public String toString()
 	{

@@ -2,7 +2,11 @@ package spl.assc.utils;
 import java.io.File;
 import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
@@ -61,21 +65,6 @@ public class XMLParser
 	
 	private static Document getDocumentFromXML(String filename)
 	{
-		//filename looks like "InitialData.xml"
-		
-		/*
-	    try {
-
-	    	File file = new File(filename);
-	    	DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-	    	return dBuilder.parse(file);
-	    }
-    	catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-		*/
-		
 		DocumentBuilderFactory documentBuilder = DocumentBuilderFactory.newInstance();
 		documentBuilder.setIgnoringElementContentWhitespace(true);
 		Schema schema;
@@ -104,7 +93,7 @@ public class XMLParser
 	public static Menu parseMenu(String filename)
 	{
 		Document doc = getDocumentFromXML(filename);
-		List<Dish> dishes = new ArrayList<>();
+		Map<String,Dish> dishes = new HashMap<String, Dish>();
 
 		NodeList dishNodes = doc.getElementsByTagName("Dish");
 
@@ -120,8 +109,7 @@ public class XMLParser
 			int difficultyRating = 	getNodeIntValue(dishNodes.item(i), "difficultyRating");
 			long expectedCookTime = getNodeLongValue(dishNodes.item(i), "expectedCookTime");
 			int reward = 			getNodeIntValue(dishNodes.item(i), "reward");
-			dishes.add(new Dish(name, difficultyRating, expectedCookTime, reward, kitchenTools, ingredients));
-			
+			dishes.put(name,new Dish(name, difficultyRating, expectedCookTime, reward, kitchenTools, ingredients));
 		}
 		
 		return new Menu(dishes);
@@ -156,9 +144,9 @@ public class XMLParser
 	
 	//////////// OrderList ////////////////////////////////////////////	
 
-	public static List<Order> parseOrderList(String filename)
+	public static Queue<Order> parseOrderList(String filename)
 	{
-		List<Order> orders = new ArrayList<>();
+		Queue<Order> orders = new LinkedList<>();
 		
 		Document doc = getDocumentFromXML(filename);
 

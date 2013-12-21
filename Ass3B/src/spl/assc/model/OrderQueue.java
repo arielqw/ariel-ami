@@ -1,16 +1,21 @@
 package spl.assc.model;
 
 import java.util.List;
+import java.util.Queue;
 
 public class OrderQueue
 {
-	public OrderQueue(List<Order> orders) {
+	public OrderQueue(Queue<Order> orders) {
 		_orders = orders;
 	}
 	
 	
-	private List<Order> _orders;
+	private Queue<Order> _orders;
 	
+	public Queue<Order> get_orders() {
+		return _orders;
+	}
+
 	@Override
 	public String toString()
 	{
@@ -21,7 +26,7 @@ public class OrderQueue
 		{
 			builder.append(i+1);
 			builder.append(":");
-			builder.append(_orders.get(i).toString());
+			builder.append(_orders.toArray()[i].toString());
 		}
 		
 		return builder.toString();
