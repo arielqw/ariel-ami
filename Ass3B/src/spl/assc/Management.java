@@ -21,7 +21,7 @@ import spl.assc.runnables.RunnableDeliveryPerson;
 public class Management
 {
 	private final static Logger LOGGER = Logger.getGlobal();
-
+	
 	public Management(ResturantInitData resturant, Menu menu,
 			OrderQueue orderQueue) {
 		_chefs = resturant.get_chefs();
