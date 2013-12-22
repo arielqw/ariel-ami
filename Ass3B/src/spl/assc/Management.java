@@ -22,11 +22,28 @@ public class Management
 {
 	private final static Logger LOGGER = Logger.getGlobal();
 	
-	public Management(ResturantInitData resturant, Menu menu,
-			OrderQueue orderQueue) {
-		_chefs = resturant.get_chefs();
-		_deliveryGuys = resturant.get_deliveryGuys();
-		_warehouse = resturant.get_warehouse();
+	//lazy loader for singelton
+	private static class LazyHolder {
+		private static final Management INSTANCE = new Management();
+	}
+ 
+
+	public static Management getInstance() {
+		return LazyHolder.INSTANCE;
+	}
+	
+	public static ResturantInitData resturant;
+	public static Menu menu;
+	public static OrderQueue orderQueue;
+	
+	private ExecutorService chefThreadPool;
+	
+	//private Management(ResturantInitData resturant, Menu menu,
+	//		OrderQueue orderQueue) {	
+	private Management() {
+		_chefs = Management.resturant.get_chefs();
+		_deliveryGuys = Management.resturant.get_deliveryGuys();
+		_warehouse = Management.resturant.get_warehouse();
 		_orders = orderQueue.get_orders();
 	
 		/** 
@@ -46,9 +63,9 @@ public class Management
 			chef.setManagment(this);
 		}
 		
-		ExecutorService threadPool = Executors.newFixedThreadPool(_chefs.size());
+		chefThreadPool = Executors.newFixedThreadPool(_chefs.size());
 		for (RunnableChef chef : _chefs) {
-			threadPool.execute(chef);
+			chefThreadPool.execute(chef);
 		}
 		
 		
@@ -88,6 +105,8 @@ public class Management
 				}
 			}
 		}
+
+		chefThreadPool.shutdownNow();
 		//statistics
 
 	}

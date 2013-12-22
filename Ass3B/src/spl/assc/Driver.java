@@ -36,8 +36,12 @@ public class Driver
 			
 		ResturantInitData resturant = XMLParser.parseResturant("InitialData.xml");
 		LOGGER.fine(resturant.toString());
+		Management.resturant = resturant;
+		Management.orderQueue = orderQueue;
+		Management.menu = menu;
 		
-		Management manager = new Management(resturant, menu, orderQueue);
+		Management manager = Management.getInstance();
+		//Management manager = new Management(resturant, menu, orderQueue);
 		manager.start();
 		//Semaphore
 
