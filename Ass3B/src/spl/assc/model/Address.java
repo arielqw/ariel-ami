@@ -1,8 +1,8 @@
 package spl.assc.model;
 
-public class DeliveryAddress
+public class Address
 {
-	public DeliveryAddress(int x, int y) {
+	public Address(int x, int y) {
 		_x = x;
 		_y = y;
 	}
@@ -14,5 +14,12 @@ public class DeliveryAddress
 	public String toString()
 	{
 		return String.format("(%d,%d)",_x,_y );
+	}
+
+	public int getX() {
+		return _x;
+	}
+	public int getY() {
+		return _y;
 	}
 }

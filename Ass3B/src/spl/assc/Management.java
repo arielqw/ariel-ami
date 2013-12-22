@@ -3,11 +3,14 @@ package spl.assc;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Logger;
 
+import spl.assc.model.Address;
 import spl.assc.model.Menu;
 import spl.assc.model.Order;
 import spl.assc.model.OrderOfDish;
@@ -37,6 +40,7 @@ public class Management
 	public static OrderQueue orderQueue;
 	
 	private ExecutorService chefThreadPool;
+	private ExecutorService deliveryGuysThreadPool;
 	
 	//private Management(ResturantInitData resturant, Menu menu,
 	//		OrderQueue orderQueue) {	
@@ -45,7 +49,7 @@ public class Management
 		_deliveryGuys = Management.resturant.get_deliveryGuys();
 		_warehouse = Management.resturant.get_warehouse();
 		_orders = orderQueue.get_orders();
-	
+		_awaitingOrdersToDeliver = new LinkedBlockingQueue<>();
 		/** 
 		 * TODO: clean up from constructor.
 		 */
@@ -68,6 +72,10 @@ public class Management
 			chefThreadPool.execute(chef);
 		}
 		
+		deliveryGuysThreadPool = Executors.newFixedThreadPool(_deliveryGuys.size());
+		for (RunnableDeliveryPerson deliveryGuy : _deliveryGuys) {
+			deliveryGuysThreadPool.execute(deliveryGuy);
+		}
 		
 	}
 	
@@ -78,8 +86,12 @@ public class Management
 	private Warehouse _warehouse;
 	
 	private Order pendingOrder;
-
+	private BlockingQueue<Order> _awaitingOrdersToDeliver;
 	
+	public BlockingQueue<Order> get_awaitingOrdersToDeliver() {
+		return _awaitingOrdersToDeliver;
+	}
+
 	public Order getPendingOrder() {
 		return pendingOrder;
 	}
@@ -115,9 +127,17 @@ public class Management
 		// TODO Auto-generated method stub
 		for (RunnableChef chef : _chefs) {
 			synchronized (chef) {
-				chef.notifyAll();
+				chef.notify();
 			}
 		}
+	}
+
+	public Warehouse getWarehouse() {
+		return _warehouse;
+	}
+
+	public Address getAddress() {
+		return resturant.getAddress();
 	}
 
 	

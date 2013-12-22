@@ -4,7 +4,17 @@ import java.util.List;
 
 public class Order
 {
-	public Order(int id, DeliveryAddress address, List<OrderOfDish> ordersOfDish) {
+	public void set_deliveryStartTime() {
+		this._deliveryStartTime = System.currentTimeMillis();
+	}
+
+
+	public void set_deliveryEndTime() {
+		this._deliveryEndTime = System.currentTimeMillis();
+	}
+
+
+	public Order(int id, Address address, List<OrderOfDish> ordersOfDish) {
 		_id = id;
 		_address = address;
 		_ordersOfDish = ordersOfDish;
@@ -14,10 +24,14 @@ public class Order
 	}
 	
 	private int _id;
-	private DeliveryAddress _address;
+	private Address _address;
 	private int _difficulty;
-	List<OrderOfDish> _ordersOfDish;
+	private List<OrderOfDish> _ordersOfDish;
 	private Order.OrderStatus _status;
+	private long _cookStartTime;
+	private long _cookEndTime;
+	private long _deliveryStartTime;
+	private long _deliveryEndTime;
 	
 	public List<OrderOfDish> get_ordersOfDish() {
 		return _ordersOfDish;
@@ -69,5 +83,21 @@ public class Order
 	public String getName() {
 		// TODO Auto-generated method stub
 		return _ordersOfDish.toString();
+	}
+
+
+	public void setCookStartTime() {
+		_cookStartTime = System.currentTimeMillis();
+	}
+
+
+	public void setCookEndTime() {
+		_cookEndTime = System.currentTimeMillis();
+		
+	}
+
+
+	public Address getAddress() {
+		return _address;
 	}
 }

@@ -31,4 +31,8 @@ public class OrderOfDish
 		// TODO Auto-generated method stub
 		return _name;
 	}
+
+	public int getQuantity() {
+		return _quantity;
+	}
 }

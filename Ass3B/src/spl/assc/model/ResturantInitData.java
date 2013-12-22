@@ -46,4 +46,9 @@ public class ResturantInitData
 
 		return builder.toString();
 	}
+
+	public Address getAddress() {
+		// TODO get Address from parser - AMI!
+		return new Address(10, 10);
+	}
 }

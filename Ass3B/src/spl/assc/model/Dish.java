@@ -20,6 +20,10 @@ public class Dish
 		_ingredients = ingredients;
 	}
 	
+	public long get_expectedCookTime() {
+		return _expectedCookTime;
+	}
+
 	private String 				_name; 
 	private int 				_difficultyRating; 
 	private long 				_expectedCookTime; 

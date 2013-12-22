@@ -9,6 +9,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
+import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
+
 import spl.assc.Management;
 import spl.assc.model.Order;
 import spl.assc.model.Order.OrderStatus;
@@ -19,17 +21,23 @@ public class RunnableChef implements Runnable
 
 	private String _name;
 	private double _efficiencyRating;
+	public double get_efficiencyRating() {
+		return _efficiencyRating;
+	}
+
 	private int _enduranceRating;
 	private List<Future<Order>> _futures;
 	private Management _managment;
 	private int _currentPressure; 
 	private ExecutorService _cookWholeOrderPool;
+	private boolean _stopTakingNewOrders;
 
 	public RunnableChef(String name, double efficiencyRating, int enduranceRating) {
 		_name = name;
 		_efficiencyRating = efficiencyRating;
 		_enduranceRating = enduranceRating;	
 		_currentPressure = 0;
+		_stopTakingNewOrders = false;
 		_futures = new ArrayList<>();
 		_cookWholeOrderPool = Executors.newCachedThreadPool();
 		
@@ -38,8 +46,18 @@ public class RunnableChef implements Runnable
 	@Override
 	public void run()
 	{
+		try {
+			work();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+	}
+	
+	private void work()
+	{
 		//LOGGER.info(String.format("Chef '%s' started...", _name));
-		
+
 		try {
 			synchronized (this) {
 				this.wait();
@@ -47,27 +65,15 @@ public class RunnableChef implements Runnable
 
 			}
 		} catch (InterruptedException e) {
-			LOGGER.info("Chef "+_name+" got interrupted. shutting down");
-			Thread.currentThread().interrupt();
+			LOGGER.info("[before while] Chef "+_name+" got interrupted. shutting down");
+			_stopTakingNewOrders = true;
 		}
 		
 		_managment = Management.getInstance();
 
-		// TODO Auto-generated method stub
-		while(!(Thread.interrupted() && _futures.isEmpty())){
-			//1. send finished orders to delivery
-			for (Iterator<Future<Order>> it = _futures.iterator() ; it.hasNext() ;  ) {
-				Future<Order> future = it.next();
-				if (future.isDone())	it.remove();
-				try {
-					deliverOrder(future.get());
-				} catch (InterruptedException | ExecutionException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		
-		
+		Thread.currentThread();
+		while(!(_stopTakingNewOrders && _futures.isEmpty())){
+
 			//2. check if I can cook the pending order
 			synchronized (_managment.getPendingOrder()) {
 				//LOGGER.info(String.format("Chef '%s' got in", _name));
@@ -78,7 +84,10 @@ public class RunnableChef implements Runnable
 						//take order
 						pendingOrder.set_status(OrderStatus.INPROGRESS);
 						pendingOrder.notify();
+						long start = System.currentTimeMillis();
+						//LOGGER.info("before deliver");
 						handleNewOrder(pendingOrder);
+						//LOGGER.info("deliver took:" + (System.currentTimeMillis() - start));
 					}
 					else
 					{
@@ -88,28 +97,60 @@ public class RunnableChef implements Runnable
 				
 				
 			}
-			try {
-				synchronized (this) {
-					this.wait();
-				}
-			} catch (InterruptedException e) {
-				LOGGER.info("Chef "+_name+" got interrupted. shutting down");
-				Thread.currentThread().interrupt();
-			}
 
+			//1. send finished orders to delivery
+			synchronized (this) {
+				boolean wasPreasureReduced = sendFinishedOrdersToDelivery();
+				if(!wasPreasureReduced){
+					try {
+						this.wait();
+					} catch (InterruptedException e) {
+						LOGGER.info("Chef "+_name+" got interrupted. shutting down");
+						_stopTakingNewOrders = true;
+					}
+				}
+				
+			}
+			if (Thread.interrupted()){
+				_stopTakingNewOrders = true;
+			}
 		}
-		
+		_cookWholeOrderPool.shutdown();
+
 	}
+		
 	
+	private boolean sendFinishedOrdersToDelivery(){
+		int currentOrdersSize = _futures.size();
+		for (Iterator<Future<Order>> it = _futures.iterator() ; it.hasNext() ;  ) {
+			Future<Order> future = it.next();
+			if (future.isDone()){
+				it.remove();
+				try {
+					Order tmp = future.get();
+					_currentPressure -= tmp.get_difficulty();
+					deliverOrder(tmp);
+				} catch (InterruptedException e)
+				{
+					_stopTakingNewOrders = true;
+				} catch (ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return ( currentOrdersSize > _futures.size() );
+	}
 	private void handleNewOrder(Order order) {
-		LOGGER.info("took order");
+		LOGGER.info("[Took Order] Chef "+_name+" took order");
 		_enduranceRating -= order.get_difficulty();
-		//_futures.add( _cookWholeOrderPool.submit(new CallableCookWholeOrder(this,)) );
+		_futures.add( _cookWholeOrderPool.submit(new CallableCookWholeOrder(this,order)) );
 		
 	}
 	
 	private void deliverOrder(Order order)
 	{
+		LOGGER.info("DELIVERING...");
+		
 	}
 	
 

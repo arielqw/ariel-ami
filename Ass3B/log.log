@@ -1,19 +1,74 @@
 [1]	Program started...
+[1]	*******************
+***	Menu:	***
+*******************
+1:	Dish:	{	Name: The Ultimate Breakfast,	DifficultyRating: 10,	ExpectedCookTime: 1500,	Reward: 54	}
+		Needed Kitchen Tools:	[Spoon:1, Pan:1, Oven:1, Stove:1, Knife:1, Plate:1]
+		Needed Ingredients:	[Cherry Tomato:100, Bread:15, Olive Oil:25, Bread Crumbs:10, Gouda Cheese:30, Egg:1, Salt:5, Black Pepper:5]
+	====================================================================================================================
+2:	Dish:	{	Name: Hasselback Potatoes,	DifficultyRating: 20,	ExpectedCookTime: 1500,	Reward: 30	}
+		Needed Kitchen Tools:	[Spoon:1, Oven:1, Knife:1, Plate:1]
+		Needed Ingredients:	[Potato:500, Butter:45, Salt:20, Olive Oil:15]
+	====================================================================================================================
+3:	Dish:	{	Name: Ramen Soup,	DifficultyRating: 20,	ExpectedCookTime: 1000,	Reward: 35	}
+		Needed Kitchen Tools:	[Spoon:1, Oven:1, Stove:1, Cup:1, Bowl:1]
+		Needed Ingredients:	[Flour:250, Egg:1, Salt:7]
+	====================================================================================================================
+
+[1]	***************************
+***	OrderQueue:	***
+***************************
+1:	Order:	{	Id: 0,	DeliveryAddress: (1,2)	}
+		Requested Dishes:	[Ramen Soup:2, Hasselback Potatoes:4, The Ultimate Breakfast:2]
+	====================================================================================================================
+2:	Order:	{	Id: 1,	DeliveryAddress: (10,20)	}
+		Requested Dishes:	[Hasselback Potatoes:4, Ramen Soup:2]
+	====================================================================================================================
+3:	Order:	{	Id: 2,	DeliveryAddress: (19,25)	}
+		Requested Dishes:	[The Ultimate Breakfast:2]
+	====================================================================================================================
+4:	Order:	{	Id: 3,	DeliveryAddress: (50,50)	}
+		Requested Dishes:	[The Ultimate Breakfast:6]
+	====================================================================================================================
+5:	Order:	{	Id: 4,	DeliveryAddress: (20,33)	}
+		Requested Dishes:	[Ramen Soup:4, The Ultimate Breakfast:4, Hasselback Potatoes:2]
+	====================================================================================================================
+
+[1]	***********************************
+***	ResturantInitData:	***
+***********************************
+		Available Kitchen Tools:	[Oven:13, Stove:14, Fork:15, Cup:14, Bowl:19, Plate:15, Spoon:25, Knife:16, Pan:26]
+		Available Ingredients:		[Potato:5000, Butter:2000, Olive Oil:1500, Salt:1500, Cherry Tomato:1500, Bread:2500, Bread Crumbs:1500, Egg:150, Flour:2500, Gouda Cheese:2500, Black Pepper:2500]
+	====================================================================================================================
+		Chefs:		[Gordon Ramsay:|efficiency:0.90|endurance:50, Rachael Ray:|efficiency:0.90|endurance:45, Wolfgang Puck:|efficiency:1.00|endurance:30, Paula Deen:|efficiency:1.10|endurance:25]
+		Delivery Guys:	[Garry Simpson:|speed:5, Ken Allen:|speed:7, Patrick Donahoe:|speed:6, Scott Davis:|speed:6, Frederick Smith:|speed:8]
+	====================================================================================================================
+
 [1]	pending order is now: '[Ramen Soup:2, Hasselback Potatoes:4, The Ultimate Breakfast:2]'
-[10]	chef cant take order
 [12]	chef cant take order
-[9]	took order
+[11]	chef cant take order
+[10]	chef cant take order
+[9]	[Took Order] Chef Gordon Ramsay took order
 [1]	pending order is now: '[Hasselback Potatoes:4, Ramen Soup:2]'
-[9]	chef cant take order
 [12]	chef cant take order
-[11]	chef cant take order
-[10]	took order
+[10]	[Took Order] Chef Rachael Ray took order
 [1]	pending order is now: '[The Ultimate Breakfast:2]'
-[12]	took order
+[12]	[Took Order] Chef Paula Deen took order
 [1]	pending order is now: '[The Ultimate Breakfast:6]'
-[12]	took order
+[9]	chef cant take order
+[12]	[Took Order] Chef Paula Deen took order
 [1]	pending order is now: '[Ramen Soup:4, The Ultimate Breakfast:4, Hasselback Potatoes:2]'
+[9]	chef cant take order
 [12]	chef cant take order
 [11]	chef cant take order
 [10]	chef cant take order
 [9]	chef cant take order
+[9]	DELIVERING...
+[9]	[Took Order] Chef Gordon Ramsay took order
+[10]	DELIVERING...
+[11]	Chef Wolfgang Puck got interrupted. shutting down
+[12]	Chef Paula Deen got interrupted. shutting down
+[9]	Chef Gordon Ramsay got interrupted. shutting down
+[12]	DELIVERING...
+[12]	DELIVERING...
+[9]	DELIVERING...

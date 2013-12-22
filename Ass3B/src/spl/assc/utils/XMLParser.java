@@ -24,7 +24,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
-import spl.assc.model.DeliveryAddress;
+import spl.assc.model.Address;
 import spl.assc.model.Dish;
 import spl.assc.model.Ingredient;
 import spl.assc.model.KitchenTool;
@@ -157,7 +157,7 @@ public class XMLParser
 			int id = Integer.parseInt(((Element)orderNodes.item(i)).getAttribute("id"));
 			int x = getNodeIntValue(orderNodes.item(i), "x");
 			int y = getNodeIntValue(orderNodes.item(i), "y");
-			DeliveryAddress address = new DeliveryAddress(x, y);
+			Address address = new Address(x, y);
 			
 			
 			NodeList orderOfDishNodes 		= ((Element)orderNodes.item(i)).getElementsByTagName("Dish");
