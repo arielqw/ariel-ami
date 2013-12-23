@@ -63,6 +63,7 @@ public class RunnableDeliveryPerson implements Runnable
 			long distance = calculateDistance(orderToDeliver.getAddress());
 			long expectedDeliveryTime = (long)(distance/_speed);
 			//1. set delivery start time
+			
 			orderToDeliver.set_deliveryStartTime();
 			//2. deliver order (Sleep)
 			drive(expectedDeliveryTime);
@@ -91,6 +92,8 @@ public class RunnableDeliveryPerson implements Runnable
 		boolean isFined = (actualTotalTime >= 1.15 * expectedTotalTime);
 		double dishReward = order.getReward();
 		
+		LOGGER.info(String.format("[Stats] Order: %d is Fined: %b.\nActual time:%d\nExpected time:%d", order.getOrderId(),isFined,actualTotalTime,expectedTotalTime));
+		//LOGGER.info(String.format("[More] expected delivery time:%d,actualy delivery time:%d", expectedDeliveryTime));
 		if(isFined){
 			return dishReward*0.5;
 		}

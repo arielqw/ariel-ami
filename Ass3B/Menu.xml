@@ -4,7 +4,7 @@
 		<Dish>
 			<name>Hasselback Potatoes</name>
 			<difficultyRating>20</difficultyRating>
-			<expectedCookTime>1500</expectedCookTime>
+			<expectedCookTime>15000</expectedCookTime>
 			<reward>30</reward>
 			<KitchenTools>
 				<KitchenTool>
@@ -46,7 +46,7 @@
 		<Dish>
 			<name>Ramen Soup</name>
 			<difficultyRating>20</difficultyRating>
-			<expectedCookTime>1000</expectedCookTime>
+			<expectedCookTime>10000</expectedCookTime>
 			<reward>35</reward>
 			<KitchenTools>
 				<KitchenTool>
@@ -88,7 +88,7 @@
 		<Dish>
 			<name>The Ultimate Breakfast</name>
 			<difficultyRating>10</difficultyRating>
-			<expectedCookTime>1500</expectedCookTime>
+			<expectedCookTime>15000</expectedCookTime>
 			<reward>54</reward>
 			<KitchenTools>
 				<KitchenTool>

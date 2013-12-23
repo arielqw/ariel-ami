@@ -1,0 +1,339 @@
+[1]01:33:36.545	Program started...
+[1]01:33:36.725	*******************
+***	Menu:	***
+*******************
+1:	Dish:	{	Name: The Ultimate Breakfast,	DifficultyRating: 10,	ExpectedCookTime: 15000,	Reward: 54	}
+		Needed Kitchen Tools:	[Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+		Needed Ingredients:	[Cherry Tomato:100, Bread:15, Olive Oil:25, Bread Crumbs:10, Gouda Cheese:30, Egg:1, Salt:5, Black Pepper:5]
+	====================================================================================================================
+2:	Dish:	{	Name: Hasselback Potatoes,	DifficultyRating: 20,	ExpectedCookTime: 15000,	Reward: 30	}
+		Needed Kitchen Tools:	[Spoon:1, Plate:1, Oven:1, Knife:1]
+		Needed Ingredients:	[Potato:500, Butter:45, Salt:20, Olive Oil:15]
+	====================================================================================================================
+3:	Dish:	{	Name: Ramen Soup,	DifficultyRating: 20,	ExpectedCookTime: 10000,	Reward: 35	}
+		Needed Kitchen Tools:	[Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+		Needed Ingredients:	[Flour:250, Egg:1, Salt:7]
+	====================================================================================================================
+
+[1]01:33:36.750	***************************
+***	OrderQueue:	***
+***************************
+1:	Order:	{	Id: 0,	DeliveryAddress: (1,2)	}
+		Requested Dishes:	[Ramen Soup:2, Hasselback Potatoes:4, The Ultimate Breakfast:2]
+	====================================================================================================================
+2:	Order:	{	Id: 1,	DeliveryAddress: (10,20)	}
+		Requested Dishes:	[Hasselback Potatoes:4, Ramen Soup:2]
+	====================================================================================================================
+3:	Order:	{	Id: 2,	DeliveryAddress: (19,25)	}
+		Requested Dishes:	[The Ultimate Breakfast:2]
+	====================================================================================================================
+4:	Order:	{	Id: 3,	DeliveryAddress: (50,50)	}
+		Requested Dishes:	[The Ultimate Breakfast:6]
+	====================================================================================================================
+5:	Order:	{	Id: 4,	DeliveryAddress: (20,33)	}
+		Requested Dishes:	[Ramen Soup:4, The Ultimate Breakfast:4, Hasselback Potatoes:2]
+	====================================================================================================================
+
+[1]01:33:36.791	***********************************
+***	ResturantInitData:	***
+***********************************
+		Available Kitchen Tools:	{Knife=Knife:16, Fork=Fork:15, Bowl=Bowl:19, Stove=Stove:14, Plate=Plate:15, Spoon=Spoon:25, Oven=Oven:20, Pan=Pan:26, Cup=Cup:14}
+		Available Ingredients:		{Gouda Cheese=Gouda Cheese:2500, Black Pepper=Black Pepper:2500, Bread=Bread:2500, Egg=Egg:150, Butter=Butter:2000, Olive Oil=Olive Oil:1500, Bread Crumbs=Bread Crumbs:1500, Cherry Tomato=Cherry Tomato:1500, Salt=Salt:1500, Potato=Potato:5000, Flour=Flour:2500}
+	====================================================================================================================
+		Chefs:		[Gordon Ramsay:|efficiency:0.90|endurance:50, Rachael Ray:|efficiency:0.90|endurance:45, Wolfgang Puck:|efficiency:1.00|endurance:30, Paula Deen:|efficiency:1.10|endurance:25]
+		Delivery Guys:	[Garry Simpson:|speed:5, Ken Allen:|speed:7, Patrick Donahoe:|speed:6, Scott Davis:|speed:6, Frederick Smith:|speed:8]
+	====================================================================================================================
+
+[1]01:33:36.796	[Pending Order Switch] Pending Order is now: [#0]
+[9]01:33:36.797	[Chef Action] Chef Gordon Ramsay took order: [0]
+[1]01:33:36.799	[Pending Order Switch] Pending Order is now: [#1]
+[10]01:33:36.801	[Chef Action] Chef Rachael Ray took order: [1]
+[19]01:33:36.801	[taking kitchen tools] kitchen tools taken: [Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+[19]01:33:36.803	WAREHOUSE: took Oven:[19/20]
+[19]01:33:36.804	WAREHOUSE: took Bowl:[18/19]
+[20]01:33:36.801	[taking kitchen tools] kitchen tools taken: [Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+[21]01:33:36.801	[taking kitchen tools] kitchen tools taken: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[20]01:33:36.805	WAREHOUSE: took Oven:[18/20]
+[21]01:33:36.806	WAREHOUSE: took Spoon:[23/25]
+[20]01:33:36.806	WAREHOUSE: took Bowl:[17/19]
+[21]01:33:36.807	WAREHOUSE: took Plate:[14/15]
+[26]01:33:36.808	[taking kitchen tools] kitchen tools taken: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[30]01:33:36.809	[taking kitchen tools] kitchen tools taken: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[30]01:33:36.810	WAREHOUSE: took Spoon:[21/25]
+[30]01:33:36.811	WAREHOUSE: took Plate:[12/15]
+[30]01:33:36.812	WAREHOUSE: took Oven:[16/20]
+[23]01:33:36.804	[taking kitchen tools] kitchen tools taken: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[30]01:33:36.813	WAREHOUSE: took Knife:[15/16]
+[23]01:33:36.813	WAREHOUSE: took Spoon:[20/25]
+[23]01:33:36.814	WAREHOUSE: took Plate:[11/15]
+[22]01:33:36.803	[taking kitchen tools] kitchen tools taken: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[23]01:33:36.815	WAREHOUSE: took Oven:[15/20]
+[22]01:33:36.816	WAREHOUSE: took Spoon:[19/25]
+[23]01:33:36.817	WAREHOUSE: took Knife:[14/16]
+[22]01:33:36.817	WAREHOUSE: took Plate:[10/15]
+[31]01:33:36.812	[taking kitchen tools] kitchen tools taken: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[33]01:33:36.811	[taking kitchen tools] kitchen tools taken: [Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+[31]01:33:36.819	WAREHOUSE: took Spoon:[18/25]
+[33]01:33:36.819	WAREHOUSE: took Oven:[13/20]
+[31]01:33:36.820	WAREHOUSE: took Plate:[9/15]
+[33]01:33:36.820	WAREHOUSE: took Bowl:[16/19]
+[31]01:33:36.821	WAREHOUSE: took Oven:[12/20]
+[33]01:33:36.821	WAREHOUSE: took Spoon:[17/25]
+[32]01:33:36.810	[taking kitchen tools] kitchen tools taken: [Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+[28]01:33:36.808	[taking kitchen tools] kitchen tools taken: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[32]01:33:36.823	WAREHOUSE: took Oven:[11/20]
+[21]01:33:36.808	WAREHOUSE: took Oven:[17/20]
+[32]01:33:36.824	WAREHOUSE: took Bowl:[15/19]
+[21]01:33:36.825	WAREHOUSE: took Knife:[12/16]
+[32]01:33:36.825	WAREHOUSE: took Spoon:[15/25]
+[20]01:33:36.807	WAREHOUSE: took Spoon:[22/25]
+[32]01:33:36.826	WAREHOUSE: took Stove:[12/14]
+[20]01:33:36.827	WAREHOUSE: took Stove:[11/14]
+[32]01:33:36.827	WAREHOUSE: took Cup:[13/14]
+[26]01:33:36.809	WAREHOUSE: took Plate:[13/15]
+[1]01:33:36.807	[Pending Order Switch] Pending Order is now: [#2]
+[26]01:33:36.829	WAREHOUSE: took Knife:[11/16]
+[25]01:33:36.807	[taking kitchen tools] kitchen tools taken: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[26]01:33:36.830	WAREHOUSE: took Spoon:[14/25]
+[20]01:33:36.828	WAREHOUSE: took Cup:[12/14]
+[19]01:33:36.805	WAREHOUSE: took Spoon:[24/25]
+[11]01:33:36.830	[Chef Action] Chef Wolfgang Puck took order: [2]
+[26]01:33:36.830	WAREHOUSE: took Stove:[10/14]
+[24]01:33:36.806	[taking kitchen tools] kitchen tools taken: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[31]01:33:36.822	WAREHOUSE: took Knife:[13/16]
+[24]01:33:36.833	WAREHOUSE: took Spoon:[13/25]
+[25]01:33:36.830	WAREHOUSE: took Plate:[8/15]
+[24]01:33:36.834	WAREHOUSE: took Plate:[7/15]
+[25]01:33:36.835	WAREHOUSE: took Knife:[10/16]
+[24]01:33:36.835	WAREHOUSE: took Oven:[9/20]
+[33]01:33:36.822	WAREHOUSE: took Stove:[13/14]
+[24]01:33:36.837	WAREHOUSE: took Knife:[9/16]
+[29]01:33:36.809	[taking kitchen tools] kitchen tools taken: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[22]01:33:36.818	WAREHOUSE: took Oven:[14/20]
+[29]01:33:36.838	WAREHOUSE: took Spoon:[11/25]
+[22]01:33:36.839	WAREHOUSE: took Knife:[8/16]
+[29]01:33:36.839	WAREHOUSE: took Plate:[6/15]
+[25]01:33:36.836	WAREHOUSE: took Spoon:[12/25]
+[29]01:33:36.840	WAREHOUSE: took Oven:[8/20]
+[25]01:33:36.841	WAREHOUSE: took Stove:[8/14]
+[26]01:33:36.833	WAREHOUSE: took Oven:[10/20]
+[1]01:33:36.833	[Pending Order Switch] Pending Order is now: [#3]
+[26]01:33:36.843	WAREHOUSE: took Pan:[25/26]
+[28]01:33:36.824	WAREHOUSE: took Spoon:[16/25]
+[19]01:33:36.832	WAREHOUSE: took Stove:[9/14]
+[28]01:33:36.844	WAREHOUSE: took Plate:[5/15]
+[19]01:33:36.845	WAREHOUSE: took Cup:[10/14]
+[11]01:33:36.843	[Chef Action] Chef Wolfgang Puck took order: [3]
+[29]01:33:36.841	WAREHOUSE: took Knife:[7/16]
+[33]01:33:36.837	WAREHOUSE: took Cup:[11/14]
+[36]01:33:36.840	[taking kitchen tools] kitchen tools taken: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[25]01:33:36.842	WAREHOUSE: took Oven:[7/20]
+[36]01:33:36.847	WAREHOUSE: took Plate:[4/15]
+[25]01:33:36.848	WAREHOUSE: took Pan:[24/26]
+[28]01:33:36.845	WAREHOUSE: took Oven:[6/20]
+[38]01:33:36.847	[taking kitchen tools] kitchen tools taken: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[28]01:33:36.849	WAREHOUSE: took Knife:[5/16]
+[38]01:33:36.850	WAREHOUSE: took Plate:[3/15]
+[39]01:33:36.848	[taking kitchen tools] kitchen tools taken: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[38]01:33:36.851	WAREHOUSE: took Knife:[4/16]
+[39]01:33:36.851	WAREHOUSE: took Plate:[2/15]
+[42]01:33:36.852	[taking kitchen tools] kitchen tools taken: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[39]01:33:36.852	WAREHOUSE: took Knife:[3/16]
+[36]01:33:36.849	WAREHOUSE: took Knife:[6/16]
+[1]01:33:36.846	[Pending Order Switch] Pending Order is now: [#4]
+[40]01:33:36.849	[taking kitchen tools] kitchen tools taken: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[43]01:33:36.853	[taking kitchen tools] kitchen tools taken: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[38]01:33:36.852	WAREHOUSE: took Spoon:[10/25]
+[40]01:33:36.855	WAREHOUSE: took Plate:[0/15]
+[38]01:33:36.857	WAREHOUSE: took Stove:[7/14]
+[40]01:33:36.857	WAREHOUSE: took Knife:[2/16]
+[38]01:33:36.858	WAREHOUSE: took Oven:[5/20]
+[38]01:33:36.859	WAREHOUSE: took Pan:[23/26]
+[35]01:33:36.839	[taking kitchen tools] kitchen tools taken: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[40]01:33:36.859	WAREHOUSE: took Spoon:[7/25]
+[40]01:33:36.861	WAREHOUSE: took Stove:[6/14]
+[40]01:33:36.863	WAREHOUSE: took Oven:[4/20]
+[36]01:33:36.854	WAREHOUSE: took Spoon:[8/25]
+[40]01:33:36.864	WAREHOUSE: took Pan:[22/26]
+[41]01:33:36.851	[taking kitchen tools] kitchen tools taken: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[39]01:33:36.853	WAREHOUSE: took Spoon:[9/25]
+[39]01:33:36.866	WAREHOUSE: took Stove:[4/14]
+[42]01:33:36.853	WAREHOUSE: took Plate:[1/15]
+[39]01:33:36.867	WAREHOUSE: took Oven:[3/20]
+[42]01:33:36.868	WAREHOUSE: took Knife:[1/16]
+[36]01:33:36.864	WAREHOUSE: took Stove:[5/14]
+[39]01:33:36.868	WAREHOUSE: took Pan:[21/26]
+[42]01:33:36.869	WAREHOUSE: took Spoon:[6/25]
+[36]01:33:36.870	WAREHOUSE: took Oven:[2/20]
+[42]01:33:36.872	WAREHOUSE: took Stove:[3/14]
+[36]01:33:36.872	WAREHOUSE: took Pan:[20/26]
+[42]01:33:36.873	WAREHOUSE: took Oven:[1/20]
+[42]01:33:36.874	WAREHOUSE: took Pan:[19/26]
+[32]01:33:45.830	[returning kitchen tools] kitchen tools returned: [Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+[20]01:33:45.833	[returning kitchen tools] kitchen tools returned: [Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+[19]01:33:45.847	[returning kitchen tools] kitchen tools returned: [Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+[33]01:33:45.848	[returning kitchen tools] kitchen tools returned: [Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+[30]01:33:50.315	[returning kitchen tools] kitchen tools returned: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[43]01:33:50.317	WAREHOUSE: took Plate:[0/15]
+[43]01:33:50.318	WAREHOUSE: took Knife:[1/16]
+[23]01:33:50.319	[returning kitchen tools] kitchen tools returned: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[43]01:33:50.319	WAREHOUSE: took Spoon:[10/25]
+[35]01:33:50.320	WAREHOUSE: took Plate:[0/15]
+[43]01:33:50.320	WAREHOUSE: took Stove:[6/14]
+[35]01:33:50.321	WAREHOUSE: took Knife:[1/16]
+[43]01:33:50.322	WAREHOUSE: took Oven:[6/20]
+[35]01:33:50.322	WAREHOUSE: took Spoon:[10/25]
+[43]01:33:50.323	WAREHOUSE: took Pan:[18/26]
+[35]01:33:50.323	WAREHOUSE: took Stove:[5/14]
+[35]01:33:50.324	WAREHOUSE: took Oven:[5/20]
+[35]01:33:50.325	WAREHOUSE: took Pan:[17/26]
+[21]01:33:50.327	[returning kitchen tools] kitchen tools returned: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[41]01:33:50.328	WAREHOUSE: took Plate:[0/15]
+[41]01:33:50.329	WAREHOUSE: took Knife:[1/16]
+[41]01:33:50.329	WAREHOUSE: took Spoon:[10/25]
+[41]01:33:50.330	WAREHOUSE: took Stove:[4/14]
+[41]01:33:50.330	WAREHOUSE: took Oven:[5/20]
+[41]01:33:50.331	WAREHOUSE: took Pan:[16/26]
+[31]01:33:50.334	[returning kitchen tools] kitchen tools returned: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[24]01:33:50.340	[returning kitchen tools] kitchen tools returned: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[22]01:33:50.341	[returning kitchen tools] kitchen tools returned: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[26]01:33:50.345	[returning kitchen tools] kitchen tools returned: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[29]01:33:50.347	[returning kitchen tools] kitchen tools returned: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[25]01:33:50.350	[returning kitchen tools] kitchen tools returned: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[28]01:33:50.351	[returning kitchen tools] kitchen tools returned: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[9]01:33:50.352	[Delivery] Chef Gordon Ramsay Sending Order [#0] to Delivery Queue
+[16]01:33:50.353	[Delivery] DeliveryPerson Scott Davis took order: [#0]
+[10]01:33:50.352	[Delivery] Chef Rachael Ray Sending Order [#1] to Delivery Queue
+[9]01:33:50.352	[Chef Action] Chef Gordon Ramsay took order: [4]
+[13]01:33:50.353	[Delivery] DeliveryPerson Garry Simpson took order: [#1]
+[12]01:33:50.354	[ShutDown] Chef Paula Deen ended.
+[10]01:33:50.354	[ShutDown] Chef Rachael Ray ended.
+[45]01:33:50.355	[taking kitchen tools] kitchen tools taken: [Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+[47]01:33:50.356	[taking kitchen tools] kitchen tools taken: [Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+[48]01:33:50.356	[taking kitchen tools] kitchen tools taken: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[47]01:33:50.356	WAREHOUSE: took Oven:[10/20]
+[48]01:33:50.357	WAREHOUSE: took Plate:[6/15]
+[47]01:33:50.357	WAREHOUSE: took Bowl:[18/19]
+[44]01:33:50.355	[taking kitchen tools] kitchen tools taken: [Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+[51]01:33:50.358	[taking kitchen tools] kitchen tools taken: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[44]01:33:50.358	WAREHOUSE: took Oven:[9/20]
+[51]01:33:50.359	WAREHOUSE: took Plate:[5/15]
+[44]01:33:50.359	WAREHOUSE: took Bowl:[17/19]
+[53]01:33:50.360	[taking kitchen tools] kitchen tools taken: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[13]01:33:50.357	[Stats] Order: 1 is Fined: false.
+Actual time:13548
+Expected time:15002
+[50]01:33:50.357	[taking kitchen tools] kitchen tools taken: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[49]01:33:50.357	[taking kitchen tools] kitchen tools taken: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[16]01:33:50.356	[Stats] Order: 0 is Fined: false.
+Actual time:13554
+Expected time:15002
+[45]01:33:50.356	WAREHOUSE: took Oven:[11/20]
+[46]01:33:50.355	[taking kitchen tools] kitchen tools taken: [Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+[49]01:33:50.361	WAREHOUSE: took Plate:[3/15]
+[50]01:33:50.361	WAREHOUSE: took Plate:[4/15]
+[53]01:33:50.360	WAREHOUSE: took Spoon:[14/25]
+[44]01:33:50.360	WAREHOUSE: took Spoon:[15/25]
+[51]01:33:50.359	WAREHOUSE: took Knife:[6/16]
+[52]01:33:50.359	[taking kitchen tools] kitchen tools taken: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[48]01:33:50.358	WAREHOUSE: took Knife:[7/16]
+[47]01:33:50.358	WAREHOUSE: took Spoon:[16/25]
+[52]01:33:50.364	WAREHOUSE: took Spoon:[12/25]
+[51]01:33:50.364	WAREHOUSE: took Spoon:[13/25]
+[44]01:33:50.363	WAREHOUSE: took Stove:[5/14]
+[53]01:33:50.363	WAREHOUSE: took Plate:[2/15]
+[50]01:33:50.363	WAREHOUSE: took Knife:[4/16]
+[49]01:33:50.363	WAREHOUSE: took Knife:[5/16]
+[50]01:33:50.366	WAREHOUSE: took Spoon:[10/25]
+[46]01:33:50.362	WAREHOUSE: took Oven:[8/20]
+[45]01:33:50.362	WAREHOUSE: took Bowl:[16/19]
+[50]01:33:50.367	WAREHOUSE: took Stove:[2/14]
+[53]01:33:50.366	WAREHOUSE: took Oven:[7/20]
+[44]01:33:50.366	WAREHOUSE: took Cup:[13/14]
+[49]01:33:50.366	WAREHOUSE: took Spoon:[9/25]
+[51]01:33:50.365	WAREHOUSE: took Stove:[3/14]
+[53]01:33:50.368	WAREHOUSE: took Knife:[3/16]
+[51]01:33:50.370	WAREHOUSE: took Oven:[5/20]
+[49]01:33:50.369	WAREHOUSE: took Stove:[1/14]
+[51]01:33:50.370	WAREHOUSE: took Pan:[17/26]
+[49]01:33:50.371	WAREHOUSE: took Oven:[4/20]
+[48]01:33:50.364	WAREHOUSE: took Spoon:[11/25]
+[52]01:33:50.365	WAREHOUSE: took Plate:[1/15]
+[47]01:33:50.365	WAREHOUSE: took Stove:[4/14]
+[45]01:33:50.367	WAREHOUSE: took Spoon:[8/25]
+[50]01:33:50.368	WAREHOUSE: took Oven:[6/20]
+[52]01:33:50.372	WAREHOUSE: took Oven:[3/20]
+[46]01:33:50.367	WAREHOUSE: took Bowl:[15/19]
+[49]01:33:50.372	WAREHOUSE: took Pan:[16/26]
+[48]01:33:50.372	WAREHOUSE: took Stove:[0/14]
+[46]01:33:50.374	WAREHOUSE: took Spoon:[7/25]
+[47]01:33:50.373	WAREHOUSE: took Cup:[12/14]
+[50]01:33:50.373	WAREHOUSE: took Pan:[15/26]
+[48]01:33:50.375	WAREHOUSE: took Oven:[2/20]
+[52]01:33:50.374	WAREHOUSE: took Knife:[2/16]
+[48]01:33:50.376	WAREHOUSE: took Pan:[14/26]
+[38]01:33:51.861	[returning kitchen tools] kitchen tools returned: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[45]01:33:51.862	WAREHOUSE: took Stove:[0/14]
+[45]01:33:51.862	WAREHOUSE: took Cup:[11/14]
+[40]01:33:51.866	[returning kitchen tools] kitchen tools returned: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[46]01:33:51.867	WAREHOUSE: took Stove:[0/14]
+[46]01:33:51.867	WAREHOUSE: took Cup:[10/14]
+[39]01:33:51.872	[returning kitchen tools] kitchen tools returned: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[36]01:33:51.875	[returning kitchen tools] kitchen tools returned: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[42]01:33:51.876	[returning kitchen tools] kitchen tools returned: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[44]01:33:59.370	[returning kitchen tools] kitchen tools returned: [Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+[47]01:33:59.376	[returning kitchen tools] kitchen tools returned: [Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+[45]01:34:00.865	[returning kitchen tools] kitchen tools returned: [Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+[46]01:34:00.869	[returning kitchen tools] kitchen tools returned: [Oven:1, Bowl:1, Spoon:1, Stove:1, Cup:1]
+[53]01:34:03.871	[returning kitchen tools] kitchen tools returned: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[51]01:34:03.873	[returning kitchen tools] kitchen tools returned: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[49]01:34:03.876	[returning kitchen tools] kitchen tools returned: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[52]01:34:03.877	[returning kitchen tools] kitchen tools returned: [Spoon:1, Plate:1, Oven:1, Knife:1]
+[48]01:34:03.878	[returning kitchen tools] kitchen tools returned: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[50]01:34:03.877	[returning kitchen tools] kitchen tools returned: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[9]01:34:03.880	[Delivery] Chef Gordon Ramsay Sending Order [#4] to Delivery Queue
+[9]01:34:03.881	[ShutDown] Chef Gordon Ramsay ended.
+[17]01:34:03.881	[Delivery] DeliveryPerson Frederick Smith took order: [#4]
+[17]01:34:03.886	[Stats] Order: 4 is Fined: false.
+Actual time:13528
+Expected time:15003
+[43]01:34:05.325	[returning kitchen tools] kitchen tools returned: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[35]01:34:05.327	[returning kitchen tools] kitchen tools returned: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[11]01:34:05.327	[Delivery] Chef Wolfgang Puck Sending Order [#2] to Delivery Queue
+[15]01:34:05.328	[Delivery] DeliveryPerson Patrick Donahoe took order: [#2]
+[15]01:34:05.331	[Stats] Order: 2 is Fined: true.
+Actual time:28496
+Expected time:15002
+[41]01:34:05.333	[returning kitchen tools] kitchen tools returned: [Plate:1, Knife:1, Spoon:1, Stove:1, Oven:1, Pan:1]
+[11]01:34:05.333	[Delivery] Chef Wolfgang Puck Sending Order [#3] to Delivery Queue
+[11]01:34:05.334	[ShutDown] Chef Wolfgang Puck ended.
+[16]01:34:05.334	[Delivery] DeliveryPerson Scott Davis ended.
+[17]01:34:05.334	[Delivery] DeliveryPerson Frederick Smith ended.
+[15]01:34:05.334	[Delivery] DeliveryPerson Patrick Donahoe ended.
+[14]01:34:05.334	[Delivery] DeliveryPerson Ken Allen took order: [#3]
+[13]01:34:05.334	[Delivery] DeliveryPerson Garry Simpson ended.
+[14]01:34:05.336	[Stats] Order: 3 is Fined: true.
+Actual time:28487
+Expected time:15008
+[14]01:34:05.337	[Delivery] DeliveryPerson Ken Allen ended.
+[1]01:34:05.340	[Statistics]
+Money Gained: 1120.00
+Delivered Orderes: 
+[	Order:	{	Id: 1,	DeliveryAddress: (10,20)	}
+		Requested Dishes:	[Hasselback Potatoes:4, Ramen Soup:2]
+	====================================================================================================================
+, 	Order:	{	Id: 0,	DeliveryAddress: (1,2)	}
+		Requested Dishes:	[Ramen Soup:2, Hasselback Potatoes:4, The Ultimate Breakfast:2]
+	====================================================================================================================
+, 	Order:	{	Id: 4,	DeliveryAddress: (20,33)	}
+		Requested Dishes:	[Ramen Soup:4, The Ultimate Breakfast:4, Hasselback Potatoes:2]
+	====================================================================================================================
+, 	Order:	{	Id: 2,	DeliveryAddress: (19,25)	}
+		Requested Dishes:	[The Ultimate Breakfast:2]
+	====================================================================================================================
+, 	Order:	{	Id: 3,	DeliveryAddress: (50,50)	}
+		Requested Dishes:	[The Ultimate Breakfast:6]
+	====================================================================================================================
+]
+Ingredients Consumed: 
+[Gouda Cheese:420], [Black Pepper:70], [Bread:210], [Egg:22], [Butter:450], [Olive Oil:500], [Bread Crumbs:140], [Cherry Tomato:1400], [Salt:326], [Potato:5000], [Flour:2000]

@@ -18,7 +18,7 @@ public abstract class WarehouseItem
 		return _initialQuantity;
 	}
 	
-	public abstract void take(int quantity);
+	//public abstract void take(int quantity);
 	
 	@Override
 	public String toString()

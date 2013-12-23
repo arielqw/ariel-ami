@@ -1,4 +1,5 @@
 package spl.assc.runnables;
+import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -36,6 +37,14 @@ public class CallableCookWholeOrder implements Callable<Order>
 	@Override
 	public Order call() throws Exception
 	{
+		
+//		Random rand = new Random();
+//		try {
+//			Thread.sleep(rand.nextInt(300));
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		//starting time
 		_myOrder.setCookStartTime();
 		CountDownLatch _countDownLatch = createCountDownLatch();
@@ -50,7 +59,6 @@ public class CallableCookWholeOrder implements Callable<Order>
 		_runnableCookOneDishPool.shutdown();
 		_myOrder.set_status(OrderStatus.COMPLETE);
 		_myOrder.setCookEndTime();
-
 		synchronized (_myChef) {
 			_myChef.notify();
 			return _myOrder;

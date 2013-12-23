@@ -3,6 +3,7 @@ package spl.assc.runnables;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -71,7 +72,6 @@ public class RunnableChef implements Runnable
 		
 		_managment = Management.getInstance();
 
-		Thread.currentThread();
 		while(!(_stopTakingNewOrders && _futures.isEmpty())){
 
 			//2. check if I can cook the pending order
@@ -86,6 +86,7 @@ public class RunnableChef implements Runnable
 						pendingOrder.notify();
 						long start = System.currentTimeMillis();
 						//LOGGER.info("before deliver");
+					
 						handleNewOrder(pendingOrder);
 						//LOGGER.info("deliver took:" + (System.currentTimeMillis() - start));
 					}
@@ -145,6 +146,8 @@ public class RunnableChef implements Runnable
 	private void handleNewOrder(Order order) {
 		LOGGER.info(String.format("[Chef Action] Chef %s took order: [%d]", _name,order.getOrderId()));
 		_enduranceRating -= order.get_difficulty();
+		
+
 		_futures.add( _cookWholeOrderPool.submit(new CallableCookWholeOrder(this,order)) );
 		
 	}

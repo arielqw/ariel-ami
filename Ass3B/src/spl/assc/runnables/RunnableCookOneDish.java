@@ -4,6 +4,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.logging.Logger;
 
 import spl.assc.model.Dish;
+import spl.assc.model.KitchenTool;
 import spl.assc.model.Warehouse;
 
 public class RunnableCookOneDish implements Runnable
@@ -30,6 +31,7 @@ public class RunnableCookOneDish implements Runnable
 	{
 		//1. go to warehouse take things.
 		_warehouse.take(_dish.get_ingredients(), _dish.get_kitchenTools());
+
 		//2. sleep needed time
 		try {
 			//LOGGER.info("going to wait for: "+Math.round(_dish.get_expectedCookTime()*_chef.get_efficiencyRating())+" milisecs");

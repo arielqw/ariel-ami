@@ -9,7 +9,7 @@ public class Ingredient extends WarehouseItem
 		_currentQuantity = quantity;
 	}
 	
-	@Override
+	
 	public synchronized void take(int quantity){
 		_currentQuantity -= quantity;
 	}
