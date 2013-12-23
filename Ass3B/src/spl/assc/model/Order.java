@@ -60,6 +60,9 @@ public class Order
 		DELIVERED
 	}
 	
+	public int getOrderId(){
+		return _id;
+	}
 	
 	@Override
 	public String toString()
@@ -99,5 +102,29 @@ public class Order
 
 	public Address getAddress() {
 		return _address;
+	}
+
+
+	public long getTotalTime() {
+		return ( (_cookEndTime-_cookStartTime) + (_deliveryEndTime-_deliveryStartTime) );
+	}
+	
+	public int getReward(){
+		int reward = 0;
+		for (OrderOfDish orderOfDish : _ordersOfDish) {
+			reward+= orderOfDish.get_dish().getReward()*orderOfDish.getQuantity();
+		}
+		return reward;
+	}
+
+	public long getExpectedCookTime() {
+		long maxCookTime = 0;
+		for (OrderOfDish orderOfDish : _ordersOfDish) {
+			long tmpExpectedTime = orderOfDish.get_dish().get_expectedCookTime();
+			if( tmpExpectedTime > maxCookTime){
+				maxCookTime = tmpExpectedTime;
+			}
+		}
+		return (maxCookTime);
 	}
 }

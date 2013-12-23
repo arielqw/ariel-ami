@@ -4,16 +4,25 @@ public abstract class WarehouseItem
 {
 	public WarehouseItem(String name, int quantity) {
 		_name = name;
-		_quantity = quantity;
+		_initialQuantity = quantity;
 	}
 	
-	private String _name;
-	private int _quantity;
+	protected final String _name;
+	protected final int _initialQuantity;
 	
+	public String getName() {
+		return _name;
+	}	
+	
+	public int getQuantity() {
+		return _initialQuantity;
+	}
+	
+	public abstract void take(int quantity);
 	
 	@Override
 	public String toString()
 	{
-		return String.format("%s:%d", _name, _quantity);
+		return String.format("%s:%d", _name, _initialQuantity);
 	}
 }

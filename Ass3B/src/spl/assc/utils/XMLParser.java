@@ -2,11 +2,14 @@ package spl.assc.utils;
 import java.io.File;
 import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
@@ -100,7 +103,7 @@ public class XMLParser
 		for (int i = 0; i < dishNodes.getLength(); i++)
 		{
 			NodeList kitchenToolNodes 		= ((Element)dishNodes.item(i)).getElementsByTagName("KitchenTool");
-			List<KitchenTool> kitchenTools 	= parseKitchenTools(kitchenToolNodes);
+			SortedSet<KitchenTool> kitchenTools 	= parseKitchenTools(kitchenToolNodes);
 			
 			NodeList ingredientNodes 		= ((Element)dishNodes.item(i)).getElementsByTagName("Ingredient");			
 			List<Ingredient> ingredients 	= parseIngredients(ingredientNodes);
@@ -127,9 +130,10 @@ public class XMLParser
 		return ingredients;
 	}
 	
-	private static List<KitchenTool> parseKitchenTools(NodeList kitchenToolNodes)
+	private static SortedSet<KitchenTool> parseKitchenTools(NodeList kitchenToolNodes)
 	{
-		List<KitchenTool> kitchenTools = new ArrayList<>();
+		
+		SortedSet<KitchenTool> kitchenTools = new TreeSet<KitchenTool>(new KitchenToolsComparator());
 		for (int i = 0; i < kitchenToolNodes.getLength(); i++)
 		{
 			String name = 	getNodeStringValue(kitchenToolNodes.item(i), "name");  			
@@ -193,7 +197,13 @@ public class XMLParser
 		Warehouse warehouse = new Warehouse(parseKitchenTools(document.getElementsByTagName("KitchenTool")), parseIngredients(document.getElementsByTagName("Ingredient")));
 		List<RunnableChef> chefs = 						parseChefs(document.getElementsByTagName("Chef"));
 		List<RunnableDeliveryPerson> deliveryGuys = 	parseDeliveryGuys(document.getElementsByTagName("DeliveryPerson"));
-		return new ResturantInitData(chefs, deliveryGuys, warehouse);
+		
+		Node addressNode = document.getElementsByTagName("Address").item(0);
+		
+		Address address = new Address(getNodeIntValue(addressNode, "x"), getNodeIntValue(addressNode, "y"));
+		
+		return new ResturantInitData(chefs, deliveryGuys, warehouse, address);
+		
 	}
 	
 	private static List<RunnableChef> parseChefs(NodeList chefNodes)

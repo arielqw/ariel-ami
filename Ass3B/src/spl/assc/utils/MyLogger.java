@@ -20,7 +20,15 @@ public class MyLogger
 		logger.setUseParentHandlers(false);
 		Formatter formatter = new MyFormatter();
 		
-		Handler consoleHandler = new ConsoleHandler();
+		//change output from System.err to system.out Patch
+		class myConsoleHandler extends ConsoleHandler {
+			public myConsoleHandler() {
+				super();
+				this.setOutputStream(System.out);
+			}
+		}
+		
+		Handler consoleHandler = new myConsoleHandler();
 		consoleHandler.setFormatter(formatter);
 		logger.addHandler(consoleHandler);
 		

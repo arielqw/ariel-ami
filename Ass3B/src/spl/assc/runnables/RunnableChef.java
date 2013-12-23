@@ -3,6 +3,7 @@ package spl.assc.runnables;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -31,7 +32,7 @@ public class RunnableChef implements Runnable
 	private int _currentPressure; 
 	private ExecutorService _cookWholeOrderPool;
 	private boolean _stopTakingNewOrders;
-
+	private CountDownLatch _latch;
 	public RunnableChef(String name, double efficiencyRating, int enduranceRating) {
 		_name = name;
 		_efficiencyRating = efficiencyRating;
@@ -65,7 +66,6 @@ public class RunnableChef implements Runnable
 
 			}
 		} catch (InterruptedException e) {
-			LOGGER.info("[before while] Chef "+_name+" got interrupted. shutting down");
 			_stopTakingNewOrders = true;
 		}
 		
@@ -91,7 +91,7 @@ public class RunnableChef implements Runnable
 					}
 					else
 					{
-						LOGGER.info("chef cant take order");
+						//LOGGER.info(String.format("[Chef Action] Chef %s can't take order: [#%d]", _name,pendingOrder.getOrderId()));
 					}
 				}
 				
@@ -105,7 +105,7 @@ public class RunnableChef implements Runnable
 					try {
 						this.wait();
 					} catch (InterruptedException e) {
-						LOGGER.info("Chef "+_name+" got interrupted. shutting down");
+						//LOGGER.info(String.format("[ShutDown] Chef %s got interrupted. shutting down", _name));
 						_stopTakingNewOrders = true;
 					}
 				}
@@ -116,6 +116,8 @@ public class RunnableChef implements Runnable
 			}
 		}
 		_cookWholeOrderPool.shutdown();
+		_latch.countDown();
+		LOGGER.info(String.format("[ShutDown] Chef %s ended.", _name));
 
 	}
 		
@@ -141,7 +143,7 @@ public class RunnableChef implements Runnable
 		return ( currentOrdersSize > _futures.size() );
 	}
 	private void handleNewOrder(Order order) {
-		LOGGER.info("[Took Order] Chef "+_name+" took order");
+		LOGGER.info(String.format("[Chef Action] Chef %s took order: [%d]", _name,order.getOrderId()));
 		_enduranceRating -= order.get_difficulty();
 		_futures.add( _cookWholeOrderPool.submit(new CallableCookWholeOrder(this,order)) );
 		
@@ -149,7 +151,8 @@ public class RunnableChef implements Runnable
 	
 	private void deliverOrder(Order order)
 	{
-		LOGGER.info("DELIVERING...");
+		LOGGER.info(String.format("[Delivery] Chef %s Sending Order [#%d] to Delivery Queue", _name,order.getOrderId()));
+		Management.getInstance().get_awaitingOrdersToDeliver().add(order);
 		
 	}
 	
@@ -162,6 +165,10 @@ public class RunnableChef implements Runnable
 
 	public void setManagment(Management management) {
 		_managment = management;
+	}
+
+	public void setCountDownLatch(CountDownLatch countDownLatch) {
+		_latch = countDownLatch;
 	}
 
 }

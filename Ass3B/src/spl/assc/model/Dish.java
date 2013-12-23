@@ -1,5 +1,6 @@
 package spl.assc.model;
 import java.util.List;
+import java.util.SortedSet;
 
 
 public class Dish
@@ -9,7 +10,7 @@ public class Dish
 			int difficultyRating, 
 			long expectedCookTime, 
 			int reward, 
-			List<KitchenTool> kitchenTools, 
+			SortedSet<KitchenTool> kitchenTools, 
 			List<Ingredient> ingredients) 
 	{
 		_name = name;
@@ -20,6 +21,14 @@ public class Dish
 		_ingredients = ingredients;
 	}
 	
+	public SortedSet<KitchenTool> get_kitchenTools() {
+		return _kitchenTools;
+	}
+
+	public List<Ingredient> get_ingredients() {
+		return _ingredients;
+	}
+
 	public long get_expectedCookTime() {
 		return _expectedCookTime;
 	}
@@ -28,7 +37,7 @@ public class Dish
 	private int 				_difficultyRating; 
 	private long 				_expectedCookTime; 
 	private int 				_reward;
-	private List<KitchenTool> 	_kitchenTools; 
+	private SortedSet<KitchenTool> 	_kitchenTools; 
 	private List<Ingredient> 	_ingredients;
 	
 	
@@ -55,5 +64,9 @@ public class Dish
 	public String getName()
 	{
 		return _name;
+	}
+
+	public int getReward() {
+		return _reward;
 	}
 }

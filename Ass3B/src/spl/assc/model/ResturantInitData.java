@@ -7,10 +7,11 @@ import spl.assc.runnables.RunnableDeliveryPerson;
 
 public class ResturantInitData
 {
-	public ResturantInitData(List<RunnableChef> chefs, List<RunnableDeliveryPerson> deliveryGuys, Warehouse warehouse) {
+	public ResturantInitData(List<RunnableChef> chefs, List<RunnableDeliveryPerson> deliveryGuys, Warehouse warehouse, Address address ) {
 		_chefs = chefs;
 		_deliveryGuys = deliveryGuys;
 		_warehouse = warehouse;
+		_address = address;
 	}
 	
 	public List<RunnableChef> get_chefs() {
@@ -27,6 +28,7 @@ public class ResturantInitData
 		return _warehouse;
 	}
 
+	private Address _address;
 	private List<RunnableChef> _chefs;
 	private List<RunnableDeliveryPerson> _deliveryGuys;
 	private Warehouse _warehouse;
@@ -49,6 +51,6 @@ public class ResturantInitData
 
 	public Address getAddress() {
 		// TODO get Address from parser - AMI!
-		return new Address(10, 10);
+		return _address;
 	}
 }

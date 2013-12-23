@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -41,15 +42,25 @@ public class Management
 	
 	private ExecutorService chefThreadPool;
 	private ExecutorService deliveryGuysThreadPool;
+	private Statistics _stats;
 	
+	private Address _address;
+	
+	public Statistics get_stats() {
+		return _stats;
+	}
+
 	//private Management(ResturantInitData resturant, Menu menu,
 	//		OrderQueue orderQueue) {	
 	private Management() {
 		_chefs = Management.resturant.get_chefs();
 		_deliveryGuys = Management.resturant.get_deliveryGuys();
 		_warehouse = Management.resturant.get_warehouse();
+		_address = Management.resturant.getAddress();
+		
 		_orders = orderQueue.get_orders();
 		_awaitingOrdersToDeliver = new LinkedBlockingQueue<>();
+		_stats = new Statistics();
 		/** 
 		 * TODO: clean up from constructor.
 		 */
@@ -63,8 +74,13 @@ public class Management
 			order.setDifficulty(tmpDifficulty);
 		}
 		
+		_chefsCountDownLatch = new CountDownLatch(_chefs.size());
+		_deliveryGuysCountDownLatch = new CountDownLatch(_deliveryGuys.size());
+
+		
 		for (RunnableChef chef : _chefs) {
 			chef.setManagment(this);
+			chef.setCountDownLatch(_chefsCountDownLatch);
 		}
 		
 		chefThreadPool = Executors.newFixedThreadPool(_chefs.size());
@@ -74,11 +90,15 @@ public class Management
 		
 		deliveryGuysThreadPool = Executors.newFixedThreadPool(_deliveryGuys.size());
 		for (RunnableDeliveryPerson deliveryGuy : _deliveryGuys) {
+			deliveryGuy.setCountDownLatch(_deliveryGuysCountDownLatch);
 			deliveryGuysThreadPool.execute(deliveryGuy);
 		}
 		
 	}
 	
+	private CountDownLatch _chefsCountDownLatch;
+	private CountDownLatch _deliveryGuysCountDownLatch;
+
 	
 	private Queue<Order> _orders;
 	private List<RunnableChef> _chefs;
@@ -105,22 +125,34 @@ public class Management
 		while(!_orders.isEmpty()){
 			
 			synchronized (_orders.peek()) {
-				LOGGER.info(String.format("pending order is now: '%s'", _orders.peek().getName() ));
+				LOGGER.info(String.format("[Pending Order Switch] Pending Order is now: [#%d]", _orders.peek().getOrderId() ));
 				switchToNextPendingOrder();
 				ringTheBell();
 				try{
 					pendingOrder.wait();
 					
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
 		}
-
+		
 		chefThreadPool.shutdownNow();
-		//statistics
-
+		try {
+			_chefsCountDownLatch.await();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		deliveryGuysThreadPool.shutdownNow();
+		
+		try {
+			_deliveryGuysCountDownLatch.await();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		LOGGER.info(String.format("[Statistics]\n%s", _stats.toString()));
 	}
 
 	private void ringTheBell() {

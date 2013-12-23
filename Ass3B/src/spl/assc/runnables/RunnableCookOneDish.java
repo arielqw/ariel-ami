@@ -29,7 +29,7 @@ public class RunnableCookOneDish implements Runnable
 	public void run()
 	{
 		//1. go to warehouse take things.
-		
+		_warehouse.take(_dish.get_ingredients(), _dish.get_kitchenTools());
 		//2. sleep needed time
 		try {
 			//LOGGER.info("going to wait for: "+Math.round(_dish.get_expectedCookTime()*_chef.get_efficiencyRating())+" milisecs");
@@ -39,6 +39,7 @@ public class RunnableCookOneDish implements Runnable
 			e.printStackTrace();
 		}
 		
+		_warehouse.putBack(_dish.get_kitchenTools());
 		_countDownLatch.countDown();
 	}
 	
