@@ -38,29 +38,35 @@ public class CallableCookWholeOrder implements Callable<Order>
 	public Order call() throws Exception
 	{
 		
-//		Random rand = new Random();
-//		try {
-//			Thread.sleep(rand.nextInt(300));
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+
 		//starting time
+		LOGGER.info(String.format("[-Cooking-] Started Cooking order: (%d)", _myOrder.getOrderId()));
+
 		_myOrder.setCookStartTime();
 		CountDownLatch _countDownLatch = createCountDownLatch();
-		ExecutorService _runnableCookOneDishPool = Executors.newFixedThreadPool(_numOfThreads);
+		//ExecutorService _runnableCookOneDishPool = Executors.newFixedThreadPool(_numOfThreads);
 		
+		/*
 		for (OrderOfDish orderOfDish : _myOrder.get_ordersOfDish()) {
 			for (int i = 0; i < orderOfDish.getQuantity(); i++) {
 				_runnableCookOneDishPool.execute(new RunnableCookOneDish(orderOfDish.get_dish(), Management.getInstance().getWarehouse(), _myChef,_countDownLatch));
 			}
 		}
+		*/
+		for (OrderOfDish orderOfDish : _myOrder.get_ordersOfDish()) {
+			for (int i = 0; i < orderOfDish.getQuantity(); i++) {
+				new Thread(new RunnableCookOneDish(orderOfDish.get_dish(), Management.getInstance().getWarehouse(), _myChef,_countDownLatch)).start();
+			}
+		}
 		_countDownLatch.await();
-		_runnableCookOneDishPool.shutdown();
+
+		//_runnableCookOneDishPool.shutdown();
 		_myOrder.set_status(OrderStatus.COMPLETE);
 		_myOrder.setCookEndTime();
+		
 		synchronized (_myChef) {
-			_myChef.notify();
+			LOGGER.info(String.format("[-Cooking-] Finished Cooking order: (%d)", _myOrder.getOrderId()));
+			_myChef.notifyAll();
 			return _myOrder;
 		}
 	}

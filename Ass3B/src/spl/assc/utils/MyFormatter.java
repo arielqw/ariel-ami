@@ -27,7 +27,7 @@ public class MyFormatter extends Formatter
 		//return String.format("[%d]\t%s\n", record.getThreadID(), record.getMessage());
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
 
-		return String.format("[%d]%s\t%s\n", record.getThreadID(),sdf.format(new Date(record.getMillis())), record.getMessage());
+		return String.format("[%d]%s\n", record.getThreadID(), record.getMessage());
 
 	}
 

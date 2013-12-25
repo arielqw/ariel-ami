@@ -40,20 +40,24 @@ public class RunnableDeliveryPerson implements Runnable
 		BlockingQueue<Order> awaitingOrders = management.get_awaitingOrdersToDeliver();
 		_resturantAddress = management.getAddress();
 		
-		boolean wasInterruptSent = false;
+		//boolean wasInterruptSent = false;
 		
-		while(!(wasInterruptSent && awaitingOrders.isEmpty())){
+		while(true){
 			Order orderToDeliver=null;
 
 			try {
 				orderToDeliver = awaitingOrders.take();
+				if(orderToDeliver.getOrderId() == -1){
+					break;
+					
+				}
 
 			} catch (InterruptedException e) {
-				wasInterruptSent = true;
+				//wasInterruptSent = true;
 			}
 
 			if(orderToDeliver == null){
-				if (Thread.interrupted())	wasInterruptSent = true;
+				//if (Thread.interrupted())	wasInterruptSent = true;
 				continue;
 			}
 			
@@ -78,10 +82,10 @@ public class RunnableDeliveryPerson implements Runnable
 			orderToDeliver.set_status(OrderStatus.DELIVERED);
 			//6. go home (Sleep)
 			drive(expectedDeliveryTime);
-			if (Thread.interrupted())	wasInterruptSent = true;
+			//if (Thread.interrupted())	wasInterruptSent = true;
 		}
 		_latch.countDown();
-		LOGGER.info(String.format("[Delivery] DeliveryPerson %s ended.", _name));
+		LOGGER.info(String.format("[-Terminated-] DeliveryPerson %s ended.", _name));
 
 	}
 
@@ -118,7 +122,7 @@ public class RunnableDeliveryPerson implements Runnable
 			) 
 		);
 	}
-
+//TODO: wrap for throws
 
 	@Override
 	public String toString()

@@ -28,7 +28,8 @@ public class MyLogger
 			}
 		}
 		
-		Handler consoleHandler = new myConsoleHandler();
+		Handler consoleHandler = new ConsoleHandler();
+		
 		consoleHandler.setFormatter(formatter);
 		logger.addHandler(consoleHandler);
 		

@@ -2,7 +2,9 @@ package spl.assc.runnables;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -11,6 +13,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
+import javax.management.Query;
 import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
 
 import spl.assc.Management;
@@ -34,6 +37,9 @@ public class RunnableChef implements Runnable
 	private ExecutorService _cookWholeOrderPool;
 	private boolean _stopTakingNewOrders;
 	private CountDownLatch _latch;
+	private Object _bell;
+	private Queue<Order> _myPendingOrders;
+	
 	public RunnableChef(String name, double efficiencyRating, int enduranceRating) {
 		_name = name;
 		_efficiencyRating = efficiencyRating;
@@ -42,7 +48,7 @@ public class RunnableChef implements Runnable
 		_stopTakingNewOrders = false;
 		_futures = new ArrayList<>();
 		_cookWholeOrderPool = Executors.newCachedThreadPool();
-		
+		_myPendingOrders = new LinkedList<>();
 	}
 
 	@Override
@@ -58,70 +64,42 @@ public class RunnableChef implements Runnable
 	
 	private void work()
 	{
-		//LOGGER.info(String.format("Chef '%s' started...", _name));
 
-		try {
-			synchronized (this) {
-				this.wait();
-			//	LOGGER.info(String.format("Chef '%s' woke up", _name));
-
-			}
-		} catch (InterruptedException e) {
-			_stopTakingNewOrders = true;
-		}
-		
 		_managment = Management.getInstance();
 
-		while(!(_stopTakingNewOrders && _futures.isEmpty())){
-
-			//2. check if I can cook the pending order
-			synchronized (_managment.getPendingOrder()) {
-				//LOGGER.info(String.format("Chef '%s' got in", _name));
-				Order pendingOrder = _managment.getPendingOrder();
-				if( pendingOrder.get_status() == OrderStatus.INCOMPLETE){
-					//LOGGER.info(String.format("%d < %d - %d - ['%s']",pendingOrder.get_difficulty(), _enduranceRating, _currentPressure, _name));
-					if(pendingOrder.get_difficulty() <= (_enduranceRating - _currentPressure)){
-						//take order
-						pendingOrder.set_status(OrderStatus.INPROGRESS);
-						pendingOrder.notify();
-						long start = System.currentTimeMillis();
-						//LOGGER.info("before deliver");
-					
-						handleNewOrder(pendingOrder);
-						//LOGGER.info("deliver took:" + (System.currentTimeMillis() - start));
-					}
-					else
-					{
-						//LOGGER.info(String.format("[Chef Action] Chef %s can't take order: [#%d]", _name,pendingOrder.getOrderId()));
-					}
-				}
-				
-				
+		while(!(_stopTakingNewOrders && _futures.isEmpty() && _myPendingOrders.isEmpty() )){
+			//LOGGER.info(String.format("[while] Chef %s in while loop", _name));
+			//start working on available orders
+			if(!_myPendingOrders.isEmpty()){
+				handleNewOrder(_myPendingOrders.poll());
 			}
-
-			//1. send finished orders to delivery
-			synchronized (this) {
-				boolean wasPreasureReduced = sendFinishedOrdersToDelivery();
-				if(!wasPreasureReduced){
+			//send completed orders to delivery
+			boolean wasPressureReduced = sendFinishedOrdersToDelivery();
+			if(wasPressureReduced){
+				synchronized (_bell) {
+					_bell.notifyAll(); // notify management that my pressure was reduced and i can take new orders now
+				}
+			}
+			else{ //try later
+				synchronized (this) {
 					try {
 						this.wait();
 					} catch (InterruptedException e) {
-						//LOGGER.info(String.format("[ShutDown] Chef %s got interrupted. shutting down", _name));
-						_stopTakingNewOrders = true;
+						// TODO Auto-generated catch block
+						//e.printStackTrace();
 					}
 				}
-				
 			}
-			if (Thread.interrupted()){
-				_stopTakingNewOrders = true;
-			}
+			
 		}
-		_cookWholeOrderPool.shutdown();
 		_latch.countDown();
-		LOGGER.info(String.format("[ShutDown] Chef %s ended.", _name));
-
+		_cookWholeOrderPool.shutdown();
+		LOGGER.info(String.format("[-Terminated-] Chef %s has finished his job", _name));
 	}
-		
+	
+	public void stopTakingNewOrders(){
+		_stopTakingNewOrders = true;
+	}
 	
 	private boolean sendFinishedOrdersToDelivery(){
 		int currentOrdersSize = _futures.size();
@@ -129,27 +107,22 @@ public class RunnableChef implements Runnable
 			Future<Order> future = it.next();
 			if (future.isDone()){
 				it.remove();
-				try {
-					Order tmp = future.get();
-					_currentPressure -= tmp.get_difficulty();
-					deliverOrder(tmp);
-				} catch (InterruptedException e)
-				{
-					_stopTakingNewOrders = true;
-				} catch (ExecutionException e) {
-					e.printStackTrace();
-				}
+					Order tmp;
+					try {
+						tmp = future.get();
+						_currentPressure -= tmp.get_difficulty();
+						deliverOrder(tmp);
+					} catch (InterruptedException | ExecutionException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 			}
 		}
 		return ( currentOrdersSize > _futures.size() );
 	}
 	private void handleNewOrder(Order order) {
 		LOGGER.info(String.format("[Chef Action] Chef %s took order: [%d]", _name,order.getOrderId()));
-		_enduranceRating -= order.get_difficulty();
-		
-
 		_futures.add( _cookWholeOrderPool.submit(new CallableCookWholeOrder(this,order)) );
-		
 	}
 	
 	private void deliverOrder(Order order)
@@ -172,6 +145,32 @@ public class RunnableChef implements Runnable
 
 	public void setCountDownLatch(CountDownLatch countDownLatch) {
 		_latch = countDownLatch;
+	}
+
+	public void setBell(Object bell) {
+		_bell = bell;
+		
+	}
+
+	public boolean canYouTakeThisOrder(Order order) {
+		if(order.get_difficulty() <= (_enduranceRating - _currentPressure)){
+			//take order
+			order.set_status(OrderStatus.INPROGRESS);
+			_enduranceRating -= order.get_difficulty();
+			//_currentOrder = order;
+			_myPendingOrders.add(order);
+			synchronized (this) {
+				this.notifyAll();
+			}
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	public String getName() {
+		return _name;
 	}
 
 }

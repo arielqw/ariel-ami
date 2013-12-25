@@ -29,13 +29,13 @@ public class Driver
 		
 		try {
 			Menu menu = XMLParser.parseMenu("Menu.xml");
-			LOGGER.info(menu.toString());	
+			LOGGER.fine(menu.toString());	
 
 			OrderQueue orderQueue = new OrderQueue(XMLParser.parseOrderList("OrdersList.xml"));
-			LOGGER.info(orderQueue.toString());
+			LOGGER.fine(orderQueue.toString());
 				
 			ResturantInitData resturant = XMLParser.parseResturant("InitialData.xml");
-			LOGGER.info(resturant.toString());
+			LOGGER.fine(resturant.toString());
 			Management.resturant = resturant;
 			Management.orderQueue = orderQueue;
 			Management.menu = menu;
@@ -49,7 +49,12 @@ public class Driver
 
 		Management manager = Management.getInstance();
 		//Management manager = new Management(resturant, menu, orderQueue);
-		manager.start();
+		try {
+			manager.start();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//Semaphore
 
 	}

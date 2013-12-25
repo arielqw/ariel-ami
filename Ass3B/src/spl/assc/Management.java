@@ -40,8 +40,8 @@ public class Management
 	public static Menu menu;
 	public static OrderQueue orderQueue;
 	
-	private ExecutorService chefThreadPool;
-	private ExecutorService deliveryGuysThreadPool;
+	//private ExecutorService chefThreadPool;
+	//private ExecutorService deliveryGuysThreadPool;
 	private Statistics _stats;
 	
 	private Address _address;
@@ -59,8 +59,10 @@ public class Management
 		_address = Management.resturant.getAddress();
 		
 		_orders = orderQueue.get_orders();
+
 		_awaitingOrdersToDeliver = new LinkedBlockingQueue<>();
 		_stats = new Statistics();
+		bell = new Object();
 		/** 
 		 * TODO: clean up from constructor.
 		 */
@@ -80,20 +82,32 @@ public class Management
 		
 		for (RunnableChef chef : _chefs) {
 			chef.setManagment(this);
+			chef.setBell(bell);
 			chef.setCountDownLatch(_chefsCountDownLatch);
 		}
 		
+		/*
 		chefThreadPool = Executors.newFixedThreadPool(_chefs.size());
 		for (RunnableChef chef : _chefs) {
 			chefThreadPool.execute(chef);
 		}
+		*/
+		for (RunnableChef chef : _chefs) {
+			new Thread(chef).start();
+		}
 		
+		/*
 		deliveryGuysThreadPool = Executors.newFixedThreadPool(_deliveryGuys.size());
 		for (RunnableDeliveryPerson deliveryGuy : _deliveryGuys) {
 			deliveryGuy.setCountDownLatch(_deliveryGuysCountDownLatch);
 			deliveryGuysThreadPool.execute(deliveryGuy);
 		}
-		
+		*/
+		for (RunnableDeliveryPerson deliveryGuy : _deliveryGuys) {
+			deliveryGuy.setCountDownLatch(_deliveryGuysCountDownLatch);
+			new Thread(deliveryGuy).start();
+
+		}		
 	}
 	
 	private CountDownLatch _chefsCountDownLatch;
@@ -104,7 +118,7 @@ public class Management
 	private List<RunnableChef> _chefs;
 	private List<RunnableDeliveryPerson> _deliveryGuys;
 	private Warehouse _warehouse;
-	
+	private Object bell;
 	private Order pendingOrder;
 	private BlockingQueue<Order> _awaitingOrdersToDeliver;
 	
@@ -116,35 +130,52 @@ public class Management
 		return pendingOrder;
 	}
 	
-	private void switchToNextPendingOrder(){
-		pendingOrder = _orders.poll();
-	}
 	
-	public void start()
+	public void start() throws Exception
 	{
 		while(!_orders.isEmpty()){
-			
-			synchronized (_orders.peek()) {
-				LOGGER.info(String.format("[Pending Order Switch] Pending Order is now: [#%d]", _orders.peek().getOrderId() ));
-				switchToNextPendingOrder();
-				ringTheBell();
-				try{
-					pendingOrder.wait();
-					
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+			boolean wasOrderTaken = false;
+			for (RunnableChef chef : _chefs) {
+				if( chef.canYouTakeThisOrder( _orders.peek()) ){
+					LOGGER.info(String.format("[Managment] Order: [#%d] was sent to Chef '%s'", _orders.peek().getOrderId(),chef.getName() ));
+					wasOrderTaken = true;
+					_orders.poll();
+					break;
 				}
 			}
+
+			if(!wasOrderTaken){
+				synchronized (bell) {
+					bell.wait();
+				}
+			}
+
 		}
 		
-		chefThreadPool.shutdownNow();
+		//Shutdown chefs
+		for (RunnableChef chef : _chefs) {
+			chef.stopTakingNewOrders();
+			synchronized (chef) {
+				chef.notifyAll();
+
+			}
+		}
+		//chefThreadPool.shutdownNow();
+
 		try {
 			_chefsCountDownLatch.await();
-		} catch (InterruptedException e) {
+		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
-		deliveryGuysThreadPool.shutdownNow();
+
+		//Poison delivery guys
+		//Poison Orders
+		for (RunnableDeliveryPerson deliveryGuy : _deliveryGuys) {
+			_awaitingOrdersToDeliver.add(new Order(-1, null, null));
+		}
+
+		//deliveryGuysThreadPool.shutdownNow();
 		
 		try {
 			_deliveryGuysCountDownLatch.await();
@@ -155,14 +186,6 @@ public class Management
 		LOGGER.info(String.format("[Statistics]\n%s", _stats.toString()));
 	}
 
-	private void ringTheBell() {
-		// TODO Auto-generated method stub
-		for (RunnableChef chef : _chefs) {
-			synchronized (chef) {
-				chef.notify();
-			}
-		}
-	}
 
 	public Warehouse getWarehouse() {
 		return _warehouse;
