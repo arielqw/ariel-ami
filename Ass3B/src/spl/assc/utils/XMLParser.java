@@ -74,8 +74,8 @@ public class XMLParser
 		Document document = null;
 		try
 		{
-			schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new File(filename.substring(0, filename.length()-3)+"xsd"));
-			documentBuilder.setSchema(schema);
+			//schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new File(filename.substring(0, filename.length()-3)+"xsd"));
+			//documentBuilder.setSchema(schema);
 			document = documentBuilder.newDocumentBuilder().parse(filename);
 		} catch (Exception e)
 		{

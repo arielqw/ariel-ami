@@ -80,6 +80,7 @@ public class RunnableDeliveryPerson implements Runnable
 			
 			//5. mark as delivered
 			orderToDeliver.set_status(OrderStatus.DELIVERED);
+			orderToDeliver.setDeliveredBy(_name);
 			//6. go home (Sleep)
 			drive(expectedDeliveryTime);
 			//if (Thread.interrupted())	wasInterruptSent = true;

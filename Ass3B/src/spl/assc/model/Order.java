@@ -19,7 +19,7 @@ public class Order
 		_address = address;
 		_ordersOfDish = ordersOfDish;
 		_difficulty = 0;
-
+		_deliveredBy = "N/A";
 		_status = OrderStatus.INCOMPLETE;
 	}
 	
@@ -32,6 +32,7 @@ public class Order
 	private long _cookEndTime;
 	private long _deliveryStartTime;
 	private long _deliveryEndTime;
+	private String _deliveredBy;
 	
 	public List<OrderOfDish> get_ordersOfDish() {
 		return _ordersOfDish;
@@ -68,10 +69,10 @@ public class Order
 	public String toString()
 	{
 		StringBuilder builder = new StringBuilder();
-		builder.append(String.format("\tOrder:\t{\tId: %d,\tDeliveryAddress: %s\t}\n", _id, _address));
+		builder.append(String.format("\tOrder:\t{\tId: %d,\tDeliveryAddress: %s\t Delivered By: '%s'\t} ", _id, _address,_deliveredBy));
 		builder.append("\t\tRequested Dishes:\t");
 		builder.append(_ordersOfDish);
-		builder.append("\n\t====================================================================================================================\n");
+		builder.append("\n\t===================================================================================================================================================================\n");
 
 		return builder.toString();
 	}
@@ -126,5 +127,11 @@ public class Order
 			}
 		}
 		return (maxCookTime);
+	}
+
+
+	public void setDeliveredBy(String _name) {
+		_deliveredBy = _name;
+		
 	}
 }

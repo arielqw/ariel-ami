@@ -11,6 +11,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Logger;
 
+import javax.tools.ForwardingFileObject;
+
 import spl.assc.model.Address;
 import spl.assc.model.Menu;
 import spl.assc.model.Order;
@@ -134,22 +136,23 @@ public class Management
 	public void start() throws Exception
 	{
 		while(!_orders.isEmpty()){
-			boolean wasOrderTaken = false;
-			for (RunnableChef chef : _chefs) {
-				if( chef.canYouTakeThisOrder( _orders.peek()) ){
-					LOGGER.info(String.format("[Managment] Order: [#%d] was sent to Chef '%s'", _orders.peek().getOrderId(),chef.getName() ));
-					wasOrderTaken = true;
-					_orders.poll();
-					break;
+			synchronized (bell) {
+				boolean wasOrderTaken = false;
+				for (RunnableChef chef : _chefs) {
+					if( chef.canYouTakeThisOrder( _orders.peek()) ){
+						LOGGER.info(String.format("[Managment] Order: [#%d] was sent to Chef '%s'", _orders.peek().getOrderId(),chef.getName() ));
+						wasOrderTaken = true;
+						_orders.poll();
+						break;
+					}
+				}
+	
+				if(!wasOrderTaken){
+//					synchronized (bell) {
+						bell.wait();
+//					}
 				}
 			}
-
-			if(!wasOrderTaken){
-				synchronized (bell) {
-					bell.wait();
-				}
-			}
-
 		}
 		
 		//Shutdown chefs
@@ -195,6 +198,5 @@ public class Management
 		return resturant.getAddress();
 	}
 
-	
 	
 }
