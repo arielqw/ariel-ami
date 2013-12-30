@@ -82,8 +82,8 @@ public class RunnableDeliveryPerson implements Runnable
 			drive(expectedDeliveryTime);
 			//if (Thread.interrupted())	wasInterruptSent = true;
 		}
-		_latch.countDown();
 		LOGGER.info(String.format("\t[Event=Shutdown] [DeliveryPerson=%s]", _name));
+		_latch.countDown();
 
 	}
 

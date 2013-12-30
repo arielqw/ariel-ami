@@ -2,11 +2,12 @@ package spl.assc.model;
 
 /**
  * This object represents an address (in x,y coords) 
+ * This object is Immutable
  */
-public class Address
+public final class Address
 {
-	private int _x;
-	private int _y;
+	private final int _x;
+	private final int _y;
 
 	public Address(int x, int y) {
 		_x = x;
@@ -24,7 +25,7 @@ public class Address
 	 * @param other
 	 * @return distance
 	 */
-	public long computeDistanceTo(Address other){
+	public final long computeDistanceTo(Address other){
 		return (long)Math.sqrt( Math.abs( Math.pow(this._y - other._y, 2) + Math.pow(this._x - other._x, 2) ));
 	}
 	

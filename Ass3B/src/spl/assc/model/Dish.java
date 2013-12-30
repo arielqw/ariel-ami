@@ -4,15 +4,16 @@ import java.util.SortedSet;
 
 /**
  * This object represents a dish
+ * This object is Immutable
  */
-public class Dish
+public final class Dish
 {
-	private String 				_name; 
-	private int 				_difficultyRating; 
-	private long 				_expectedCookTime; 
-	private int 				_reward;
-	private SortedSet<KitchenTool> 	_kitchenTools; 
-	private List<Ingredient> 	_ingredients;
+	private final String _name; 
+	private final int _difficultyRating; 
+	private final long _expectedCookTime; 
+	private final int _reward;
+	private final SortedSet<KitchenTool> _kitchenTools; 
+	private final List<Ingredient> _ingredients;
 	
 	public Dish(String name, int difficultyRating, long expectedCookTime, int reward, SortedSet<KitchenTool> kitchenTools, List<Ingredient> ingredients) {
 		_name = name;

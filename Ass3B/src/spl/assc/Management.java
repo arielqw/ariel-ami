@@ -93,29 +93,29 @@ public class Management
 		
 		//As long as there is pending orders: send to appropriate chef
 		while(!_orders.isEmpty()){
-				boolean isOrderTaken = false;
-				bell.compareAndSet(true, false);
-				
-				//Go through chefs and try to find a chef that will take the order
-				for (RunnableChef chef : _chefs) {
-					if( chef.canYouTakeThisOrder( _orders.peek()) ){
-						LOGGER.info(String.format("\t[Event=Order Sent To Chef] [Order=%s] [Chef=%s]", _orders.peek().info(),chef.info() ));
-						isOrderTaken = true;
-						_orders.poll();
-						break;
-					}
+			boolean isOrderTaken = false;
+			bell.compareAndSet(true, false);
+			
+			//Go through chefs and try to find a chef that will take the order
+			for (RunnableChef chef : _chefs) {
+				if( chef.canYouTakeThisOrder( _orders.peek()) ){
+					LOGGER.info(String.format("\t[Event=Order Sent To Chef] [Order=%s] [Chef=%s]", _orders.peek().info(),chef.info() ));
+					isOrderTaken = true;
+					_orders.poll();
+					break;
 				}
-				//if no chef could take the order -> go sleep and wait that a chef becomes available 
-				//*note: checking bell's status for knowing no one notified while awake
+			}
+			//if no chef could take the order -> go sleep and wait that a chef becomes available 
+			//*note: checking bell's status for knowing no one notified while awake
+			synchronized (bell) {
 				if(!isOrderTaken && !bell.get()){
-					synchronized (bell) {
-						try {
-							bell.wait();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
+					try {
+						bell.wait();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
 					}
 				}
+			}
 		}
 		
 		//Shutdown chefs
