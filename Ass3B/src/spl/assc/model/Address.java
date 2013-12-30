@@ -25,7 +25,7 @@ public final class Address
 	 * @param other
 	 * @return distance
 	 */
-	public final long computeDistanceTo(Address other){
+	public long computeDistanceTo(Address other){
 		return (long)Math.sqrt( Math.abs( Math.pow(this._y - other._y, 2) + Math.pow(this._x - other._x, 2) ));
 	}
 	

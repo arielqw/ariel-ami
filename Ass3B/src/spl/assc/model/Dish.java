@@ -23,22 +23,6 @@ public final class Dish
 		_kitchenTools = kitchenTools;
 		_ingredients = ingredients;
 	}
-	
-	/**
-	 * this object is immutable .
-	 * @return needed kitchen tools
-	 */
-	public SortedSet<KitchenTool> getKitchenTools() {
-		return _kitchenTools;
-	}
-
-	/**
-	 * this object is immutable .
-	 * @return needed ingredients 
-	 */
-	public List<Ingredient> getIngredients() {
-		return _ingredients;
-	}
 
 	/**
 	 * @return expected cook time for this dish
@@ -70,5 +54,14 @@ public final class Dish
 
 	public int getReward() {
 		return _reward;
+	}
+
+
+	public void take(Warehouse warehouse) {
+		warehouse.take(_ingredients, _kitchenTools);
+	}
+
+	public void putBack(Warehouse warehouse) {
+		warehouse.putBack(_kitchenTools);		
 	}
 }

@@ -26,21 +26,22 @@ public class RunnableChef implements Runnable
 {
 	private final static Logger LOGGER = Logger.getGlobal();
 
-	private String _name;
-	private double _efficiencyRating;
-	private int _enduranceRating;
+	private final String _name;
+	private final double _efficiencyRating;
+	private final int _enduranceRating;
 	private int _currentPressure; 
 
 	private boolean _stopTakingNewOrders;
 
-	private Management _managment;
-	private Warehouse _warehouse;
+	private final Management _managment;
+	private final Warehouse _warehouse;
+
+	private final AtomicBoolean _bell;
 
 	private Queue<Order> _myPendingOrders;
 	private List<Future<Order>> _futures;
 	private ExecutorService _cookWholeOrderPool;
 	private CountDownLatch _latch;
-	private AtomicBoolean _bell;
 	
 	public RunnableChef(String name, double efficiencyRating, int enduranceRating, AtomicBoolean bell, Management managment, CountDownLatch latch, Warehouse warehouse) {
 		_name = name;

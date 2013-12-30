@@ -14,10 +14,10 @@ import spl.assc.model.Warehouse;
 public class CallableCookWholeOrder implements Callable<Order>
 {
 	private final static Logger LOGGER = Logger.getGlobal();
-	private RunnableChef _myChef;
-	private Order _myOrder;
+	private final RunnableChef _myChef;
+	private final Order _myOrder;
 	private int _numOfThreads;
-	private Warehouse _wareHouse;
+	private final Warehouse _wareHouse;
 	
 	public CallableCookWholeOrder(RunnableChef runnableChef, Order order,Warehouse warhouse) {
 		_myOrder = order;

@@ -15,9 +15,9 @@ public class Driver
 		new MyLogger().setup();
 		
 		//Input files
-		String INITIALDATA_FILENAME = "InitialData2.xml";
-		String MENU_FILENAME = "Menu2.xml";
-		String ORDERS_FILENAME = "OrdersList2.xml";
+		String INITIALDATA_FILENAME = "InitialData.xml";
+		String MENU_FILENAME = "Menu.xml";
+		String ORDERS_FILENAME = "OrdersList.xml";
 		
 		//Creating a new management 
 		Management manager = new Management(

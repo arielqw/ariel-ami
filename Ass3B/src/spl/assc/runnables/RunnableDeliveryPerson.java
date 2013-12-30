@@ -15,10 +15,10 @@ public class RunnableDeliveryPerson implements Runnable
 {
 	private final static Logger LOGGER = Logger.getGlobal();
 
-	private String _name;
-	private int _speed;
-	private CountDownLatch _latch;
-	private Management _management;
+	private final String _name;
+	private final int _speed;
+	private final CountDownLatch _latch;
+	private final Management _management;
 	
 	public RunnableDeliveryPerson(String name, int speed, Management management, CountDownLatch latch) {
 		_name = name;

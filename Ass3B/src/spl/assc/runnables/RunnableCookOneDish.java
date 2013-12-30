@@ -10,10 +10,10 @@ import spl.assc.model.Warehouse;
  */
 public class RunnableCookOneDish implements Runnable
 {
-	private Dish _dish;
-	private Warehouse _warehouse;
-	private RunnableChef _chef;
-	private CountDownLatch _countDownLatch;
+	private final Dish _dish;
+	private final Warehouse _warehouse;
+	private final RunnableChef _chef;
+	private final CountDownLatch _countDownLatch;
 	
 	public RunnableCookOneDish(Dish dish, Warehouse warehouse, RunnableChef chef,CountDownLatch countDownLatch) {
 		_dish = dish;
@@ -41,9 +41,8 @@ public class RunnableCookOneDish implements Runnable
 	 */
 	private void cookOneDish()
 	{
-		//1. go to warehouse take things.
-		_warehouse.take(_dish.getIngredients(), _dish.getKitchenTools());
-
+		//1. take kitchen tools and ingredients from warehouse
+		_dish.take(_warehouse);
 		//2. sleep needed time
 		try {
 			Thread.sleep(Math.round(_dish.getExpectedCookTime()*_chef.get_efficiencyRating()));
@@ -51,8 +50,8 @@ public class RunnableCookOneDish implements Runnable
 			e.printStackTrace();
 		}
 		
-		//3. return used kitchen tools
-		_warehouse.putBack(_dish.getKitchenTools());
+		//3. return used kitchen tools to warehouse
+		_dish.putBack(_warehouse);
 
 		_countDownLatch.countDown();
 	}

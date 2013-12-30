@@ -1,4 +1,5 @@
 package spl.assc.model;
+import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -17,14 +18,18 @@ public class Order
 		_rewarded = "N/A";
 	}
 	
+	//for creating a poisoned order
 	public Order(String string) {
 		_id = -1;
+		_address = null;
+		_difficulty = 0;
+		_ordersOfDish = null;
 	}
 
-	private int _id;
-	private Address _address;
-	private int _difficulty;
-	private List<OrderOfDish> _ordersOfDish;
+	private final int _id;
+	private final Address _address;
+	private final int _difficulty;
+	private final List<OrderOfDish> _ordersOfDish;
 	private Order.OrderStatus _status;
 	private long _cookStartTime;
 	private long _cookEndTime;
@@ -33,8 +38,17 @@ public class Order
 	private String _deliveredBy;
 	private String _rewarded;
 	
+	//deep copy
+	private List<OrderOfDish> copyOrderOfDish(){
+		List<OrderOfDish> ordersOfDishCopy = new ArrayList<>();
+		for (int i = 0; i < _ordersOfDish.size(); i++) {
+			ordersOfDishCopy.add(_ordersOfDish.get(i));
+		}
+		return ordersOfDishCopy;
+	}
+	
 	public List<OrderOfDish> get_ordersOfDish() {
-		return _ordersOfDish;
+		return copyOrderOfDish();
 	}
 
 	public void setDeliveryStartTime() {
@@ -47,6 +61,7 @@ public class Order
 
 	//not used anywhere.
 	public Order.OrderStatus get_status() {
+		if(_id == -1) return OrderStatus.POISONED;
 		return _status;
 	}
 
@@ -59,7 +74,8 @@ public class Order
 		INCOMPLETE,
 		INPROGRESS,
 		COMPLETE,
-		DELIVERED
+		DELIVERED,
+		POISONED
 	}
 	
 	public String info(){
@@ -80,12 +96,14 @@ public class Order
 	 * @return total time (cook + deliver)
 	 */
 	public long getTotalTime() {
+		if( _id == -1 ) return -1;
 		return ( (_cookEndTime-_cookStartTime) + (_deliveryEndTime-_deliveryStartTime) );
 	}
 	
 
 	public int getReward(){
 		int reward = 0;
+		if( _id == -1) return reward;
 		for (OrderOfDish orderOfDish : _ordersOfDish) {
 			reward+= orderOfDish.get_dish().getReward()*orderOfDish.getQuantity();
 		}
@@ -94,6 +112,8 @@ public class Order
 
 	public long getExpectedCookTime() {
 		long maxCookTime = 0;
+		if( _id == -1) return maxCookTime;
+
 		for (OrderOfDish orderOfDish : _ordersOfDish) {
 			long tmpExpectedTime = orderOfDish.get_dish().getExpectedCookTime();
 			if( tmpExpectedTime > maxCookTime){

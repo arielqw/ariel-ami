@@ -10,7 +10,7 @@ public class OrderOfDish
 		_quantity = quantity;
 	}
 	
-	private String _name;
+	private final String _name;
 	private int _quantity;
 	private Dish _dish;
 	
