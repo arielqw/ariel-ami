@@ -1,5 +1,8 @@
 package spl.assc.model;
 
+/**
+ * Represents a dish order (dish + it's amount)
+ */
 public class OrderOfDish
 {
 	public OrderOfDish(String name, int quantity) {

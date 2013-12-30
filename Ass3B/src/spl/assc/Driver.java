@@ -1,33 +1,31 @@
 package spl.assc;
-import java.util.logging.Logger;
 
-import spl.assc.model.OrderQueue;
-import spl.assc.model.ResturantInitData;
 import spl.assc.utils.MyLogger;
 import spl.assc.utils.XMLParser;
 
-
+/**
+ * Our program main class which:
+ * 1. Calling for Parsing inputs
+ * 2. starting up management
+ */
 public class Driver
 {
-
-	/**
-	 * @param args
-	 */
-	
 	public static void main(String[] args)
 	{
 		new MyLogger().setup();
 		
+		//Input files
 		String INITIALDATA_FILENAME = "InitialData2.xml";
 		String MENU_FILENAME = "Menu2.xml";
 		String ORDERS_FILENAME = "OrdersList2.xml";
 		
+		//Creating a new management 
 		Management manager = new Management(
 								XMLParser.getSizeOf(INITIALDATA_FILENAME,"InitialData.xsd", "Chef"), 
 								XMLParser.getSizeOf(INITIALDATA_FILENAME,"InitialData.xsd", "DeliveryPerson"),
 								XMLParser.parseAddress(INITIALDATA_FILENAME,"InitialData.xsd") 
 							);
-		
+		//Parsing data and setting up in management
 		try {
 			XMLParser.parseResturant(INITIALDATA_FILENAME,"InitialData.xsd",manager);
 			XMLParser.parseMenu(MENU_FILENAME,"Menu.xsd",manager);
@@ -36,6 +34,7 @@ public class Driver
 			e.printStackTrace();
 		}
 
+		//Starting the program
 		try {
 			manager.openRestaurant();
 			manager.start();

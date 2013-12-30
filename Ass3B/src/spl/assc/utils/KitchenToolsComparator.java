@@ -4,6 +4,9 @@ import java.util.Comparator;
 
 import spl.assc.model.KitchenTool;
 
+/**
+ * comparing kitchen tools by name
+ */
 public class KitchenToolsComparator implements Comparator<KitchenTool> {
 
 	@Override

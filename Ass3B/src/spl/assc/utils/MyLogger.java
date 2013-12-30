@@ -6,7 +6,9 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
+/**
+ * Logger Utility
+ */
 public class MyLogger
 {
 
@@ -14,27 +16,16 @@ public class MyLogger
 	{
 		Logger logger = Logger.getGlobal();
 		
-	
 		logger.setLevel(Level.FINEST);
 		
 		logger.setUseParentHandlers(false);
 		Formatter formatter = new MyFormatter();
 		
-		//change output from System.err to system.out Patch
-		class myConsoleHandler extends ConsoleHandler {
-			public myConsoleHandler() {
-				super();
-				this.setOutputStream(System.out);
-			}
-		}
-		
 		Handler consoleHandler = new ConsoleHandler();
 		
 		consoleHandler.setFormatter(formatter);
 		logger.addHandler(consoleHandler);
-		
-		
-		
+
 		try
 		{
 			Handler fileHandler = new FileHandler("log.log");

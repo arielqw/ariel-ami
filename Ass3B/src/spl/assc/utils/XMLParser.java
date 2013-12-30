@@ -1,43 +1,26 @@
 package spl.assc.utils;
 import java.io.File;
-import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
-import javax.xml.crypto.NodeSetData;
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 import spl.assc.Management;
 import spl.assc.model.Address;
-import spl.assc.model.Dish;
 import spl.assc.model.Ingredient;
 import spl.assc.model.KitchenTool;
-import spl.assc.model.Order;
 import spl.assc.model.OrderOfDish;
-import spl.assc.model.ResturantInitData;
-import spl.assc.model.Warehouse;
-import spl.assc.runnables.RunnableChef;
-import spl.assc.runnables.RunnableDeliveryPerson;
 
 
 public class XMLParser

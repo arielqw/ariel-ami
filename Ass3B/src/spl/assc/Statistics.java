@@ -1,36 +1,33 @@
 package spl.assc;
 
-
 import java.util.Vector;
 
-import spl.assc.model.Ingredient;
 import spl.assc.model.Order;
 import spl.assc.model.Warehouse;
 
+/**
+ * This class handles statistics for the restaurant
+ */
 public class Statistics
 {
 	private double _moneyGained;
 	private Vector<Order> _deliveredOrders;
 	private Warehouse _warehouse;
-	//private Vector<Ingredient> _ingredientsConsumed;
 	
 	public Statistics(Warehouse warehouse) {
 		_moneyGained = 0;
 		_deliveredOrders = new Vector<>();
 		_warehouse = warehouse;
-		//_ingredientsConsumed = new Vector<>();
 	}
+	
+	//inserting data methods
 	public synchronized void add(double reward){
 		_moneyGained += reward;
 	}
 	public void add(Order order){
 		_deliveredOrders.add(order);
 	}
-	/*
-	public void add(Ingredient ingredient){
-		_ingredientsConsumed.add(ingredient);
-	}
-	*/
+
 	
 	@Override
 	public String toString() {

@@ -1,24 +1,22 @@
 package spl.assc.runnables;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.logging.Logger;
 
 import spl.assc.Management;
-import spl.assc.Statistics;
-import spl.assc.model.Address;
 import spl.assc.model.Order;
 import spl.assc.model.Order.OrderStatus;
 
+/**
+ * This class represents a restaurant's delivery person
+ * In order to shutdown needs to receive a poisoned order.
+ */
 public class RunnableDeliveryPerson implements Runnable
 {
 	private final static Logger LOGGER = Logger.getGlobal();
 
 	private String _name;
 	private int _speed;
-//	private Address _resturantAddress;
-//	private Statistics _statistics;
 	private CountDownLatch _latch;
 	private Management _management;
 	
@@ -30,19 +28,23 @@ public class RunnableDeliveryPerson implements Runnable
 	}
 
 	
-	
 	@Override
-	public void run()
+	public void run(){
+		try {
+			work();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Constinley checking for new orders needed delivered and deliver them 
+	 */
+	private void work()
 	{
-//		Management management = Management.getInstance();
-		
-		//BlockingQueue<Order> awaitingOrders = management.get_awaitingOrdersToDeliver();
-		//_resturantAddress = management.getAddress();
-		
-		//boolean wasInterruptSent = false;
-		
 		while(true){
 			
+			//trying to take an order (blocked untill succeed)
 			Order orderToDeliver = null;
 			try {
 				orderToDeliver = _management.takeNextOrder();
@@ -51,23 +53,23 @@ public class RunnableDeliveryPerson implements Runnable
 				}
 
 			} catch (InterruptedException e) {
-				//wasInterruptSent = true;
+				e.printStackTrace();
 			}
+			
 			if(orderToDeliver == null) continue;
 			
 			LOGGER.info(String.format("\t[Event=Order Taken] [DeliveryPerson=%s] [Order=%s]", _name, orderToDeliver.info()));
 
 			
 			long distance = _management.computeDistance(orderToDeliver);
-			
 			long expectedDeliveryTime = (long)(distance/_speed);
+		
 			//1. set delivery start time
-			
-			orderToDeliver.set_deliveryStartTime();
+			orderToDeliver.setDeliveryStartTime();
 			//2. deliver order (Sleep)
 			drive(expectedDeliveryTime);
 			//3. set deliver end time
-			orderToDeliver.set_deliveryEndTime();
+			orderToDeliver.setDeliveryEndTime();
 
 			//4. recive money
 			_management.addToStatistics( calculateReward(orderToDeliver,expectedDeliveryTime) );
@@ -85,15 +87,22 @@ public class RunnableDeliveryPerson implements Runnable
 
 	}
 
+	/**
+	 * calculating order's reward money
+	 * @param order
+	 * @param expectedDeliveryTime
+	 * @return money
+	 */
 	private double calculateReward(Order order, long expectedDeliveryTime) {
 		long actualTotalTime = order.getTotalTime();
 		long expectedTotalTime = order.getExpectedCookTime() + expectedDeliveryTime;
 
+		//checking if order was fined
 		boolean isFined = (actualTotalTime > 1.15 * expectedTotalTime);
 		double dishReward = order.getReward();
 		
 		LOGGER.info(String.format("\t[Stats] [Order=%s] [Fined=%b] [Actual time=%d] [Expected time=%d]", order.info(),isFined,actualTotalTime,expectedTotalTime));
-		//LOGGER.info(String.format("[More] expected delivery time:%d,actualy delivery time:%d", expectedDeliveryTime));
+
 		if(isFined){
 			order.wasFined(false);
 			return dishReward*0.5;
@@ -104,6 +113,10 @@ public class RunnableDeliveryPerson implements Runnable
 		}
 	}
 
+	/**
+	 * simulates driving between locations
+	 * @param deliveryTime
+	 */
 	private void drive(long deliveryTime){
 		
 		try {
@@ -112,8 +125,6 @@ public class RunnableDeliveryPerson implements Runnable
 			Thread.currentThread().interrupt();
 		}
 	}
-
-//TODO: wrap for throws
 
 	@Override
 	public String toString()

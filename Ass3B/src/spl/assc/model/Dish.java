@@ -2,7 +2,9 @@ package spl.assc.model;
 import java.util.List;
 import java.util.SortedSet;
 
-
+/**
+ * This object represents a dish
+ */
 public class Dish
 {
 	private String 				_name; 
@@ -21,19 +23,31 @@ public class Dish
 		_ingredients = ingredients;
 	}
 	
-	public SortedSet<KitchenTool> get_kitchenTools() {
+	/**
+	 * this object is immutable .
+	 * @return needed kitchen tools
+	 */
+	public SortedSet<KitchenTool> getKitchenTools() {
 		return _kitchenTools;
 	}
 
-	public List<Ingredient> get_ingredients() {
+	/**
+	 * this object is immutable .
+	 * @return needed ingredients 
+	 */
+	public List<Ingredient> getIngredients() {
 		return _ingredients;
 	}
 
-	public long get_expectedCookTime() {
+	/**
+	 * @return expected cook time for this dish
+	 */
+	public long getExpectedCookTime() {
 		return _expectedCookTime;
 	}
 	
-	public int get_difficultyRating() {
+
+	public int getDifficultyRating() {
 		return _difficultyRating;
 	}
 
@@ -52,11 +66,6 @@ public class Dish
 		return builder.toString();
 	}
 
-
-	public String getName()
-	{
-		return _name;
-	}
 
 	public int getReward() {
 		return _reward;

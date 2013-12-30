@@ -5,27 +5,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
+/**
+ * This object represents a warehouse
+ */
 public class Warehouse
 {
 
-	private Map<String,KitchenTool> 	_kitchenTools; 
+	private Map<String,KitchenTool> _kitchenTools; 
 	private Map<String,Ingredient> 	_ingredients;
 
 	public Warehouse() {
 		_kitchenTools = new HashMap<String,KitchenTool>();
 		_ingredients = new HashMap<String,Ingredient>();
 
-		/*
-		//transfer set to hash map
-		for (KitchenTool kitchenTool : kitchenTools) {
-			_kitchenTools.put(kitchenTool.getName(), kitchenTool);
-		}
-
-		for (Ingredient ingredient : ingredients) {
-			_ingredients.put(ingredient.getName(), ingredient);
-		}
-		*/
 	}
+	
 	public void addKitchenTool(String name, KitchenTool kitchenTool){
 		_kitchenTools.put(name, kitchenTool);
 	}
@@ -35,13 +29,12 @@ public class Warehouse
 	}	
 	
 	/**
-	 * This function is Blocking (semaphore kitchen tools take()
+	 * used to retrive desired kitchen tools and ingredients
+	 * This method is Blocking (semaphore kitchen tools take() )
 	 * @param ingredients
 	 * @param kitchenTools
 	 */
-
-	public  void take(List<Ingredient> ingredients,SortedSet<KitchenTool> kitchenTools){
-		
+	public void take(List<Ingredient> ingredients,SortedSet<KitchenTool> kitchenTools){
 		//take ingredients
 		for (Ingredient ingredient : ingredients) {
 			_ingredients.get( ingredient.getName() ).take(ingredient);
@@ -52,11 +45,13 @@ public class Warehouse
 			KitchenTool warehouseKitchenTool = _kitchenTools.get( kitchenTool.getName() );
 			warehouseKitchenTool.take( kitchenTool );
 		}
-		
-		
 	}
 
-	public  void putBack(SortedSet<KitchenTool> kitchenTools){
+	/**
+	 * return used kitchen tools to the warehouse
+	 * @param kitchenTools
+	 */
+	public void putBack(SortedSet<KitchenTool> kitchenTools){
 		for (KitchenTool kitchenTool : kitchenTools) {
 			_kitchenTools.get( kitchenTool.getName() ).putBack( kitchenTool );
 		}
@@ -77,7 +72,10 @@ public class Warehouse
 	}
 	
 	
-	
+	/**
+	 * Utility, printing how many ingredients were used
+	 * @return
+	 */
 	public String consumedIngredientsReport()
 	{
 		StringBuilder builder = new StringBuilder();
