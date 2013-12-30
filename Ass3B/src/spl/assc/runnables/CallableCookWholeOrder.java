@@ -37,7 +37,7 @@ public class CallableCookWholeOrder implements Callable<Order>
 	@Override
 	public Order call() throws Exception
 	{
-		LOGGER.info(String.format("[-Cooking-] Started Cooking order: (%d)", _myOrder.getOrderId()));
+		LOGGER.info(String.format("[-Cooking-] Started Cooking order: (%s)", _myOrder.info()));
 
 		CountDownLatch _countDownLatch = createCountDownLatch();
 
@@ -54,7 +54,7 @@ public class CallableCookWholeOrder implements Callable<Order>
 		_myOrder.set_status(OrderStatus.COMPLETE);
 		
 		synchronized (_myChef) {
-			LOGGER.info(String.format("[-Cooking-] Finished Cooking order: (%d)", _myOrder.getOrderId()));
+			LOGGER.info(String.format("[-Cooking-] Finished Cooking order: (%s)", _myOrder.info()));
 			_myChef.notifyAll();
 			return _myOrder;
 		}

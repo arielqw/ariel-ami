@@ -1,18 +1,12 @@
 package spl.assc.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
-import java.util.logging.Logger;
-
-import spl.assc.Management;
 
 public class Warehouse
 {
-	private final static Logger LOGGER = Logger.getGlobal();
 
 	private Map<String,KitchenTool> 	_kitchenTools; 
 	private Map<String,Ingredient> 	_ingredients;
@@ -32,13 +26,6 @@ public class Warehouse
 		}
 	}
 	
-	/*TODO: try to do this:
-	private void take(Iterable<WarehouseItem> iterable, Map<String,WarehouseItem> map){
-		for (WarehouseItem item : iterable) {
-			map.get( item.getName() ).take( item.getQuantity() );
-		}
-	}
-	*/
 	/**
 	 * This function is Blocking (semaphore kitchen tools take()
 	 * @param ingredients
@@ -48,24 +35,20 @@ public class Warehouse
 	public  void take(List<Ingredient> ingredients,SortedSet<KitchenTool> kitchenTools){
 		
 		//take ingredients
-		
 		for (Ingredient ingredient : ingredients) {
 			_ingredients.get( ingredient.getName() ).take(ingredient);
 		}
-		//LOGGER.info(String.format("[taking kitchen tools] kitchen tools taken: %s", kitchenTools));
 		
 		//take kitchen tools
 		for (KitchenTool kitchenTool : kitchenTools) {
 			KitchenTool warehouseKitchenTool = _kitchenTools.get( kitchenTool.getName() );
 			warehouseKitchenTool.take( kitchenTool );
-			//LOGGER.info("WAREHOUSE: took "+warehouseKitchenTool.getQuantities());
 		}
 		
 		
 	}
 
 	public  void putBack(SortedSet<KitchenTool> kitchenTools){
-		//LOGGER.info(String.format("[returning kitchen tools] kitchen tools returned: %s", kitchenTools));
 		for (KitchenTool kitchenTool : kitchenTools) {
 			_kitchenTools.get( kitchenTool.getName() ).putBack( kitchenTool );
 		}

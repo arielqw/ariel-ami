@@ -1,0 +1,79 @@
+[1]Program started...
+[1]*******************
+***	Menu:	***
+*******************
+1:	Dish:	{	Name: The Ultimate Breakfast,	DifficultyRating: 10,	ExpectedCookTime: 15000,	Reward: 54	}
+		Needed Kitchen Tools:	[Knife:1, Oven:1, Pan:1, Plate:1, Spoon:1, Stove:1]
+		Needed Ingredients:	[Cherry Tomato:100, Bread:15, Olive Oil:25, Bread Crumbs:10, Gouda Cheese:30, Egg:1, Salt:5, Black Pepper:5]
+	====================================================================================================================
+2:	Dish:	{	Name: Hasselback Potatoes,	DifficultyRating: 20,	ExpectedCookTime: 15000,	Reward: 30	}
+		Needed Kitchen Tools:	[Knife:1, Oven:1, Plate:1, Spoon:1]
+		Needed Ingredients:	[Potato:500, Butter:45, Salt:20, Olive Oil:15]
+	====================================================================================================================
+3:	Dish:	{	Name: Ramen Soup,	DifficultyRating: 20,	ExpectedCookTime: 10000,	Reward: 35	}
+		Needed Kitchen Tools:	[Bowl:1, Cup:1, Oven:1, Spoon:1, Stove:1]
+		Needed Ingredients:	[Flour:250, Egg:1, Salt:7]
+	====================================================================================================================
+
+[1]***************************
+***	OrderQueue:	***
+***************************
+1:	Order:	{	Id: 0,	DeliveryAddress: (1,2)	 Delivered By: 'N/A'	} 		Requested Dishes:	[Ramen Soup:2, Hasselback Potatoes:4, The Ultimate Breakfast:2]
+	===================================================================================================================================================================
+2:	Order:	{	Id: 1,	DeliveryAddress: (10,20)	 Delivered By: 'N/A'	} 		Requested Dishes:	[Hasselback Potatoes:4, Ramen Soup:2]
+	===================================================================================================================================================================
+3:	Order:	{	Id: 2,	DeliveryAddress: (19,25)	 Delivered By: 'N/A'	} 		Requested Dishes:	[The Ultimate Breakfast:2]
+	===================================================================================================================================================================
+4:	Order:	{	Id: 3,	DeliveryAddress: (50,50)	 Delivered By: 'N/A'	} 		Requested Dishes:	[The Ultimate Breakfast:6]
+	===================================================================================================================================================================
+5:	Order:	{	Id: 4,	DeliveryAddress: (20,33)	 Delivered By: 'N/A'	} 		Requested Dishes:	[Ramen Soup:4, The Ultimate Breakfast:4, Hasselback Potatoes:2]
+	===================================================================================================================================================================
+
+[1]***********************************
+***	ResturantInitData:	***
+***********************************
+		Available Kitchen Tools:	{Knife=Knife:16, Fork=Fork:15, Bowl=Bowl:19, Stove=Stove:14, Plate=Plate:15, Spoon=Spoon:25, Oven=Oven:13, Pan=Pan:26, Cup=Cup:14}
+		Available Ingredients:		{Gouda Cheese=Gouda Cheese:2500, Black Pepper=Black Pepper:2500, Bread=Bread:2500, Egg=Egg:150, Butter=Butter:2000, Olive Oil=Olive Oil:1500, Bread Crumbs=Bread Crumbs:1500, Cherry Tomato=Cherry Tomato:1500, Salt=Salt:1500, Potato=Potato:5000, Flour=Flour:2500}
+	====================================================================================================================
+		Chefs:		[Gordon Ramsay:|efficiency:0.90|endurance:50, Rachael Ray:|efficiency:0.90|endurance:45, Wolfgang Puck:|efficiency:1.00|endurance:30, Paula Deen:|efficiency:1.10|endurance:25]
+		Delivery Guys:	[Garry Simpson:|speed:5, Ken Allen:|speed:7, Patrick Donahoe:|speed:6, Scott Davis:|speed:6, Frederick Smith:|speed:8]
+	====================================================================================================================
+
+[1][Managment] Order: [#0] was sent to 'Chef: 'Gordon Ramsay''
+[9][Chef Action] Chef Gordon Ramsay took order: [#0]
+[10][Chef Action] Chef Rachael Ray took order: [#1]
+[1][Managment] Order: [#1] was sent to 'Chef: 'Rachael Ray''
+[19][-Cooking-] Started Cooking order: (#1)
+[18][-Cooking-] Started Cooking order: (#0)
+[19]num of latch:6
+[11][Chef Action] Chef Wolfgang Puck took order: [#2]
+[18]num of latch:8
+[21]got heer
+[23]got heer
+[25]got heer
+[20][-Cooking-] Started Cooking order: (#2)
+[24]got heer
+[20]num of latch:2
+[32]got heer
+[31]got heer
+[22]got heer
+[30]got heer
+[29]got heer
+[28]got heer
+[27]got heer
+[36]got heer
+[26]got heer
+[35]got heer
+[34]got heer
+[33]got heer
+[1][Managment] Order: [#2] was sent to 'Chef: 'Wolfgang Puck''
+[1][Managment] Order: [#3] was sent to 'Chef: 'Wolfgang Puck''
+[11][Chef Action] Chef Wolfgang Puck took order: [#3]
+[37][-Cooking-] Started Cooking order: (#3)
+[37]num of latch:6
+[38]got heer
+[39]got heer
+[41]got heer
+[42]got heer
+[40]got heer
+[43]got heer

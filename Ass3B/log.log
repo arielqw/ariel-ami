@@ -39,72 +39,72 @@
 		Delivery Guys:	[Garry Simpson:|speed:5, Ken Allen:|speed:7, Patrick Donahoe:|speed:6, Scott Davis:|speed:6, Frederick Smith:|speed:8]
 	====================================================================================================================
 
-[1][Managment] Order: [#0] was sent to Chef 'Gordon Ramsay'
-[1][Managment] Order: [#1] was sent to Chef 'Rachael Ray'
-[9][Chef Action] Chef Gordon Ramsay took order: [0]
-[1][Managment] Order: [#2] was sent to Chef 'Wolfgang Puck'
-[10][Chef Action] Chef Rachael Ray took order: [1]
-[11][Chef Action] Chef Wolfgang Puck took order: [2]
-[19][-Cooking-] Started Cooking order: (0)
-[20][-Cooking-] Started Cooking order: (2)
-[18][-Cooking-] Started Cooking order: (1)
-[1][Managment] Order: [#3] was sent to Chef 'Wolfgang Puck'
-[19][-Cooking-] Finished Cooking order: (0)
-[9][Delivery] Chef Gordon Ramsay Sending Order [#0] to Delivery Queue
-[1][Managment] Order: [#4] was sent to Chef 'Gordon Ramsay'
-[9][Chef Action] Chef Gordon Ramsay took order: [4]
-[17][Delivery] DeliveryPerson Frederick Smith took order: [0]
-[11][Chef Action] Chef Wolfgang Puck took order: [3]
-[12][-Terminated-] Chef Paula Deen has finished his job
-[19][-Cooking-] Started Cooking order: (4)
-[37][-Cooking-] Started Cooking order: (3)
-[17][Stats] Order: 0 is Fined: false.
-Actual time:13505
+[1][Managment] Order: [##0] was sent to Chef: 'Gordon Ramsay'
+[1][Managment] Order: [##1] was sent to Chef: 'Rachael Ray'
+[9][Chef Action] Chef Gordon Ramsay took order: [#0]
+[10][Chef Action] Chef Rachael Ray took order: [#1]
+[11][Chef Action] Chef Wolfgang Puck took order: [#2]
+[1][Managment] Order: [##2] was sent to Chef: 'Wolfgang Puck'
+[1][Managment] Order: [##3] was sent to Chef: 'Wolfgang Puck'
+[18][-Cooking-] Started Cooking order: (#0)
+[19][-Cooking-] Started Cooking order: (#1)
+[20][-Cooking-] Started Cooking order: (#2)
+[19][-Cooking-] Finished Cooking order: (#1)
+[10][Delivery] Chef Rachael Ray Sending Order [##1] to Delivery Queue
+[16][Delivery] DeliveryPerson Scott Davis took order: [#1]
+[16][Stats] Order: #1 is Fined: false.
+Actual time:13504
 Expected time:15001
-[20][-Cooking-] Finished Cooking order: (2)
-[11][Delivery] Chef Wolfgang Puck Sending Order [#2] to Delivery Queue
-[16][Delivery] DeliveryPerson Scott Davis took order: [2]
-[16][Stats] Order: 2 is Fined: false.
-Actual time:15005
+[20][-Cooking-] Finished Cooking order: (#2)
+[11][Chef Action] Chef Wolfgang Puck took order: [#3]
+[20][-Cooking-] Started Cooking order: (#3)
+[11][Delivery] Chef Wolfgang Puck Sending Order [##2] to Delivery Queue
+[15][Delivery] DeliveryPerson Patrick Donahoe took order: [#2]
+[15][Stats] Order: #2 is Fined: false.
+Actual time:15004
 Expected time:15002
-[18][-Cooking-] Finished Cooking order: (1)
-[10][Delivery] Chef Rachael Ray Sending Order [#1] to Delivery Queue
+[18][-Cooking-] Finished Cooking order: (#0)
+[9][Delivery] Chef Gordon Ramsay Sending Order [##0] to Delivery Queue
+[14][Delivery] DeliveryPerson Ken Allen took order: [#0]
+[1][Managment] Order: [##4] was sent to Chef: 'Gordon Ramsay'
+[9][Chef Action] Chef Gordon Ramsay took order: [#4]
+[18][-Cooking-] Started Cooking order: (#4)
+[12][-Terminated-] Chef Paula Deen has finished his job
 [10][-Terminated-] Chef Rachael Ray has finished his job
-[15][Delivery] DeliveryPerson Patrick Donahoe took order: [1]
-[15][Stats] Order: 1 is Fined: true.
-Actual time:22504
+[14][Stats] Order: #0 is Fined: true.
+Actual time:22505
 Expected time:15001
-[19][-Cooking-] Finished Cooking order: (4)
-[9][Delivery] Chef Gordon Ramsay Sending Order [#4] to Delivery Queue
-[9][-Terminated-] Chef Gordon Ramsay has finished his job
-[14][Delivery] DeliveryPerson Ken Allen took order: [4]
-[14][Stats] Order: 4 is Fined: false.
-Actual time:14999
-Expected time:15003
-[37][-Cooking-] Finished Cooking order: (3)
-[11][Delivery] Chef Wolfgang Puck Sending Order [#3] to Delivery Queue
-[13][Delivery] DeliveryPerson Garry Simpson took order: [3]
-[17][-Terminated-] DeliveryPerson Frederick Smith ended.
-[14][-Terminated-] DeliveryPerson Ken Allen ended.
+[20][-Cooking-] Finished Cooking order: (#3)
+[11][Delivery] Chef Wolfgang Puck Sending Order [##3] to Delivery Queue
+[13][Delivery] DeliveryPerson Garry Simpson took order: [#3]
 [11][-Terminated-] Chef Wolfgang Puck has finished his job
-[16][-Terminated-] DeliveryPerson Scott Davis ended.
-[15][-Terminated-] DeliveryPerson Patrick Donahoe ended.
-[13][Stats] Order: 3 is Fined: true.
-Actual time:24014
+[13][Stats] Order: #3 is Fined: false.
+Actual time:15014
 Expected time:15011
+[18][-Cooking-] Finished Cooking order: (#4)
+[9][Delivery] Chef Gordon Ramsay Sending Order [##4] to Delivery Queue
+[9][-Terminated-] Chef Gordon Ramsay has finished his job
+[14][-Terminated-] DeliveryPerson Ken Allen ended.
 [13][-Terminated-] DeliveryPerson Garry Simpson ended.
+[17][Delivery] DeliveryPerson Frederick Smith took order: [#4]
+[15][-Terminated-] DeliveryPerson Patrick Donahoe ended.
+[16][-Terminated-] DeliveryPerson Scott Davis ended.
+[17][Stats] Order: #4 is Fined: true.
+Actual time:21003
+Expected time:15003
+[17][-Terminated-] DeliveryPerson Frederick Smith ended.
 [1][Statistics]
-Money Gained: 1079.00
+Money Gained: 979.00
 Delivered Orderes: 
-[	Order:	{	Id: 0,	DeliveryAddress: (1,2)	 Delivered By: 'Frederick Smith'	} 		Requested Dishes:	[Ramen Soup:2, Hasselback Potatoes:4, The Ultimate Breakfast:2]
+[	Order:	{	Id: 1,	DeliveryAddress: (10,20)	 Delivered By: 'Scott Davis'	} 		Requested Dishes:	[Hasselback Potatoes:4, Ramen Soup:2]
 	===================================================================================================================================================================
-, 	Order:	{	Id: 2,	DeliveryAddress: (19,25)	 Delivered By: 'Scott Davis'	} 		Requested Dishes:	[The Ultimate Breakfast:2]
+, 	Order:	{	Id: 2,	DeliveryAddress: (19,25)	 Delivered By: 'Patrick Donahoe'	} 		Requested Dishes:	[The Ultimate Breakfast:2]
 	===================================================================================================================================================================
-, 	Order:	{	Id: 1,	DeliveryAddress: (10,20)	 Delivered By: 'Patrick Donahoe'	} 		Requested Dishes:	[Hasselback Potatoes:4, Ramen Soup:2]
-	===================================================================================================================================================================
-, 	Order:	{	Id: 4,	DeliveryAddress: (20,33)	 Delivered By: 'Ken Allen'	} 		Requested Dishes:	[Ramen Soup:4, The Ultimate Breakfast:4, Hasselback Potatoes:2]
+, 	Order:	{	Id: 0,	DeliveryAddress: (1,2)	 Delivered By: 'Ken Allen'	} 		Requested Dishes:	[Ramen Soup:2, Hasselback Potatoes:4, The Ultimate Breakfast:2]
 	===================================================================================================================================================================
 , 	Order:	{	Id: 3,	DeliveryAddress: (50,50)	 Delivered By: 'Garry Simpson'	} 		Requested Dishes:	[The Ultimate Breakfast:6]
+	===================================================================================================================================================================
+, 	Order:	{	Id: 4,	DeliveryAddress: (20,33)	 Delivered By: 'Frederick Smith'	} 		Requested Dishes:	[Ramen Soup:4, The Ultimate Breakfast:4, Hasselback Potatoes:2]
 	===================================================================================================================================================================
 ]
 Ingredients Consumed: 

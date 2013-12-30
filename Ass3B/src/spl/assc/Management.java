@@ -106,7 +106,7 @@ public class Management
 				bell.compareAndSet(true, false);
 				for (RunnableChef chef : _chefs) {
 					if( chef.canYouTakeThisOrder( _orders.peek()) ){
-						LOGGER.info(String.format("[Managment] Order: [#%d] was sent to %s", _orders.peek().getOrderId(),chef.info() ));
+						LOGGER.info(String.format("[Managment] Order: [#%s] was sent to %s", _orders.peek().info(),chef.info() ));
 						isOrderTaken = true;
 						_orders.poll();
 						break;
@@ -135,7 +135,7 @@ public class Management
 		}
 
 		//Poison delivery guys
-		for (RunnableDeliveryPerson deliveryGuy : _deliveryGuys) {
+		for (int i=0; i < _deliveryGuys.size(); i++) {
 			_awaitingOrdersToDeliver.add(new Order(-1, null, null));
 		}
 		

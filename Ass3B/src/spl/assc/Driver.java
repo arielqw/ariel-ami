@@ -1,11 +1,7 @@
 package spl.assc;
-import java.util.List;
-import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import spl.assc.model.Menu;
-import spl.assc.model.Order;
 import spl.assc.model.OrderQueue;
 import spl.assc.model.ResturantInitData;
 import spl.assc.utils.MyLogger;

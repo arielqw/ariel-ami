@@ -43,10 +43,6 @@ public class Order
 	}
 
 
-	public int get_difficulty() {
-		return _difficulty;
-	}
-
 
 	public Order.OrderStatus get_status() {
 		return _status;
@@ -65,8 +61,8 @@ public class Order
 		DELIVERED
 	}
 	
-	public int getOrderId(){
-		return _id;
+	public String info(){
+		return "#"+_id;
 	}
 	
 	@Override

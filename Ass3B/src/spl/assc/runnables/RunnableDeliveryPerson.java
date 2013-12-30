@@ -55,7 +55,7 @@ public class RunnableDeliveryPerson implements Runnable
 			}
 			if(orderToDeliver == null) continue;
 			
-			LOGGER.info(String.format("[Delivery] DeliveryPerson %s took order: [%d]", _name, orderToDeliver.getOrderId()));
+			LOGGER.info(String.format("[Delivery] DeliveryPerson %s took order: [%s]", _name, orderToDeliver.info()));
 
 			
 			long distance = management.computeDistance(orderToDeliver);
@@ -92,7 +92,7 @@ public class RunnableDeliveryPerson implements Runnable
 		boolean isFined = (actualTotalTime > 1.15 * expectedTotalTime);
 		double dishReward = order.getReward();
 		
-		LOGGER.info(String.format("[Stats] Order: %d is Fined: %b.\nActual time:%d\nExpected time:%d", order.getOrderId(),isFined,actualTotalTime,expectedTotalTime));
+		LOGGER.info(String.format("[Stats] Order: %s is Fined: %b.\nActual time:%d\nExpected time:%d", order.info(),isFined,actualTotalTime,expectedTotalTime));
 		//LOGGER.info(String.format("[More] expected delivery time:%d,actualy delivery time:%d", expectedDeliveryTime));
 		if(isFined){
 			return dishReward*0.5;

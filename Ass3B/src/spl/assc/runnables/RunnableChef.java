@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -13,9 +12,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
-
-import javax.management.Query;
-import javax.swing.text.html.HTMLDocument.HTMLReader.IsindexAction;
 
 import spl.assc.Management;
 import spl.assc.model.Order;
@@ -122,13 +118,13 @@ public class RunnableChef implements Runnable
 	}
 	
 	private void handleNewOrder(Order order) {
-		LOGGER.info(String.format("[Chef Action] Chef %s took order: [%d]", _name,order.getOrderId()));
+		LOGGER.info(String.format("[Chef Action] Chef %s took order: [%s]", _name,order.info()));
 		_futures.add( _cookWholeOrderPool.submit(new CallableCookWholeOrder(this,order)) );
 	}
 	
 	private void deliverOrder(Order order)
 	{
-		LOGGER.info(String.format("[Delivery] Chef %s Sending Order [#%d] to Delivery Queue", _name,order.getOrderId()));
+		LOGGER.info(String.format("[Delivery] Chef %s Sending Order [#%s] to Delivery Queue", _name,order.info()));
 		_managment.sendToDelivery(order);
 		
 	}
