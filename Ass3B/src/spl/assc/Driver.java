@@ -12,12 +12,18 @@ public class Driver
 {
 	public static void main(String[] args)
 	{
+		if (args.length < 2)
+		{
+			System.out.println("Not enough arguments. Exiting...");
+			return;
+		}
+		
 		new MyLogger().setup();
 		
 		//Input files
-		String INITIALDATA_FILENAME = "InitialData.xml";
-		String MENU_FILENAME = "Menu.xml";
-		String ORDERS_FILENAME = "OrdersList.xml";
+		String INITIALDATA_FILENAME 	= args[0];
+		String MENU_FILENAME 			= args[1];
+		String ORDERS_FILENAME 			= args[2];
 		
 		//Creating a new management 
 		Management manager = new Management(

@@ -4,12 +4,12 @@
         <delete dir="build"/>
     </target>
 
-    <target name="compile">
+    <target name="compile" depends="clean">
         <mkdir dir="build/classes"/>
         <javac includeantruntime="false" srcdir="src" destdir="build/classes"/>
     </target>
 
-    <target name="jar">
+    <target name="jar" depends="compile">
         <mkdir dir="build/jar"/>
         <jar destfile="build/jar/Ass3B.jar" basedir="build/classes">
             <manifest>
@@ -18,8 +18,13 @@
         </jar>
     </target>
 
-    <target name="run">
-        <java jar="build/jar/Ass3B.jar" fork="true"/>
+    <target name="run" depends="jar">
+        <java jar="build/jar/Ass3B.jar" fork="true">
+        	<arg value="${arg0}"/>
+        	<arg value="${arg1}"/>
+        	<arg value="${arg2}"/>
+        </java>
+        	
     </target>
 
 </project>
