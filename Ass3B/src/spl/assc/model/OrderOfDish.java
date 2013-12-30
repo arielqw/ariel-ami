@@ -28,7 +28,6 @@ public class OrderOfDish
 	}
 
 	public String getName() {
-		// TODO Auto-generated method stub
 		return _name;
 	}
 

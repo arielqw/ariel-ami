@@ -50,14 +50,14 @@ public class Warehouse
 		//take ingredients
 		
 		for (Ingredient ingredient : ingredients) {
-			_ingredients.get( ingredient.getName() ).take( ingredient.getQuantity() );
+			_ingredients.get( ingredient.getName() ).take(ingredient);
 		}
 		//LOGGER.info(String.format("[taking kitchen tools] kitchen tools taken: %s", kitchenTools));
 		
 		//take kitchen tools
 		for (KitchenTool kitchenTool : kitchenTools) {
 			KitchenTool warehouseKitchenTool = _kitchenTools.get( kitchenTool.getName() );
-			warehouseKitchenTool.take( kitchenTool.getQuantity());
+			warehouseKitchenTool.take( kitchenTool );
 			//LOGGER.info("WAREHOUSE: took "+warehouseKitchenTool.getQuantities());
 		}
 		
@@ -67,7 +67,7 @@ public class Warehouse
 	public  void putBack(SortedSet<KitchenTool> kitchenTools){
 		//LOGGER.info(String.format("[returning kitchen tools] kitchen tools returned: %s", kitchenTools));
 		for (KitchenTool kitchenTool : kitchenTools) {
-			_kitchenTools.get( kitchenTool.getName() ).putBack( kitchenTool.getQuantity() );
+			_kitchenTools.get( kitchenTool.getName() ).putBack( kitchenTool );
 		}
 	}
 

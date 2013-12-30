@@ -29,13 +29,13 @@ public class Driver
 
 	
 		try {
-			Menu menu = XMLParser.parseMenu("Menu2.xml");
+			Menu menu = XMLParser.parseMenu("Menu.xml");
 			LOGGER.fine(menu.toString());	
 
-			OrderQueue orderQueue = new OrderQueue(XMLParser.parseOrderList("OrdersList2.xml"));
+			OrderQueue orderQueue = new OrderQueue(XMLParser.parseOrderList("OrdersList.xml"));
 			LOGGER.fine(orderQueue.toString());
 				
-			ResturantInitData resturant = XMLParser.parseResturant("InitialData2.xml");
+			ResturantInitData resturant = XMLParser.parseResturant("InitialData.xml");
 			LOGGER.fine(resturant.toString());
 			Management.resturant = resturant;
 			Management.orderQueue = orderQueue;

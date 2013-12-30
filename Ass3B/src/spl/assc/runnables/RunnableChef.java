@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 import javax.management.Query;
@@ -37,7 +38,7 @@ public class RunnableChef implements Runnable
 	private ExecutorService _cookWholeOrderPool;
 	private boolean _stopTakingNewOrders;
 	private CountDownLatch _latch;
-	private Object _bell;
+	private AtomicBoolean _bell;
 	private Queue<Order> _myPendingOrders;
 	
 	public RunnableChef(String name, double efficiencyRating, int enduranceRating) {
@@ -68,7 +69,6 @@ public class RunnableChef implements Runnable
 		_managment = Management.getInstance();
 
 		while(!(_stopTakingNewOrders && _futures.isEmpty() && _myPendingOrders.isEmpty() )){
-			//LOGGER.info(String.format("[while] Chef %s in while loop", _name));
 			//start working on available orders
 			if(!_myPendingOrders.isEmpty()){
 				handleNewOrder(_myPendingOrders.poll());
@@ -76,6 +76,7 @@ public class RunnableChef implements Runnable
 			//send completed orders to delivery
 			boolean wasPressureReduced = sendFinishedOrdersToDelivery();
 			if(wasPressureReduced){
+				_bell.compareAndSet(false, true);
 				synchronized (_bell) {
 					_bell.notifyAll(); // notify management that my pressure was reduced and i can take new orders now
 				}
@@ -110,16 +111,16 @@ public class RunnableChef implements Runnable
 					Order tmp;
 					try {
 						tmp = future.get();
-						_currentPressure -= tmp.get_difficulty();
+						_currentPressure = tmp.decreasedPressure(_currentPressure);
 						deliverOrder(tmp);
 					} catch (InterruptedException | ExecutionException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 			}
 		}
 		return ( currentOrdersSize > _futures.size() );
 	}
+	
 	private void handleNewOrder(Order order) {
 		LOGGER.info(String.format("[Chef Action] Chef %s took order: [%d]", _name,order.getOrderId()));
 		_futures.add( _cookWholeOrderPool.submit(new CallableCookWholeOrder(this,order)) );
@@ -128,7 +129,7 @@ public class RunnableChef implements Runnable
 	private void deliverOrder(Order order)
 	{
 		LOGGER.info(String.format("[Delivery] Chef %s Sending Order [#%d] to Delivery Queue", _name,order.getOrderId()));
-		Management.getInstance().get_awaitingOrdersToDeliver().add(order);
+		_managment.sendToDelivery(order);
 		
 	}
 	
@@ -147,17 +148,17 @@ public class RunnableChef implements Runnable
 		_latch = countDownLatch;
 	}
 
-	public void setBell(Object bell) {
+	public void setBell(AtomicBoolean bell) {
 		_bell = bell;
 		
 	}
 
 	public boolean canYouTakeThisOrder(Order order) {
-		if(order.get_difficulty() <= (_enduranceRating - _currentPressure)){
+		if( order.canItakeThisOrder(_enduranceRating,_currentPressure) ){
 			//take order
 			order.set_status(OrderStatus.INPROGRESS);
-			_enduranceRating -= order.get_difficulty();
-			//_currentOrder = order;
+			//_enduranceRating -= order.get_difficulty();
+			_currentPressure = order.increasedPressure(_currentPressure);
 			_myPendingOrders.add(order);
 			synchronized (this) {
 				this.notifyAll();
@@ -169,8 +170,8 @@ public class RunnableChef implements Runnable
 		}
 	}
 
-	public String getName() {
-		return _name;
+	public String info() {
+		return "Chef: '"+_name+"'";
 	}
 
 }

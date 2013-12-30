@@ -31,6 +31,6 @@ public class Statistics
 	
 	@Override
 	public String toString() {
-		return String.format("Money Gained: %.2f\nDelivered Orderes: \n%s\nIngredients Consumed: \n%s", _moneyGained,_deliveredOrders.toString(),Management.getInstance().getWarehouse().consumedIngredientsReport());
+		return String.format("Money Gained: %.2f\nDelivered Orderes: \n%s\nIngredients Consumed: \n%s", _moneyGained,_deliveredOrders.toString(),Management.getInstance().linkToWareHouse().consumedIngredientsReport());
 	}
 }

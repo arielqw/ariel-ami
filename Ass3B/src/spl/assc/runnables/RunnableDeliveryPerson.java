@@ -35,36 +35,31 @@ public class RunnableDeliveryPerson implements Runnable
 	public void run()
 	{
 		Management management = Management.getInstance();
-		_statistics = management.get_stats();
 		
-		BlockingQueue<Order> awaitingOrders = management.get_awaitingOrdersToDeliver();
-		_resturantAddress = management.getAddress();
+		//BlockingQueue<Order> awaitingOrders = management.get_awaitingOrdersToDeliver();
+		//_resturantAddress = management.getAddress();
 		
 		//boolean wasInterruptSent = false;
 		
 		while(true){
-			Order orderToDeliver=null;
-
+			
+			Order orderToDeliver = null;
 			try {
-				orderToDeliver = awaitingOrders.take();
-				if(orderToDeliver.getOrderId() == -1){
+				orderToDeliver = management.takeNextOrder();
+				if(orderToDeliver.isPoisoned()){
 					break;
-					
 				}
 
 			} catch (InterruptedException e) {
 				//wasInterruptSent = true;
 			}
-
-			if(orderToDeliver == null){
-				//if (Thread.interrupted())	wasInterruptSent = true;
-				continue;
-			}
+			if(orderToDeliver == null) continue;
 			
-			LOGGER.info(String.format("[Delivery] DeliveryPerson %s took order: [#%d]", _name, orderToDeliver.getOrderId()));
+			LOGGER.info(String.format("[Delivery] DeliveryPerson %s took order: [%d]", _name, orderToDeliver.getOrderId()));
 
 			
-			long distance = calculateDistance(orderToDeliver.getAddress());
+			long distance = management.computeDistance(orderToDeliver);
+			
 			long expectedDeliveryTime = (long)(distance/_speed);
 			//1. set delivery start time
 			
@@ -75,8 +70,8 @@ public class RunnableDeliveryPerson implements Runnable
 			orderToDeliver.set_deliveryEndTime();
 
 			//4. recive money
-			_statistics.add( calculateReward(orderToDeliver,expectedDeliveryTime) );
-			_statistics.add( orderToDeliver );
+			management.addToStatistics( calculateReward(orderToDeliver,expectedDeliveryTime) );
+			management.addToStatistics( orderToDeliver );
 			
 			//5. mark as delivered
 			orderToDeliver.set_status(OrderStatus.DELIVERED);
@@ -94,7 +89,7 @@ public class RunnableDeliveryPerson implements Runnable
 		long actualTotalTime = order.getTotalTime();
 		long expectedTotalTime = order.getExpectedCookTime() + expectedDeliveryTime;
 
-		boolean isFined = (actualTotalTime >= 1.15 * expectedTotalTime);
+		boolean isFined = (actualTotalTime > 1.15 * expectedTotalTime);
 		double dishReward = order.getReward();
 		
 		LOGGER.info(String.format("[Stats] Order: %d is Fined: %b.\nActual time:%d\nExpected time:%d", order.getOrderId(),isFined,actualTotalTime,expectedTotalTime));
@@ -115,14 +110,7 @@ public class RunnableDeliveryPerson implements Runnable
 			Thread.currentThread().interrupt();
 		}
 	}
-	private long calculateDistance(Address address) {
-		return (long)Math.sqrt( 
-			Math.abs( 
-						Math.pow(address.getY() - _resturantAddress.getY(), 2)	+ 
-						Math.pow(address.getX() - _resturantAddress.getX(), 2)  
-			) 
-		);
-	}
+
 //TODO: wrap for throws
 
 	@Override

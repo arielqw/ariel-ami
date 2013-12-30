@@ -12,19 +12,18 @@ public class KitchenTool extends WarehouseItem
 	}
 	
 	
-	public void take(int quantity){
+	public void take(KitchenTool kitchenTool){
 
 		try {
-			_lock.acquire(quantity);
+			_lock.acquire(kitchenTool._initialQuantity);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 	
-	public void putBack(int quantity){
-		_lock.release(quantity);
+	public void putBack(KitchenTool kitchenTool){
+		_lock.release(kitchenTool._initialQuantity);
 	}
 	
 	public String getQuantities()

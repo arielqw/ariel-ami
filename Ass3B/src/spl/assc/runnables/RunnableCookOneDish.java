@@ -27,10 +27,18 @@ public class RunnableCookOneDish implements Runnable
 
 	
 	@Override
-	public void run()
+	public void run(){
+		try {
+			cookOneDish();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	private void cookOneDish()
 	{
 		//LOGGER.info(String.format("[-Cooking-] Started Cooking dish '%s'", _dish.getName()));
-
 		//1. go to warehouse take things.
 		_warehouse.take(_dish.get_ingredients(), _dish.get_kitchenTools());
 
@@ -47,7 +55,6 @@ public class RunnableCookOneDish implements Runnable
 		//LOGGER.info(String.format("[-Cooking-] Finished Cooking dish '%s'", _dish.getName()));
 
 		_countDownLatch.countDown();
-		
 	}
 	
 

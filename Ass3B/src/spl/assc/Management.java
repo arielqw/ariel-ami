@@ -1,17 +1,12 @@
 package spl.assc;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.locks.Lock;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
-
-import javax.tools.ForwardingFileObject;
 
 import spl.assc.model.Address;
 import spl.assc.model.Menu;
@@ -42,18 +37,10 @@ public class Management
 	public static Menu menu;
 	public static OrderQueue orderQueue;
 	
-	//private ExecutorService chefThreadPool;
-	//private ExecutorService deliveryGuysThreadPool;
 	private Statistics _stats;
-	
 	private Address _address;
-	
-	public Statistics get_stats() {
-		return _stats;
-	}
 
-	//private Management(ResturantInitData resturant, Menu menu,
-	//		OrderQueue orderQueue) {	
+
 	private Management() {
 		_chefs = Management.resturant.get_chefs();
 		_deliveryGuys = Management.resturant.get_deliveryGuys();
@@ -64,7 +51,7 @@ public class Management
 
 		_awaitingOrdersToDeliver = new LinkedBlockingQueue<>();
 		_stats = new Statistics();
-		bell = new Object();
+		bell = new AtomicBoolean();
 		/** 
 		 * TODO: clean up from constructor.
 		 */
@@ -88,23 +75,11 @@ public class Management
 			chef.setCountDownLatch(_chefsCountDownLatch);
 		}
 		
-		/*
-		chefThreadPool = Executors.newFixedThreadPool(_chefs.size());
-		for (RunnableChef chef : _chefs) {
-			chefThreadPool.execute(chef);
-		}
-		*/
+
 		for (RunnableChef chef : _chefs) {
 			new Thread(chef).start();
 		}
 		
-		/*
-		deliveryGuysThreadPool = Executors.newFixedThreadPool(_deliveryGuys.size());
-		for (RunnableDeliveryPerson deliveryGuy : _deliveryGuys) {
-			deliveryGuy.setCountDownLatch(_deliveryGuysCountDownLatch);
-			deliveryGuysThreadPool.execute(deliveryGuy);
-		}
-		*/
 		for (RunnableDeliveryPerson deliveryGuy : _deliveryGuys) {
 			deliveryGuy.setCountDownLatch(_deliveryGuysCountDownLatch);
 			new Thread(deliveryGuy).start();
@@ -114,45 +89,34 @@ public class Management
 	
 	private CountDownLatch _chefsCountDownLatch;
 	private CountDownLatch _deliveryGuysCountDownLatch;
-
 	
 	private Queue<Order> _orders;
 	private List<RunnableChef> _chefs;
 	private List<RunnableDeliveryPerson> _deliveryGuys;
 	private Warehouse _warehouse;
-	private Object bell;
-	private Order pendingOrder;
+	private AtomicBoolean bell;
 	private BlockingQueue<Order> _awaitingOrdersToDeliver;
-	
-	public BlockingQueue<Order> get_awaitingOrdersToDeliver() {
-		return _awaitingOrdersToDeliver;
-	}
-
-	public Order getPendingOrder() {
-		return pendingOrder;
-	}
-	
+		
 	
 	public void start() throws Exception
 	{
 		while(!_orders.isEmpty()){
-			synchronized (bell) {
-				boolean wasOrderTaken = false;
+			
+				boolean isOrderTaken = false;
+				bell.compareAndSet(true, false);
 				for (RunnableChef chef : _chefs) {
 					if( chef.canYouTakeThisOrder( _orders.peek()) ){
-						LOGGER.info(String.format("[Managment] Order: [#%d] was sent to Chef '%s'", _orders.peek().getOrderId(),chef.getName() ));
-						wasOrderTaken = true;
+						LOGGER.info(String.format("[Managment] Order: [#%d] was sent to %s", _orders.peek().getOrderId(),chef.info() ));
+						isOrderTaken = true;
 						_orders.poll();
 						break;
 					}
 				}
-	
-				if(!wasOrderTaken){
-//					synchronized (bell) {
-						bell.wait();
-//					}
-				}
-			}
+					if(!isOrderTaken && !bell.get()){
+						synchronized (bell) {
+							bell.wait();
+						}
+					}
 		}
 		
 		//Shutdown chefs
@@ -163,39 +127,49 @@ public class Management
 
 			}
 		}
-		//chefThreadPool.shutdownNow();
 
 		try {
 			_chefsCountDownLatch.await();
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 
 		//Poison delivery guys
-		//Poison Orders
 		for (RunnableDeliveryPerson deliveryGuy : _deliveryGuys) {
 			_awaitingOrdersToDeliver.add(new Order(-1, null, null));
 		}
-
-		//deliveryGuysThreadPool.shutdownNow();
 		
 		try {
 			_deliveryGuysCountDownLatch.await();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		LOGGER.info(String.format("[Statistics]\n%s", _stats.toString()));
 	}
 
 
-	public Warehouse getWarehouse() {
+	public Warehouse linkToWareHouse() {
 		return _warehouse;
 	}
 
-	public Address getAddress() {
-		return resturant.getAddress();
+	public void sendToDelivery(Order order) {
+		_awaitingOrdersToDeliver.add(order);
+	}
+
+	public Order takeNextOrder() throws InterruptedException {
+		return _awaitingOrdersToDeliver.take();		
+	}
+
+	public long computeDistance(Order order) {
+		return order.computeDistanceFrom(_address);
+	}
+
+	public void addToStatistics(double reward) {
+		_stats.add(reward);
+	}
+
+	public void addToStatistics(Order order) {
+		_stats.add(order);		
 	}
 
 	

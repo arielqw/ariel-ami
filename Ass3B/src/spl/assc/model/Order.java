@@ -1,16 +1,20 @@
 package spl.assc.model;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 
 public class Order
 {
 	public void set_deliveryStartTime() {
-		this._deliveryStartTime = System.currentTimeMillis();
+//		this._deliveryStartTime = System.currentTimeMillis();
+		this._deliveryStartTime = new GregorianCalendar().getTimeInMillis();
+		
 	}
 
 
 	public void set_deliveryEndTime() {
-		this._deliveryEndTime = System.currentTimeMillis();
+		//this._deliveryEndTime = System.currentTimeMillis();
+		this._deliveryEndTime = new GregorianCalendar().getTimeInMillis();
 	}
 
 
@@ -84,25 +88,16 @@ public class Order
 	}
 
 
-	public String getName() {
-		// TODO Auto-generated method stub
-		return _ordersOfDish.toString();
-	}
-
-
 	public void setCookStartTime() {
-		_cookStartTime = System.currentTimeMillis();
+		//_cookStartTime = System.currentTimeMillis();
+		_cookStartTime = new GregorianCalendar().getTimeInMillis();
 	}
 
 
 	public void setCookEndTime() {
-		_cookEndTime = System.currentTimeMillis();
+		//_cookEndTime = System.currentTimeMillis();
+		_cookEndTime = new GregorianCalendar().getTimeInMillis();
 		
-	}
-
-
-	public Address getAddress() {
-		return _address;
 	}
 
 
@@ -133,5 +128,27 @@ public class Order
 	public void setDeliveredBy(String _name) {
 		_deliveredBy = _name;
 		
+	}
+
+
+	public long computeDistanceFrom(Address _resturantAddress) {
+		return _resturantAddress.computeDistanceTo(_address);
+	}
+
+
+	public boolean isPoisoned() {
+		return (_id == -1);
+	}
+
+
+	public boolean canItakeThisOrder(int _enduranceRating, int _currentPressure) {
+		return ( _difficulty <= (_enduranceRating - _currentPressure) );
+	}
+
+	public int decreasedPressure(int currentPressure) {
+		return currentPressure - _difficulty;
+	}
+	public int increasedPressure(int currentPressure) {
+		return currentPressure + _difficulty;
 	}
 }

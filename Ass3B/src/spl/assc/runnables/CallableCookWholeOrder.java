@@ -37,32 +37,21 @@ public class CallableCookWholeOrder implements Callable<Order>
 	@Override
 	public Order call() throws Exception
 	{
-		
-
-		//starting time
 		LOGGER.info(String.format("[-Cooking-] Started Cooking order: (%d)", _myOrder.getOrderId()));
 
-		_myOrder.setCookStartTime();
 		CountDownLatch _countDownLatch = createCountDownLatch();
-		//ExecutorService _runnableCookOneDishPool = Executors.newFixedThreadPool(_numOfThreads);
-		
-		/*
+
+		_myOrder.setCookStartTime();
+
 		for (OrderOfDish orderOfDish : _myOrder.get_ordersOfDish()) {
 			for (int i = 0; i < orderOfDish.getQuantity(); i++) {
-				_runnableCookOneDishPool.execute(new RunnableCookOneDish(orderOfDish.get_dish(), Management.getInstance().getWarehouse(), _myChef,_countDownLatch));
-			}
-		}
-		*/
-		for (OrderOfDish orderOfDish : _myOrder.get_ordersOfDish()) {
-			for (int i = 0; i < orderOfDish.getQuantity(); i++) {
-				new Thread(new RunnableCookOneDish(orderOfDish.get_dish(), Management.getInstance().getWarehouse(), _myChef,_countDownLatch)).start();
+				new Thread(new RunnableCookOneDish(orderOfDish.get_dish(), Management.getInstance().linkToWareHouse(), _myChef,_countDownLatch)).start();
 			}
 		}
 		_countDownLatch.await();
-
-		//_runnableCookOneDishPool.shutdown();
-		_myOrder.set_status(OrderStatus.COMPLETE);
 		_myOrder.setCookEndTime();
+
+		_myOrder.set_status(OrderStatus.COMPLETE);
 		
 		synchronized (_myChef) {
 			LOGGER.info(String.format("[-Cooking-] Finished Cooking order: (%d)", _myOrder.getOrderId()));

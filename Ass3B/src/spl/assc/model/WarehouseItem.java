@@ -13,13 +13,7 @@ public abstract class WarehouseItem
 	public String getName() {
 		return _name;
 	}	
-	
-	public int getQuantity() {
-		return _initialQuantity;
-	}
-	
-	//public abstract void take(int quantity);
-	
+		
 	@Override
 	public String toString()
 	{

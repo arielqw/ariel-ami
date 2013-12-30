@@ -5,14 +5,14 @@ import java.util.SortedSet;
 
 public class Dish
 {
-	public Dish(
-			String name, 
-			int difficultyRating, 
-			long expectedCookTime, 
-			int reward, 
-			SortedSet<KitchenTool> kitchenTools, 
-			List<Ingredient> ingredients) 
-	{
+	private String 				_name; 
+	private int 				_difficultyRating; 
+	private long 				_expectedCookTime; 
+	private int 				_reward;
+	private SortedSet<KitchenTool> 	_kitchenTools; 
+	private List<Ingredient> 	_ingredients;
+	
+	public Dish(String name, int difficultyRating, long expectedCookTime, int reward, SortedSet<KitchenTool> kitchenTools, List<Ingredient> ingredients) {
 		_name = name;
 		_difficultyRating = difficultyRating;
 		_expectedCookTime = expectedCookTime;
@@ -32,14 +32,6 @@ public class Dish
 	public long get_expectedCookTime() {
 		return _expectedCookTime;
 	}
-	
-	private String 				_name; 
-	private int 				_difficultyRating; 
-	private long 				_expectedCookTime; 
-	private int 				_reward;
-	private SortedSet<KitchenTool> 	_kitchenTools; 
-	private List<Ingredient> 	_ingredients;
-	
 	
 	public int get_difficultyRating() {
 		return _difficultyRating;

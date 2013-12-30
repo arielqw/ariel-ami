@@ -10,8 +10,8 @@ public class Ingredient extends WarehouseItem
 	}
 	
 	
-	public synchronized void take(int quantity){
-		_currentQuantity -= quantity;
+	public synchronized void take(Ingredient ingredient){
+		_currentQuantity -= ingredient._initialQuantity;
 	}
 	
 	public int getConsumedAmount(){
