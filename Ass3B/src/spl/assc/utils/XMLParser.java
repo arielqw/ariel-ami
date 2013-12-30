@@ -27,11 +27,11 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import spl.assc.Management;
 import spl.assc.model.Address;
 import spl.assc.model.Dish;
 import spl.assc.model.Ingredient;
 import spl.assc.model.KitchenTool;
-import spl.assc.model.Menu;
 import spl.assc.model.Order;
 import spl.assc.model.OrderOfDish;
 import spl.assc.model.ResturantInitData;
@@ -42,7 +42,8 @@ import spl.assc.runnables.RunnableDeliveryPerson;
 
 public class XMLParser
 {
-	
+	private final static Logger LOGGER = Logger.getGlobal();
+
 	//////////// General //////////////////////////////////////////////
 	
 	private static String getNodeStringValue(Node node, String tagName)
@@ -66,7 +67,7 @@ public class XMLParser
 		return Double.parseDouble(getNodeStringValue(node, tagName));
 	}
 	
-	private static Document getDocumentFromXML(String filename)
+	private static Document getDocumentFromXML(String filename, String schemaFilename)
 	{
 		DocumentBuilderFactory documentBuilder = DocumentBuilderFactory.newInstance();
 		documentBuilder.setIgnoringElementContentWhitespace(true);
@@ -74,8 +75,8 @@ public class XMLParser
 		Document document = null;
 		try
 		{
-			//schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new File(filename.substring(0, filename.length()-3)+"xsd"));
-			//documentBuilder.setSchema(schema);
+			schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI).newSchema(new File(schemaFilename));
+			documentBuilder.setSchema(schema);
 			document = documentBuilder.newDocumentBuilder().parse(filename);
 		} catch (Exception e)
 		{
@@ -93,12 +94,12 @@ public class XMLParser
 	
 	//////////// Menu /////////////////////////////////////////////////
 	
-	public static Menu parseMenu(String filename)
+	public static void parseMenu(String filename,String schemaFilename, Management management)
 	{
-		Document doc = getDocumentFromXML(filename);
-		Map<String,Dish> dishes = new HashMap<String, Dish>();
+		Document doc = getDocumentFromXML(filename,schemaFilename);
 
 		NodeList dishNodes = doc.getElementsByTagName("Dish");
+		LOGGER.info("[DISH]");
 
 		for (int i = 0; i < dishNodes.getLength(); i++)
 		{
@@ -112,10 +113,11 @@ public class XMLParser
 			int difficultyRating = 	getNodeIntValue(dishNodes.item(i), "difficultyRating");
 			long expectedCookTime = getNodeLongValue(dishNodes.item(i), "expectedCookTime");
 			int reward = 			getNodeIntValue(dishNodes.item(i), "reward");
-			dishes.put(name,new Dish(name, difficultyRating, expectedCookTime, reward, kitchenTools, ingredients));
+			management.addMenuDish(name, difficultyRating, expectedCookTime, reward, kitchenTools, ingredients);
+			
 		}
-		
-		return new Menu(dishes);
+		LOGGER.info("[/DISH]\n");
+	
 	}
 	
 	private static List<Ingredient> parseIngredients(NodeList ingredientNodes)
@@ -142,17 +144,40 @@ public class XMLParser
 		}
 		return kitchenTools;
 	}
+	private static void parseIngredients(NodeList ingredientNodes,Management management)
+	{
+		LOGGER.info("[INGREDIENTS]");
+		for (int i = 0; i < ingredientNodes.getLength(); i++)
+		{
+			String name = 	getNodeStringValue(ingredientNodes.item(i), "name");  			
+			int quantity = 	getNodeIntValue(ingredientNodes.item(i), "quantity");
+			management.addIngredient(name, quantity);
+
+		}
+		LOGGER.info("[/INGREDIENTS]\n");
+	}
 	
+	private static void parseKitchenTools(NodeList kitchenToolNodes, Management management)
+	{
+		LOGGER.info("[TOOLS]");
+		for (int i = 0; i < kitchenToolNodes.getLength(); i++)
+		{
+			String name = 	getNodeStringValue(kitchenToolNodes.item(i), "name");  			
+			int quantity = 	getNodeIntValue(kitchenToolNodes.item(i), "quantity");
+			management.addKitchenTool(name, quantity);
+		}
+		LOGGER.info("[/TOOLS]\n");
+	}
 	
 	///////////////////////////////////////////////////////////////////
 	
 	//////////// OrderList ////////////////////////////////////////////	
 
-	public static Queue<Order> parseOrderList(String filename)
+	public static void parseOrderList(String filename, String schemaFilename,Management management)
 	{
-		Queue<Order> orders = new LinkedList<>();
+		LOGGER.info("[ORDERS]");
 		
-		Document doc = getDocumentFromXML(filename);
+		Document doc = getDocumentFromXML(filename,schemaFilename);
 
 		NodeList orderNodes = doc.getElementsByTagName("Order");
 
@@ -163,14 +188,12 @@ public class XMLParser
 			int y = getNodeIntValue(orderNodes.item(i), "y");
 			Address address = new Address(x, y);
 			
-			
 			NodeList orderOfDishNodes 		= ((Element)orderNodes.item(i)).getElementsByTagName("Dish");
 			List<OrderOfDish> ordersOfDish 	= parseOrderOfDish(orderOfDishNodes);
-			
-			orders.add(new Order(id, address, ordersOfDish));
-		}
+			management.addOrder(id, address, ordersOfDish);
 		
-		return orders;
+		}
+		LOGGER.info("[/ORDERS]\n");
 	}
 	
 	
@@ -191,44 +214,53 @@ public class XMLParser
 	
 	//////////// Resturant ////////////////////////////////////////////
 	
-	public static ResturantInitData parseResturant(String filename)
+	public static void parseResturant(String filename,String schemaFilename, Management manager)
 	{
-		Document document = getDocumentFromXML(filename);
-		Warehouse warehouse = new Warehouse(parseKitchenTools(document.getElementsByTagName("KitchenTool")), parseIngredients(document.getElementsByTagName("Ingredient")));
-		List<RunnableChef> chefs = 						parseChefs(document.getElementsByTagName("Chef"));
-		List<RunnableDeliveryPerson> deliveryGuys = 	parseDeliveryGuys(document.getElementsByTagName("DeliveryPerson"));
+		Document document = getDocumentFromXML(filename,schemaFilename);
 		
-		Node addressNode = document.getElementsByTagName("Address").item(0);
-		
-		Address address = new Address(getNodeIntValue(addressNode, "x"), getNodeIntValue(addressNode, "y"));
-		
-		return new ResturantInitData(chefs, deliveryGuys, warehouse, address);
+		parseChefs(document.getElementsByTagName("Chef"),manager);
+		parseDeliveryGuys(document.getElementsByTagName("DeliveryPerson"),manager);
+		parseKitchenTools(document.getElementsByTagName("KitchenTool"),manager);
+		parseIngredients(document.getElementsByTagName("Ingredient"),manager);
 		
 	}
 	
-	private static List<RunnableChef> parseChefs(NodeList chefNodes)
+	public static Address parseAddress(String filename,String schemaFilename){
+		Document document = getDocumentFromXML(filename,schemaFilename);
+		Node addressNode = document.getElementsByTagName("Address").item(0);
+		Address address = new Address(getNodeIntValue(addressNode, "x"), getNodeIntValue(addressNode, "y"));
+		return address;
+	}
+	
+	private static void parseChefs(NodeList chefNodes, Management management)
 	{
-		List<RunnableChef> chefs = new ArrayList<>();
+		LOGGER.info("[CHEFS]");
 		for (int i = 0; i < chefNodes.getLength(); i++)
 		{
 			String name = 	getNodeStringValue(chefNodes.item(i), "name");  			
 			double efficiencyRating = 	getNodeDoubleValue(chefNodes.item(i), "efficiencyRating");
 			int enduranceRating = 	getNodeIntValue(chefNodes.item(i), "enduranceRating");
-			chefs.add(new RunnableChef(name, efficiencyRating, enduranceRating));
+			management.addChef(name, efficiencyRating, enduranceRating);
 		}
-		return chefs;
+		LOGGER.info("[/CHEFS]\n");
 	}
 	
-	private static List<RunnableDeliveryPerson> parseDeliveryGuys(NodeList deliveryGuysNodes)
+	private static void parseDeliveryGuys(NodeList deliveryGuysNodes, Management management)
 	{
-		List<RunnableDeliveryPerson> deliveryGuys = new ArrayList<>();
+		LOGGER.info("[DELIVERY]");
 		for (int i = 0; i < deliveryGuysNodes.getLength(); i++)
 		{
 			String name = 	getNodeStringValue(deliveryGuysNodes.item(i), "name");  			
 			int speed = 	getNodeIntValue(deliveryGuysNodes.item(i), "speed");
-			deliveryGuys.add(new RunnableDeliveryPerson(name, speed));
+			
+			management.addDeliveryGuy(name,speed);
 		}
-		return deliveryGuys;
+		LOGGER.info("[/DELIVERY]\n");
+	}
+
+	public static int getSizeOf(String filename,String schemaFilename,String tag) {
+		Document document = getDocumentFromXML(filename,schemaFilename);
+		return document.getElementsByTagName(tag).getLength();
 	}
 	
 	

@@ -10,6 +10,7 @@ import spl.assc.Management;
 import spl.assc.model.Order;
 import spl.assc.model.Order.OrderStatus;
 import spl.assc.model.OrderOfDish;
+import spl.assc.model.Warehouse;
 
 
 public class CallableCookWholeOrder implements Callable<Order>
@@ -18,11 +19,13 @@ public class CallableCookWholeOrder implements Callable<Order>
 	private RunnableChef _myChef;
 	private Order _myOrder;
 	private int _numOfThreads;
+	private Warehouse _wareHouse;
 	
-	public CallableCookWholeOrder(RunnableChef runnableChef, Order order) {
+	public CallableCookWholeOrder(RunnableChef runnableChef, Order order,Warehouse warhouse) {
 		_myOrder = order;
 		_myChef = runnableChef;
 		_numOfThreads =0;
+		_wareHouse = warhouse;
 		
 	}
 
@@ -37,7 +40,7 @@ public class CallableCookWholeOrder implements Callable<Order>
 	@Override
 	public Order call() throws Exception
 	{
-		LOGGER.info(String.format("[-Cooking-] Started Cooking order: (%s)", _myOrder.info()));
+		LOGGER.info(String.format("\t[Event=Cooking Started] [Order=%s]", _myOrder.info()));
 
 		CountDownLatch _countDownLatch = createCountDownLatch();
 
@@ -45,7 +48,7 @@ public class CallableCookWholeOrder implements Callable<Order>
 
 		for (OrderOfDish orderOfDish : _myOrder.get_ordersOfDish()) {
 			for (int i = 0; i < orderOfDish.getQuantity(); i++) {
-				new Thread(new RunnableCookOneDish(orderOfDish.get_dish(), Management.getInstance().linkToWareHouse(), _myChef,_countDownLatch)).start();
+				new Thread(new RunnableCookOneDish(orderOfDish.get_dish(), _wareHouse, _myChef,_countDownLatch)).start();
 			}
 		}
 		_countDownLatch.await();
@@ -54,7 +57,7 @@ public class CallableCookWholeOrder implements Callable<Order>
 		_myOrder.set_status(OrderStatus.COMPLETE);
 		
 		synchronized (_myChef) {
-			LOGGER.info(String.format("[-Cooking-] Finished Cooking order: (%s)", _myOrder.info()));
+			LOGGER.info(String.format("\t[Event=Cooking Ended] [Order=%s]", _myOrder.info()));
 			_myChef.notifyAll();
 			return _myOrder;
 		}

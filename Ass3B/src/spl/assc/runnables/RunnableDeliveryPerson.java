@@ -15,26 +15,26 @@ public class RunnableDeliveryPerson implements Runnable
 {
 	private final static Logger LOGGER = Logger.getGlobal();
 
-	public RunnableDeliveryPerson(String name, int speed) {
+	private String _name;
+	private int _speed;
+//	private Address _resturantAddress;
+//	private Statistics _statistics;
+	private CountDownLatch _latch;
+	private Management _management;
+	
+	public RunnableDeliveryPerson(String name, int speed, Management management, CountDownLatch latch) {
 		_name = name;
 		_speed = speed;
+		_latch = latch;
+		_management = management;
 	}
 
 	
-	private String _name;
-	private int _speed;
-	private Address _resturantAddress;
-	private Statistics _statistics;
-	private CountDownLatch _latch;
-	
-	public void setCountDownLatch(CountDownLatch countDownLatch) {
-		_latch = countDownLatch;
-	}
 	
 	@Override
 	public void run()
 	{
-		Management management = Management.getInstance();
+//		Management management = Management.getInstance();
 		
 		//BlockingQueue<Order> awaitingOrders = management.get_awaitingOrdersToDeliver();
 		//_resturantAddress = management.getAddress();
@@ -45,7 +45,7 @@ public class RunnableDeliveryPerson implements Runnable
 			
 			Order orderToDeliver = null;
 			try {
-				orderToDeliver = management.takeNextOrder();
+				orderToDeliver = _management.takeNextOrder();
 				if(orderToDeliver.isPoisoned()){
 					break;
 				}
@@ -55,10 +55,10 @@ public class RunnableDeliveryPerson implements Runnable
 			}
 			if(orderToDeliver == null) continue;
 			
-			LOGGER.info(String.format("[Delivery] DeliveryPerson %s took order: [%s]", _name, orderToDeliver.info()));
+			LOGGER.info(String.format("\t[Event=Order Taken] [DeliveryPerson=%s] [Order=%s]", _name, orderToDeliver.info()));
 
 			
-			long distance = management.computeDistance(orderToDeliver);
+			long distance = _management.computeDistance(orderToDeliver);
 			
 			long expectedDeliveryTime = (long)(distance/_speed);
 			//1. set delivery start time
@@ -70,8 +70,8 @@ public class RunnableDeliveryPerson implements Runnable
 			orderToDeliver.set_deliveryEndTime();
 
 			//4. recive money
-			management.addToStatistics( calculateReward(orderToDeliver,expectedDeliveryTime) );
-			management.addToStatistics( orderToDeliver );
+			_management.addToStatistics( calculateReward(orderToDeliver,expectedDeliveryTime) );
+			_management.addToStatistics( orderToDeliver );
 			
 			//5. mark as delivered
 			orderToDeliver.set_status(OrderStatus.DELIVERED);
@@ -81,7 +81,7 @@ public class RunnableDeliveryPerson implements Runnable
 			//if (Thread.interrupted())	wasInterruptSent = true;
 		}
 		_latch.countDown();
-		LOGGER.info(String.format("[-Terminated-] DeliveryPerson %s ended.", _name));
+		LOGGER.info(String.format("\t[Event=Shutdown] [DeliveryPerson=%s]", _name));
 
 	}
 
@@ -92,12 +92,14 @@ public class RunnableDeliveryPerson implements Runnable
 		boolean isFined = (actualTotalTime > 1.15 * expectedTotalTime);
 		double dishReward = order.getReward();
 		
-		LOGGER.info(String.format("[Stats] Order: %s is Fined: %b.\nActual time:%d\nExpected time:%d", order.info(),isFined,actualTotalTime,expectedTotalTime));
+		LOGGER.info(String.format("\t[Stats] [Order=%s] [Fined=%b] [Actual time=%d] [Expected time=%d]", order.info(),isFined,actualTotalTime,expectedTotalTime));
 		//LOGGER.info(String.format("[More] expected delivery time:%d,actualy delivery time:%d", expectedDeliveryTime));
 		if(isFined){
+			order.wasFined(false);
 			return dishReward*0.5;
 		}
 		else{
+			order.wasFined(true);
 			return dishReward;
 		}
 	}

@@ -1,7 +1,6 @@
 package spl.assc;
 import java.util.logging.Logger;
 
-import spl.assc.model.Menu;
 import spl.assc.model.OrderQueue;
 import spl.assc.model.ResturantInitData;
 import spl.assc.utils.MyLogger;
@@ -15,50 +14,35 @@ public class Driver
 	 * @param args
 	 */
 	
-	private final static Logger LOGGER = Logger.getGlobal();
-
 	public static void main(String[] args)
 	{
 		new MyLogger().setup();
 		
-		LOGGER.info("Program started...");
-
-	
+		String INITIALDATA_FILENAME = "InitialData2.xml";
+		String MENU_FILENAME = "Menu2.xml";
+		String ORDERS_FILENAME = "OrdersList2.xml";
+		
+		Management manager = new Management(
+								XMLParser.getSizeOf(INITIALDATA_FILENAME,"InitialData.xsd", "Chef"), 
+								XMLParser.getSizeOf(INITIALDATA_FILENAME,"InitialData.xsd", "DeliveryPerson"),
+								XMLParser.parseAddress(INITIALDATA_FILENAME,"InitialData.xsd") 
+							);
+		
 		try {
-			Menu menu = XMLParser.parseMenu("Menu.xml");
-			LOGGER.fine(menu.toString());	
-
-			OrderQueue orderQueue = new OrderQueue(XMLParser.parseOrderList("OrdersList.xml"));
-			LOGGER.fine(orderQueue.toString());
-				
-			ResturantInitData resturant = XMLParser.parseResturant("InitialData.xml");
-			LOGGER.fine(resturant.toString());
-			Management.resturant = resturant;
-			Management.orderQueue = orderQueue;
-			Management.menu = menu;
+			XMLParser.parseResturant(INITIALDATA_FILENAME,"InitialData.xsd",manager);
+			XMLParser.parseMenu(MENU_FILENAME,"Menu.xsd",manager);
+			XMLParser.parseOrderList(ORDERS_FILENAME,"OrdersList.xsd",manager);
 		} catch (Exception e) {
-			// TODO: handle exception
 			e.printStackTrace();
 		}
 
-		Management manager = Management.getInstance();
-
-		
-
-		//Management manager = new Management(resturant, menu, orderQueue);
 		try {
+			manager.openRestaurant();
 			manager.start();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//Semaphore
 	}
 	
-
-	
-	
-	
-
 
 }

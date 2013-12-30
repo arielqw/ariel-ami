@@ -1,111 +1,114 @@
-[1]Program started...
-[1]*******************
-***	Menu:	***
-*******************
-1:	Dish:	{	Name: The Ultimate Breakfast,	DifficultyRating: 10,	ExpectedCookTime: 15000,	Reward: 54	}
-		Needed Kitchen Tools:	[Knife:1, Oven:1, Pan:1, Plate:1, Spoon:1, Stove:1]
-		Needed Ingredients:	[Cherry Tomato:100, Bread:15, Olive Oil:25, Bread Crumbs:10, Gouda Cheese:30, Egg:1, Salt:5, Black Pepper:5]
-	====================================================================================================================
-2:	Dish:	{	Name: Hasselback Potatoes,	DifficultyRating: 20,	ExpectedCookTime: 15000,	Reward: 30	}
-		Needed Kitchen Tools:	[Knife:1, Oven:1, Plate:1, Spoon:1]
-		Needed Ingredients:	[Potato:500, Butter:45, Salt:20, Olive Oil:15]
-	====================================================================================================================
-3:	Dish:	{	Name: Ramen Soup,	DifficultyRating: 20,	ExpectedCookTime: 10000,	Reward: 35	}
-		Needed Kitchen Tools:	[Bowl:1, Cup:1, Oven:1, Spoon:1, Stove:1]
-		Needed Ingredients:	[Flour:250, Egg:1, Salt:7]
-	====================================================================================================================
+16:18:02.997 [-Management initialization started-] [Chefs=4] [Delivery Persons=5]
 
-[1]***************************
-***	OrderQueue:	***
-***************************
-1:	Order:	{	Id: 0,	DeliveryAddress: (1,2)	 Delivered By: 'N/A'	} 		Requested Dishes:	[Ramen Soup:2, Hasselback Potatoes:4, The Ultimate Breakfast:2]
-	===================================================================================================================================================================
-2:	Order:	{	Id: 1,	DeliveryAddress: (10,20)	 Delivered By: 'N/A'	} 		Requested Dishes:	[Hasselback Potatoes:4, Ramen Soup:2]
-	===================================================================================================================================================================
-3:	Order:	{	Id: 2,	DeliveryAddress: (19,25)	 Delivered By: 'N/A'	} 		Requested Dishes:	[The Ultimate Breakfast:2]
-	===================================================================================================================================================================
-4:	Order:	{	Id: 3,	DeliveryAddress: (50,50)	 Delivered By: 'N/A'	} 		Requested Dishes:	[The Ultimate Breakfast:6]
-	===================================================================================================================================================================
-5:	Order:	{	Id: 4,	DeliveryAddress: (20,33)	 Delivered By: 'N/A'	} 		Requested Dishes:	[Ramen Soup:4, The Ultimate Breakfast:4, Hasselback Potatoes:2]
-	===================================================================================================================================================================
+16:18:03.032 [CHEFS]
+16:18:03.039 	(+) Chef added: [name=Gordon Ramsay] [rating=0.9] [endurance=50]
+16:18:03.041 	(+) Chef added: [name=Rachael Ray] [rating=0.9] [endurance=45]
+16:18:03.041 	(+) Chef added: [name=Wolfgang Puck] [rating=1.0] [endurance=30]
+16:18:03.042 	(+) Chef added: [name=Paula Deen] [rating=1.1] [endurance=25]
+16:18:03.043 [/CHEFS]
 
-[1]***********************************
-***	ResturantInitData:	***
-***********************************
-		Available Kitchen Tools:	{Knife=Knife:16, Fork=Fork:15, Bowl=Bowl:19, Stove=Stove:14, Plate=Plate:15, Spoon=Spoon:25, Oven=Oven:13, Pan=Pan:26, Cup=Cup:14}
-		Available Ingredients:		{Gouda Cheese=Gouda Cheese:2500, Black Pepper=Black Pepper:2500, Bread=Bread:2500, Egg=Egg:150, Butter=Butter:2000, Olive Oil=Olive Oil:1500, Bread Crumbs=Bread Crumbs:1500, Cherry Tomato=Cherry Tomato:1500, Salt=Salt:1500, Potato=Potato:5000, Flour=Flour:2500}
-	====================================================================================================================
-		Chefs:		[Gordon Ramsay:|efficiency:0.90|endurance:50, Rachael Ray:|efficiency:0.90|endurance:45, Wolfgang Puck:|efficiency:1.00|endurance:30, Paula Deen:|efficiency:1.10|endurance:25]
-		Delivery Guys:	[Garry Simpson:|speed:5, Ken Allen:|speed:7, Patrick Donahoe:|speed:6, Scott Davis:|speed:6, Frederick Smith:|speed:8]
-	====================================================================================================================
+16:18:03.043 [DELIVERY]
+16:18:03.045 	(+) Delivery Person added: [name=Garry Simpson][speed=5]
+16:18:03.046 	(+) Delivery Person added: [name=Ken Allen][speed=7]
+16:18:03.047 	(+) Delivery Person added: [name=Patrick Donahoe][speed=6]
+16:18:03.048 	(+) Delivery Person added: [name=Scott Davis][speed=6]
+16:18:03.049 	(+) Delivery Person added: [name=Frederick Smith][speed=8]
+16:18:03.049 [/DELIVERY]
 
-[1][Managment] Order: [##0] was sent to Chef: 'Gordon Ramsay'
-[1][Managment] Order: [##1] was sent to Chef: 'Rachael Ray'
-[9][Chef Action] Chef Gordon Ramsay took order: [#0]
-[10][Chef Action] Chef Rachael Ray took order: [#1]
-[11][Chef Action] Chef Wolfgang Puck took order: [#2]
-[1][Managment] Order: [##2] was sent to Chef: 'Wolfgang Puck'
-[1][Managment] Order: [##3] was sent to Chef: 'Wolfgang Puck'
-[18][-Cooking-] Started Cooking order: (#0)
-[19][-Cooking-] Started Cooking order: (#1)
-[20][-Cooking-] Started Cooking order: (#2)
-[19][-Cooking-] Finished Cooking order: (#1)
-[10][Delivery] Chef Rachael Ray Sending Order [##1] to Delivery Queue
-[16][Delivery] DeliveryPerson Scott Davis took order: [#1]
-[16][Stats] Order: #1 is Fined: false.
-Actual time:13504
-Expected time:15001
-[20][-Cooking-] Finished Cooking order: (#2)
-[11][Chef Action] Chef Wolfgang Puck took order: [#3]
-[20][-Cooking-] Started Cooking order: (#3)
-[11][Delivery] Chef Wolfgang Puck Sending Order [##2] to Delivery Queue
-[15][Delivery] DeliveryPerson Patrick Donahoe took order: [#2]
-[15][Stats] Order: #2 is Fined: false.
-Actual time:15004
-Expected time:15002
-[18][-Cooking-] Finished Cooking order: (#0)
-[9][Delivery] Chef Gordon Ramsay Sending Order [##0] to Delivery Queue
-[14][Delivery] DeliveryPerson Ken Allen took order: [#0]
-[1][Managment] Order: [##4] was sent to Chef: 'Gordon Ramsay'
-[9][Chef Action] Chef Gordon Ramsay took order: [#4]
-[18][-Cooking-] Started Cooking order: (#4)
-[12][-Terminated-] Chef Paula Deen has finished his job
-[10][-Terminated-] Chef Rachael Ray has finished his job
-[14][Stats] Order: #0 is Fined: true.
-Actual time:22505
-Expected time:15001
-[20][-Cooking-] Finished Cooking order: (#3)
-[11][Delivery] Chef Wolfgang Puck Sending Order [##3] to Delivery Queue
-[13][Delivery] DeliveryPerson Garry Simpson took order: [#3]
-[11][-Terminated-] Chef Wolfgang Puck has finished his job
-[13][Stats] Order: #3 is Fined: false.
-Actual time:15014
-Expected time:15011
-[18][-Cooking-] Finished Cooking order: (#4)
-[9][Delivery] Chef Gordon Ramsay Sending Order [##4] to Delivery Queue
-[9][-Terminated-] Chef Gordon Ramsay has finished his job
-[14][-Terminated-] DeliveryPerson Ken Allen ended.
-[13][-Terminated-] DeliveryPerson Garry Simpson ended.
-[17][Delivery] DeliveryPerson Frederick Smith took order: [#4]
-[15][-Terminated-] DeliveryPerson Patrick Donahoe ended.
-[16][-Terminated-] DeliveryPerson Scott Davis ended.
-[17][Stats] Order: #4 is Fined: true.
-Actual time:21003
-Expected time:15003
-[17][-Terminated-] DeliveryPerson Frederick Smith ended.
-[1][Statistics]
-Money Gained: 979.00
-Delivered Orderes: 
-[	Order:	{	Id: 1,	DeliveryAddress: (10,20)	 Delivered By: 'Scott Davis'	} 		Requested Dishes:	[Hasselback Potatoes:4, Ramen Soup:2]
-	===================================================================================================================================================================
-, 	Order:	{	Id: 2,	DeliveryAddress: (19,25)	 Delivered By: 'Patrick Donahoe'	} 		Requested Dishes:	[The Ultimate Breakfast:2]
-	===================================================================================================================================================================
-, 	Order:	{	Id: 0,	DeliveryAddress: (1,2)	 Delivered By: 'Ken Allen'	} 		Requested Dishes:	[Ramen Soup:2, Hasselback Potatoes:4, The Ultimate Breakfast:2]
-	===================================================================================================================================================================
-, 	Order:	{	Id: 3,	DeliveryAddress: (50,50)	 Delivered By: 'Garry Simpson'	} 		Requested Dishes:	[The Ultimate Breakfast:6]
-	===================================================================================================================================================================
-, 	Order:	{	Id: 4,	DeliveryAddress: (20,33)	 Delivered By: 'Frederick Smith'	} 		Requested Dishes:	[Ramen Soup:4, The Ultimate Breakfast:4, Hasselback Potatoes:2]
-	===================================================================================================================================================================
-]
-Ingredients Consumed: 
-[Gouda Cheese:420], [Black Pepper:70], [Bread:210], [Egg:22], [Butter:450], [Olive Oil:500], [Bread Crumbs:140], [Cherry Tomato:1400], [Salt:326], [Potato:5000], [Flour:2000]
+16:18:03.050 [TOOLS]
+16:18:03.051 	(+) KitchenTool added: [Oven=13]
+16:18:03.053 	(+) KitchenTool added: [Stove=14]
+16:18:03.055 	(+) KitchenTool added: [Fork=15]
+16:18:03.056 	(+) KitchenTool added: [Cup=14]
+16:18:03.057 	(+) KitchenTool added: [Bowl=19]
+16:18:03.058 	(+) KitchenTool added: [Plate=15]
+16:18:03.059 	(+) KitchenTool added: [Spoon=25]
+16:18:03.060 	(+) KitchenTool added: [Knife=16]
+16:18:03.060 	(+) KitchenTool added: [Pan=26]
+16:18:03.061 [/TOOLS]
+
+16:18:03.062 [INGREDIENTS]
+16:18:03.063 	(+) Ingredient added: [Potato=5000]
+16:18:03.065 	(+) Ingredient added: [Butter=2000]
+16:18:03.066 	(+) Ingredient added: [Olive Oil=1500]
+16:18:03.067 	(+) Ingredient added: [Salt=1500]
+16:18:03.068 	(+) Ingredient added: [Cherry Tomato=1500]
+16:18:03.068 	(+) Ingredient added: [Bread=2500]
+16:18:03.069 	(+) Ingredient added: [Bread Crumbs=1500]
+16:18:03.070 	(+) Ingredient added: [Egg=150]
+16:18:03.071 	(+) Ingredient added: [Flour=2500]
+16:18:03.072 	(+) Ingredient added: [Gouda Cheese=2500]
+16:18:03.073 	(+) Ingredient added: [Black Pepper=2500]
+16:18:03.074 [/INGREDIENTS]
+
+16:18:03.094 [DISH]
+16:18:03.098 	(+) Dish added: [Hasselback Potatoes]
+16:18:03.100 	(+) Dish added: [Ramen Soup]
+16:18:03.103 	(+) Dish added: [The Ultimate Breakfast]
+16:18:03.105 [/DISH]
+
+16:18:03.106 [ORDERS]
+16:18:03.132 	(+) Order added: [id=0] [Ramen Soup=2, Hasselback Potatoes=2, The Ultimate Breakfast=1]
+16:18:03.134 	(+) Order added: [id=1] [Hasselback Potatoes=4, Ramen Soup=2]
+16:18:03.136 	(+) Order added: [id=2] [The Ultimate Breakfast=2]
+16:18:03.137 	(+) Order added: [id=3] [The Ultimate Breakfast=3]
+16:18:03.138 	(+) Order added: [id=4] [Ramen Soup=2, The Ultimate Breakfast=2, Hasselback Potatoes=2]
+16:18:03.139 [/ORDERS]
+
+16:18:03.141 [-Management started-]
+16:18:03.142 	[Event=Took Order] [Chef=Gordon Ramsay] [Order=0]
+16:18:03.142 	[Event=Order Sent To Chef] [Order=0] [Chef=Gordon Ramsay]
+16:18:03.143 	[Event=Took Order] [Chef=Rachael Ray] [Order=1]
+16:18:03.145 	[Event=Order Sent To Chef] [Order=1] [Chef=Rachael Ray]
+16:18:03.145 	[Event=Cooking Started] [Order=1]
+16:18:03.145 	[Event=Cooking Started] [Order=0]
+16:18:03.146 	[Event=Took Order] [Chef=Wolfgang Puck] [Order=2]
+16:18:03.146 	[Event=Order Sent To Chef] [Order=2] [Chef=Wolfgang Puck]
+16:18:03.150 	[Event=Cooking Started] [Order=2]
+16:18:03.151 	[Event=Order Sent To Chef] [Order=3] [Chef=Wolfgang Puck]
+16:18:03.151 	[Event=Took Order] [Chef=Wolfgang Puck] [Order=3]
+16:18:03.153 	[Event=Cooking Started] [Order=3]
+16:18:16.651 	[Event=Cooking Ended] [Order=1]
+16:18:16.652 	[Event=Cooking Ended] [Order=0]
+16:18:16.652 	[Event=Sent to Delivery] [Chef=Rachael Ray] [Order=1]
+16:18:16.653 	[Event=Sent to Delivery] [Chef=Gordon Ramsay] [Order=0]
+16:18:16.654 	[Event=Order Taken] [DeliveryPerson=Garry Simpson] [Order=1]
+16:18:16.655 	[Event=Took Order] [Chef=Gordon Ramsay] [Order=4]
+16:18:16.654 	[Event=Order Sent To Chef] [Order=4] [Chef=Gordon Ramsay]
+16:18:16.655 	[Event=Order Taken] [DeliveryPerson=Ken Allen] [Order=0]
+16:18:16.655 	[Event=Cooking Started] [Order=4]
+16:18:16.656 	[Event=Shutdown] [Chef=Rachael Ray]
+16:18:16.657 	[Event=Shutdown] [Chef=Paula Deen]
+16:18:16.657 	[Stats] [Order=0] [Fined=false] [Actual time=13505] [Expected time=15001]
+16:18:16.657 	[Stats] [Order=1] [Fined=false] [Actual time=13506] [Expected time=15002]
+16:18:18.153 	[Event=Cooking Ended] [Order=2]
+16:18:18.155 	[Event=Sent to Delivery] [Chef=Wolfgang Puck] [Order=2]
+16:18:18.156 	[Event=Order Taken] [DeliveryPerson=Patrick Donahoe] [Order=2]
+16:18:18.159 	[Stats] [Order=2] [Fined=false] [Actual time=15004] [Expected time=15002]
+16:18:27.151 	[Event=Cooking Ended] [Order=3]
+16:18:27.153 	[Event=Sent to Delivery] [Chef=Wolfgang Puck] [Order=3]
+16:18:27.154 	[Event=Order Taken] [DeliveryPerson=Scott Davis] [Order=3]
+16:18:27.154 	[Event=Shutdown] [Chef=Wolfgang Puck]
+16:18:27.165 	[Stats] [Order=3] [Fined=true] [Actual time=24007] [Expected time=15009]
+16:18:30.160 	[Event=Cooking Ended] [Order=4]
+16:18:30.161 	[Event=Sent to Delivery] [Chef=Gordon Ramsay] [Order=4]
+16:18:30.162 	[Event=Shutdown] [Chef=Gordon Ramsay]
+16:18:30.164 	[Event=Shutdown] [DeliveryPerson=Ken Allen]
+16:18:30.162 	[Event=Order Taken] [DeliveryPerson=Frederick Smith] [Order=4]
+16:18:30.166 	[Event=Shutdown] [DeliveryPerson=Garry Simpson]
+16:18:30.167 	[Event=Shutdown] [DeliveryPerson=Patrick Donahoe]
+16:18:30.168 	[Event=Shutdown] [DeliveryPerson=Scott Davis]
+16:18:30.169 	[Stats] [Order=4] [Fined=false] [Actual time=13508] [Expected time=15003]
+16:18:30.174 	[Event=Shutdown] [DeliveryPerson=Frederick Smith]
+16:18:30.175 [-Management ended-]
+
+16:18:30.182 [Statistics]
+		[Money Gained=801.00]
+		[Delivered Orderes=]
+			[Order=0] [Reward=100%] [DeliveryAddress=(1,2)] [Delivery Guys=Ken Allen] [Requested Dishes=[Ramen Soup=2, Hasselback Potatoes=2, The Ultimate Breakfast=1]]
+			[Order=1] [Reward=100%] [DeliveryAddress=(10,20)] [Delivery Guys=Garry Simpson] [Requested Dishes=[Hasselback Potatoes=4, Ramen Soup=2]]
+			[Order=2] [Reward=100%] [DeliveryAddress=(19,25)] [Delivery Guys=Patrick Donahoe] [Requested Dishes=[The Ultimate Breakfast=2]]
+			[Order=3] [Reward=50%] [DeliveryAddress=(50,50)] [Delivery Guys=Scott Davis] [Requested Dishes=[The Ultimate Breakfast=3]]
+			[Order=4] [Reward=100%] [DeliveryAddress=(20,33)] [Delivery Guys=Frederick Smith] [Requested Dishes=[Ramen Soup=2, The Ultimate Breakfast=2, Hasselback Potatoes=2]]
+		[Ingredients Consumed]
+			[Gouda Cheese:240], [Black Pepper:40], [Bread:120], [Egg:14], [Butter:360], [Olive Oil:320], [Bread Crumbs:80], [Cherry Tomato:800], [Salt:242], [Potato:4000], [Flour:1500]

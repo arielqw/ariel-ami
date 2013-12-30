@@ -18,15 +18,20 @@ public class Order
 	}
 
 
-	public Order(int id, Address address, List<OrderOfDish> ordersOfDish) {
+	public Order(int id, Address address, List<OrderOfDish> ordersOfDish, int difficulty) {
 		_id = id;
 		_address = address;
 		_ordersOfDish = ordersOfDish;
-		_difficulty = 0;
+		_difficulty = difficulty;
 		_deliveredBy = "N/A";
 		_status = OrderStatus.INCOMPLETE;
+		_rewarded = "N/A";
 	}
 	
+	public Order(String string) {
+		_id = -1;
+	}
+
 	private int _id;
 	private Address _address;
 	private int _difficulty;
@@ -37,6 +42,7 @@ public class Order
 	private long _deliveryStartTime;
 	private long _deliveryEndTime;
 	private String _deliveredBy;
+	private String _rewarded;
 	
 	public List<OrderOfDish> get_ordersOfDish() {
 		return _ordersOfDish;
@@ -62,17 +68,17 @@ public class Order
 	}
 	
 	public String info(){
-		return "#"+_id;
+		return ""+_id;
 	}
 	
 	@Override
 	public String toString()
 	{
 		StringBuilder builder = new StringBuilder();
-		builder.append(String.format("\tOrder:\t{\tId: %d,\tDeliveryAddress: %s\t Delivered By: '%s'\t} ", _id, _address,_deliveredBy));
-		builder.append("\t\tRequested Dishes:\t");
+		builder.append(String.format("\t\t[Order=%d] [Reward=%s] [DeliveryAddress=%s] [Delivery Guys=%s] ", _id,_rewarded, _address,_deliveredBy));
+		builder.append("[Requested Dishes=");
 		builder.append(_ordersOfDish);
-		builder.append("\n\t===================================================================================================================================================================\n");
+		builder.append("]\n");
 
 		return builder.toString();
 	}
@@ -146,5 +152,15 @@ public class Order
 	}
 	public int increasedPressure(int currentPressure) {
 		return currentPressure + _difficulty;
+	}
+
+
+	public void wasFined(boolean wasFined) {
+		if(wasFined){
+			_rewarded = "100%";
+		}
+		else{
+			_rewarded = "50%";
+		}
 	}
 }

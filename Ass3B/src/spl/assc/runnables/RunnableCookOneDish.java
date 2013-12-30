@@ -38,13 +38,11 @@ public class RunnableCookOneDish implements Runnable
 
 	private void cookOneDish()
 	{
-		//LOGGER.info(String.format("[-Cooking-] Started Cooking dish '%s'", _dish.getName()));
 		//1. go to warehouse take things.
 		_warehouse.take(_dish.get_ingredients(), _dish.get_kitchenTools());
 
 		//2. sleep needed time
 		try {
-			//LOGGER.info("going to wait for: "+Math.round(_dish.get_expectedCookTime()*_chef.get_efficiencyRating())+" milisecs");
 			Thread.sleep(Math.round(_dish.get_expectedCookTime()*_chef.get_efficiencyRating()));
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -52,7 +50,6 @@ public class RunnableCookOneDish implements Runnable
 		}
 		
 		_warehouse.putBack(_dish.get_kitchenTools());
-		//LOGGER.info(String.format("[-Cooking-] Finished Cooking dish '%s'", _dish.getName()));
 
 		_countDownLatch.countDown();
 	}

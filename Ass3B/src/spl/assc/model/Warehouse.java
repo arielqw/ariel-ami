@@ -11,11 +11,11 @@ public class Warehouse
 	private Map<String,KitchenTool> 	_kitchenTools; 
 	private Map<String,Ingredient> 	_ingredients;
 
-	public Warehouse(SortedSet<KitchenTool> kitchenTools, List<Ingredient> ingredients) {
+	public Warehouse() {
 		_kitchenTools = new HashMap<String,KitchenTool>();
 		_ingredients = new HashMap<String,Ingredient>();
 
-		
+		/*
 		//transfer set to hash map
 		for (KitchenTool kitchenTool : kitchenTools) {
 			_kitchenTools.put(kitchenTool.getName(), kitchenTool);
@@ -24,7 +24,15 @@ public class Warehouse
 		for (Ingredient ingredient : ingredients) {
 			_ingredients.put(ingredient.getName(), ingredient);
 		}
+		*/
 	}
+	public void addKitchenTool(String name, KitchenTool kitchenTool){
+		_kitchenTools.put(name, kitchenTool);
+	}
+	
+	public void addIngredient(String name, Ingredient ingredient){
+		_ingredients.put(name, ingredient);
+	}	
 	
 	/**
 	 * This function is Blocking (semaphore kitchen tools take()

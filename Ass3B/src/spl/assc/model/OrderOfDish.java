@@ -24,7 +24,7 @@ public class OrderOfDish
 	@Override
 	public String toString()
 	{
-		return String.format("%s:%d", _name, _quantity);
+		return String.format("%s=%d", _name, _quantity);
 	}
 
 	public String getName() {

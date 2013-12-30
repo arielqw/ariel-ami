@@ -36,8 +36,8 @@ public class RunnableChef implements Runnable
 	private CountDownLatch _latch;
 	private AtomicBoolean _bell;
 	private Queue<Order> _myPendingOrders;
-	
-	public RunnableChef(String name, double efficiencyRating, int enduranceRating) {
+
+	public RunnableChef(String name, double efficiencyRating, int enduranceRating, AtomicBoolean bell, Management managment, CountDownLatch latch) {
 		_name = name;
 		_efficiencyRating = efficiencyRating;
 		_enduranceRating = enduranceRating;	
@@ -46,6 +46,9 @@ public class RunnableChef implements Runnable
 		_futures = new ArrayList<>();
 		_cookWholeOrderPool = Executors.newCachedThreadPool();
 		_myPendingOrders = new LinkedList<>();
+		_bell = bell;
+		_managment = managment;
+		_latch = latch;
 	}
 
 	@Override
@@ -62,7 +65,7 @@ public class RunnableChef implements Runnable
 	private void work()
 	{
 
-		_managment = Management.getInstance();
+		//_managment = Management.getInstance();
 
 		while(!(_stopTakingNewOrders && _futures.isEmpty() && _myPendingOrders.isEmpty() )){
 			//start working on available orders
@@ -82,8 +85,7 @@ public class RunnableChef implements Runnable
 					try {
 						this.wait();
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						//e.printStackTrace();
+						e.printStackTrace();
 					}
 				}
 			}
@@ -91,7 +93,7 @@ public class RunnableChef implements Runnable
 		}
 		_latch.countDown();
 		_cookWholeOrderPool.shutdown();
-		LOGGER.info(String.format("[-Terminated-] Chef %s has finished his job", _name));
+		LOGGER.info(String.format("\t[Event=Shutdown] [Chef=%s]", _name));
 	}
 	
 	public void stopTakingNewOrders(){
@@ -118,13 +120,13 @@ public class RunnableChef implements Runnable
 	}
 	
 	private void handleNewOrder(Order order) {
-		LOGGER.info(String.format("[Chef Action] Chef %s took order: [%s]", _name,order.info()));
-		_futures.add( _cookWholeOrderPool.submit(new CallableCookWholeOrder(this,order)) );
+		LOGGER.info(String.format("\t[Event=Took Order] [Chef=%s] [Order=%s]", _name,order.info()));
+		_futures.add( _cookWholeOrderPool.submit(new CallableCookWholeOrder(this,order,_managment.linkToWareHouse())) );
 	}
 	
 	private void deliverOrder(Order order)
 	{
-		LOGGER.info(String.format("[Delivery] Chef %s Sending Order [#%s] to Delivery Queue", _name,order.info()));
+		LOGGER.info(String.format("\t[Event=Sent to Delivery] [Chef=%s] [Order=%s]", _name,order.info()));
 		_managment.sendToDelivery(order);
 		
 	}
@@ -136,18 +138,6 @@ public class RunnableChef implements Runnable
 		return String.format("%s:|efficiency:%.2f|endurance:%d", _name,_efficiencyRating,_enduranceRating);
 	}
 
-	public void setManagment(Management management) {
-		_managment = management;
-	}
-
-	public void setCountDownLatch(CountDownLatch countDownLatch) {
-		_latch = countDownLatch;
-	}
-
-	public void setBell(AtomicBoolean bell) {
-		_bell = bell;
-		
-	}
 
 	public boolean canYouTakeThisOrder(Order order) {
 		if( order.canItakeThisOrder(_enduranceRating,_currentPressure) ){
@@ -167,7 +157,7 @@ public class RunnableChef implements Runnable
 	}
 
 	public String info() {
-		return "Chef: '"+_name+"'";
+		return _name;
 	}
 
 }

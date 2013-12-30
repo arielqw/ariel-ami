@@ -12,22 +12,11 @@ public class MyFormatter extends Formatter
 	@Override
 	public String format(LogRecord record)
 	{
-		if (record.getLevel() == Level.FINEST)
-		{
-			SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
-			return String.format("[%d|%s|%s][%s:%s]\n%s\n", 
-						record.getThreadID(), 
-						sdf.format(new Date(record.getMillis())), 
-						record.getLevel().getName(), 
-						record.getSourceClassName(),
-						record.getSourceMethodName(),
-						record.getMessage()
-						);
-		}
-		//return String.format("[%d]\t%s\n", record.getThreadID(), record.getMessage());
 		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
-
-		return String.format("[%d]%s\n",record.getThreadID(), record.getMessage());
+		return String.format("%s %s\n", 
+					sdf.format(new Date(record.getMillis())), 
+					record.getMessage()
+					);
 
 	}
 
