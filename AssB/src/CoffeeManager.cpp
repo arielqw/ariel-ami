@@ -61,7 +61,7 @@ void CoffeeManager::registerEvent(const string& name, const string& product_name
 	if(is_VIP == "1"){
 		isVIPstr= "VIP";
 	}
-	CAppLogger::Instance().Log("New "+isVIPstr+" Costumer registered - "+name+", Favorite product - "+product_name+".",Poco::Message::PRIO_NOTICE);
+	CAppLogger::Instance().Log("New "+isVIPstr+" Customer registered - "+name+", Favorite product - "+product_name+".",Poco::Message::PRIO_NOTICE);
 
 }
 
@@ -98,13 +98,13 @@ void CoffeeManager::singleBuy(Customer& buyer) {
 	if(favoriteItem->isOnMenu()){ //found
 		double total = buyer.computeProductPrice( favoriteItem->getBrutoPrice() );
 		double neto = favoriteItem->getNetoPrice();
-		CAppLogger::Instance().Log("Costumer "+buyer.getCustomerName()+" purchased "+favoriteItem->getName(),Poco::Message::PRIO_WARNING);
+		CAppLogger::Instance().Log("Customer "+buyer.getCustomerName()+" purchased "+favoriteItem->getName(),Poco::Message::PRIO_WARNING);
 
 		_revenue += total;
 		_profit += (total-neto);
 	}
 	else{ //not found
-		CAppLogger::Instance().Log("Costumer "+buyer.getCustomerName()+" failed to purchase "+favoriteItem->getName(),Poco::Message::PRIO_WARNING);
+		CAppLogger::Instance().Log("Customer "+buyer.getCustomerName()+" failed to purchase "+favoriteItem->getName(),Poco::Message::PRIO_WARNING);
 	}
 }
 
@@ -133,7 +133,7 @@ void CoffeeManager::eventHandler(const string& eventFileName) {
 
 	}
 
-	_customers.saveCostumersCollage();
+	_customers.saveCustomersCollage();
 
 }
 
@@ -190,7 +190,7 @@ void CoffeeManager::start(const string& confFileName, const string& productsFile
 	//read through the file events and run them realtime
 	eventHandler(eventFileName);
 
-	_customers.saveCostumersCollage();
+	_customers.saveCustomersCollage();
 
 	logRevenueAndProfit();
 

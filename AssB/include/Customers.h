@@ -31,7 +31,7 @@ public:
 	void registerCustomer(const std::string& customer_name, const std::string& favorite_product,const std::string& isVIP);
 
 	//produce a collage of from all the customers' images and save it to a file
-	void saveCostumersCollage();
+	void saveCustomersCollage();
 };
 
 #endif /* CUSTOMERS_H_ */
