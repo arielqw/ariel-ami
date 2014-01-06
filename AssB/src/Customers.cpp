@@ -58,7 +58,7 @@ void Customers::registerCustomer(const std::string& customer_name, const std::st
 	m_customers.push_back(customer);
 }
 
-void Customers::saveCostumersCollage() {
+void Customers::saveCustomersCollage() {
 	ImageOperations photoshop;
 
 	int lowestHeight 	=-1;
@@ -84,7 +84,7 @@ void Customers::saveCostumersCollage() {
 
 	int xPosition =0;
 
-	//2. paste each costumer image to it
+	//2. paste each customer image to it
 	for (unsigned int i = 0; i < m_customers.size(); ++i) {
 		cv::Mat photo = m_customers[i]->getPhoto().getImage(true);
 		int proportionalWidth = lowestHeight*(photo.cols/photo.rows);
