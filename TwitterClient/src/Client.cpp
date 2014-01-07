@@ -1,18 +1,21 @@
-#include <stdlib.h>
-#include "connectionHandler.h"
+/*
+ * Client.cpp
+ *
+ *  Created on: Jan 7, 2014
+ *      Author: amio
+ */
+
+#include "../include/Client.h"
 
 
-/**
-* This code assumes that the server replies the exact text the client sent it (as opposed to the practical session example)
-*/
-int main (int argc, char *argv[]) {
-    if (argc < 3) {
-        std::cerr << "Usage: " << argv[0] << " host port" << std::endl << std::endl;
-        return -1;
-    }
-    std::string host = argv[1];
-    unsigned short port = atoi(argv[2]);
+Client::Client(Protocol protocol,UserInputHandler userInputHandler):_protocol(protocol),_userInputHandler(userInputHandler),_isConnected(false) {
 
+}
+Client::~Client() {
+	// TODO Auto-generated destructor stub
+}
+
+void Client::start() {
     ConnectionHandler connectionHandler(host, port);
     if (!connectionHandler.connect()) {
         std::cerr << "Cannot connect to " << host << ":" << port << std::endl;
@@ -56,5 +59,6 @@ int main (int argc, char *argv[]) {
             break;
         }
     }
-    return 0;
 }
+
+

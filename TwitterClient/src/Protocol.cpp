@@ -1,18 +1,18 @@
 /*
- * SendFrame.cpp
+ * Protocol.cpp
  *
  *  Created on: Jan 7, 2014
  *      Author: amio
  */
 
-#include "../include/SendFrame.h"
+#include "../include/Protocol.h"
 
-SendFrame::SendFrame() {
+Protocol::Protocol() {
 	// TODO Auto-generated constructor stub
 
 }
 
-SendFrame::~SendFrame() {
+Protocol::~Protocol() {
 	// TODO Auto-generated destructor stub
 }
 

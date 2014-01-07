@@ -5,7 +5,7 @@
  *      Author: amio
  */
 
-#include "StompFrame.h"
+#include "../include/StompFrame.h"
 
 StompFrame::StompFrame() {
 	// TODO Auto-generated constructor stub

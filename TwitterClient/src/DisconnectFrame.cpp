@@ -5,7 +5,7 @@
  *      Author: amio
  */
 
-#include "DisconnectFrame.h"
+#include "../include/DisconnectFrame.h"
 
 DisconnectFrame::DisconnectFrame() {
 	// TODO Auto-generated constructor stub
