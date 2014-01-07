@@ -4,13 +4,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../src/StompClient.cpp 
+../src/StompClient.cpp \
+../src/connectionHandler.cpp 
 
 OBJS += \
-./src/StompClient.o 
+./src/StompClient.o \
+./src/connectionHandler.o 
 
 CPP_DEPS += \
-./src/StompClient.d 
+./src/StompClient.d \
+./src/connectionHandler.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes

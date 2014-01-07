@@ -12,10 +12,18 @@
 #include <string>
 using namespace std;
 
-class ConnectFrame: public StompFrame {
+class ConnectFrame:public StompFrame {
 public:
+
 	ConnectFrame(const string& hostIP, unsigned short port, const string& username, const string& password);
 	virtual ~ConnectFrame();
+	virtual string toString();
+
+private:
+	string _hostIP;
+	unsigned short _port;
+	string _username;
+	string _password;
 };
 
 #endif /* CONNECTFRAME_H_ */

@@ -1,18 +1,18 @@
 /*
- * SendFrame.cpp
+ * DisconnectFrame.cpp
  *
  *  Created on: Jan 7, 2014
  *      Author: amio
  */
 
-#include "../include/SendFrame.h"
+#include "DisconnectFrame.h"
 
-SendFrame::SendFrame() {
+DisconnectFrame::DisconnectFrame() {
 	// TODO Auto-generated constructor stub
 
 }
 
-SendFrame::~SendFrame() {
+DisconnectFrame::~DisconnectFrame() {
 	// TODO Auto-generated destructor stub
 }
 

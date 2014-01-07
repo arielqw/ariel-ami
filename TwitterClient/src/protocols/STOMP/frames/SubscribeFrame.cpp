@@ -5,7 +5,7 @@
  *      Author: amio
  */
 
-#include "../include/SubscribeFrame.h"
+#include "SubscribeFrame.h"
 
 SubscribeFrame::SubscribeFrame(const string& username) {
 	// TODO Auto-generated constructor stub

@@ -16,3 +16,8 @@ Protocol::~Protocol() {
 	// TODO Auto-generated destructor stub
 }
 
+void Protocol::setClient(Client* client) {
+	_client = client;
+}
+
+

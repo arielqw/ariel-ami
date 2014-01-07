@@ -10,7 +10,6 @@
 
 #include <string>
 #include <vector>
-//#include <stdio.h>
 
 using namespace std;
 
@@ -18,7 +17,7 @@ class StompFrame {
 public:
 	StompFrame();
 	virtual ~StompFrame();
-	virtual string toString() = 0;
+	virtual string toString();
 
 protected:
 	string makeFrame(const string& header, vector<pair<string,string> > pairs,const string& body);

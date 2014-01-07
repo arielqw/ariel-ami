@@ -9,6 +9,9 @@
 #define PROTOCOL_H_
 
 #include <string>
+#include "Client.h"
+class Client;
+
 using namespace std;
 
 class Protocol {
@@ -17,6 +20,9 @@ public:
 	virtual ~Protocol();
 	virtual void processMsg(const string& msg) = 0;
 	virtual string processUserInput(const string& msg) = 0;
+	void setClient(Client* client);
+protected:
+	Client* _client;
 };
 
 #endif /* PROTOCOL_H_ */
