@@ -23,8 +23,8 @@ int main(int argc, char* argv[])
 	{
 		if (argc != 3)
 		{
-		  std::cerr << "Usage: blocking_tcp_echo_client <host> <port>\n";
-		  return 1;
+			std::cerr << "Usage: blocking_tcp_echo_client <host> <port>\n";
+			return 1;
 		}
 
 		boost::asio::io_service io_service;
