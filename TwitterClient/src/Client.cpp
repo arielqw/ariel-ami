@@ -101,7 +101,6 @@ void Client::startListenning() {
 		if (_pConnectionHanlder->getLine(incomingMessage)) //BLOCKING
 		{
 			_protocol->chunkUpMsg(incomingMessage);
-			CAppLogger::Instance().Log("SERVER ANSWER:\n "+incomingMessage,Poco::Message::PRIO_DEBUG);
 		}
 		else
 		{

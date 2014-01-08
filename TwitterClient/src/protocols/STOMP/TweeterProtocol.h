@@ -18,7 +18,7 @@ public:
 	virtual bool processUserInput(const string& inputMsg, string& outputMsg);
 
 protected:
-	virtual void processMsg();
+	//virtual void processMsg();
 };
 
 #endif /* TWEETERPROTOCOL_H_ */

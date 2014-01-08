@@ -51,6 +51,7 @@ bool StompProtocol::processUserInput(const string& inputMsg, string& outputMsg) 
     if(tokens[0] == "login"){ //"login ip port username password"
     	if( _client->connect(tokens[1],atoi(tokens[2].c_str())) ){
         	frame = new ConnectFrame(tokens[1], atoi(tokens[2].c_str()), tokens[3], tokens[4]);
+        	_username = tokens[3];
         	_receipt ++;
     	}
     }

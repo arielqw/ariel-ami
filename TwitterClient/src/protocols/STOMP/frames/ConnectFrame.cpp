@@ -24,6 +24,8 @@ string ConnectFrame::toString() {
 	vector<pair<string,string> > vec;
 	vec.push_back(make_pair("accept-version","1.2"));
 	vec.push_back(make_pair("host",_hostIP));
+	vec.push_back(make_pair("login",_username));
+	vec.push_back(make_pair("passcode",_password));
 	return makeFrame("CONNECT",vec,"");
 }
 

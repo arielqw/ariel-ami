@@ -27,6 +27,7 @@ public:
 	void chunkUpMsg(const string& str);
 protected:
 	virtual void processMsg();
+	string _username;
 private:
 	int _receipt;
 	int _subscriptionCounter;
