@@ -70,12 +70,22 @@ bool StompProtocol::processUserInput(const string& inputMsg, string& outputMsg) 
     else if	(tokens[0] == "send"){ //"send destination body"
     	frame = new SendFrame(tokens[1], tokens[2]);
     }
-    else if	(tokens[0] == "subscribe"){ //"subscribe destination id"
+    else if	(tokens[0] == "subscribe"){ //"subscribe destination"
     	_subscriptions[tokens[1]]=_subscriptionCounter;
     	frame = new SubscribeFrame(tokens[1], _subscriptionCounter);
     	_subscriptionCounter++;
     }
-    else if	(tokens[0] == "unsubscribe"){ }
+    else if	(tokens[0] == "unsubscribe"){ //"subscribe destination"
+    	map<string,int>::iterator it =_subscriptions.find(tokens[1]);
+
+    	if( it == _subscriptions.end() ){ //not found
+    		//todo: print not found msg
+    	}
+    	else{
+        	frame = new UnsubscribeFrame(it->second);
+        	_subscriptions.erase(it);
+    	}
+    }
 //    else if	(tokens[0] == "follow")    	frame = new SubscribeFrame(tokens[1]);
 //    else if	(tokens[0] == "unfollow")	frame = new UnsubscribeFrame(tokens[1]);
 //    else if	(tokens[0] == "tweet")		frame = new d(tokens[1]);

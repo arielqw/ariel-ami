@@ -27,6 +27,7 @@ string StompFrame::makeFrame(const string& header,vector<pair<string, string> > 
 	}
 	output << body;
 	output << '\n';
+	output << '\n';
 	output << '\0';
 
 	return output.str();

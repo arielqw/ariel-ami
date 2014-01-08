@@ -15,6 +15,7 @@
 #include "frames/SendFrame.h"
 #include <map>
 #include "frames/SubscribeFrame.h"
+#include "frames/UnsubscribeFrame.h"
 
 //TODO: add more
 
