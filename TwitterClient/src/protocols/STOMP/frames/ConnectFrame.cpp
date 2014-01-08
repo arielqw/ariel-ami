@@ -7,9 +7,17 @@
 
 #include "ConnectFrame.h"
 
+
+//ConnectFrame::ConnectFrame()
+//{
+//}
+
 ConnectFrame::ConnectFrame(const string& hostIP, unsigned short port,
 		const string& username, const string& password):_hostIP(hostIP),_port(port),_username(username),_password(password) {
 
+}
+
+ConnectFrame::~ConnectFrame() {
 }
 
 string ConnectFrame::toString() {

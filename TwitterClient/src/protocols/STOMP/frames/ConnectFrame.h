@@ -14,7 +14,7 @@ using namespace std;
 
 class ConnectFrame:public StompFrame {
 public:
-
+	//ConnectFrame();
 	ConnectFrame(const string& hostIP, unsigned short port, const string& username, const string& password);
 	virtual ~ConnectFrame();
 	virtual string toString();
