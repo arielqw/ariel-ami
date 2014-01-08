@@ -12,8 +12,12 @@
 
 class SendFrame: public StompFrame {
 public:
-	SendFrame();
+	SendFrame(const string& destination,const string& body);
 	virtual ~SendFrame();
+	virtual string toString();
+private:
+	string _destination;
+	string _body;
 };
 
 #endif /* SENDFRAME_H_ */

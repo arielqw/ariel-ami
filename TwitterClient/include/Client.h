@@ -12,6 +12,7 @@
 #include "connectionHandler.h"
 #include <boost/thread.hpp>
 #include <sstream>
+#include "AppLogger.h"
 
 class Protocol;
 
@@ -25,11 +26,14 @@ public:
 	bool connect(const string& host, unsigned short port);
 	void disconnect();
 	bool isConnected();
+	void shutdown();
 private:
 	Protocol* _protocol;
 	bool _isConnected;
+	bool _shouldShutdown;
 	ConnectionHandler* _pConnectionHanlder;
 	void startListenning();
+	boost::thread* _pServerResponseHandlerThread;
 };
 
 #endif /* CLIENT_H_ */

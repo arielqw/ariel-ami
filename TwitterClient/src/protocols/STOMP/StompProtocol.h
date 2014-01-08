@@ -12,9 +12,10 @@
 #include <vector>
 #include "frames/ConnectFrame.h"
 #include "frames/DisconnectFrame.h"
+#include "frames/SendFrame.h"
+#include <map>
+#include "frames/SubscribeFrame.h"
 
-//#include "frames/SendFrame.h"
-//#include "frames/SubscribeFrame.h"
 //TODO: add more
 
 class StompProtocol: public Protocol {
@@ -27,6 +28,8 @@ protected:
 	virtual void processMsg();
 private:
 	int _receipt;
+	int _subscriptionCounter;
+	map<string,int> _subscriptions;
 };
 
 #endif /* STOMPPROTOCOL_H_ */

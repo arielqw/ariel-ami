@@ -8,7 +8,7 @@
 #include "../include/Client.h"
 
 
-Client::Client(Protocol& protocol):_protocol(&protocol),_isConnected(false){
+Client::Client(Protocol& protocol):_protocol(&protocol),_isConnected(false),_shouldShutdown(false){
 	protocol.setClient(this);
 }
 Client::~Client() {
@@ -17,7 +17,7 @@ Client::~Client() {
 
 void Client::start() {
 
-    while (true) {
+    while (!_shouldShutdown) {
         const short bufsize = 1024;
         char buf[bufsize];
         std::cin.getline(buf, bufsize);
@@ -25,6 +25,7 @@ void Client::start() {
 
         string msgToSend;
         bool shouldDisconnect = _protocol->processUserInput(userInputMsg, msgToSend);
+
 		if(_isConnected && msgToSend != "INVALID"){
 			if (!_pConnectionHanlder->sendLine(msgToSend)) {
 				std::cout << "Disconnected. Exiting...\n" << std::endl;
@@ -33,7 +34,9 @@ void Client::start() {
 		}
 
 		if( shouldDisconnect ){
-			disconnect();
+			CAppLogger::Instance().Log("got to should ",Poco::Message::PRIO_DEBUG);
+
+			_pServerResponseHandlerThread->join(); //... waiting for disconnecting gracefully..
 		}
 //        if (!connectionHandler.sendLine(line)) {
 //            std::cout << "Disconnected. Exiting...\n" << std::endl;
@@ -74,7 +77,8 @@ bool Client::connect(const string& host, unsigned short port) {
         return false;
     }
     _isConnected = true;
-    boost::thread listener(&Client::startListenning, this);
+    _pServerResponseHandlerThread = new boost::thread(&Client::startListenning, this);
+    //todo: delete it after dc
     return true;
 }
 
@@ -87,12 +91,22 @@ void Client::disconnect() {
     _pConnectionHanlder->close();
 }
 
+void Client::shutdown() {
+	_shouldShutdown = true;
+}
+
 void Client::startListenning() {
 	while(_isConnected){
 		string incomingMessage;
-		_pConnectionHanlder->getLine(incomingMessage); //BLOCKING
-		_protocol->chunkUpMsg(incomingMessage);
-		CAppLogger::Instance().Log("SERVER ANSWER:\n "+incomingMessage,Poco::Message::PRIO_DEBUG);
+		if (_pConnectionHanlder->getLine(incomingMessage)) //BLOCKING
+		{
+			_protocol->chunkUpMsg(incomingMessage);
+			CAppLogger::Instance().Log("SERVER ANSWER:\n "+incomingMessage,Poco::Message::PRIO_DEBUG);
+		}
+		else
+		{
+			break;
+		}
 	}
 }
 

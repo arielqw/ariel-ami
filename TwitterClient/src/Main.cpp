@@ -10,6 +10,7 @@
 int main (int argc, char *argv[]) {
 	//init logger
 	CAppLogger::Instance( "app.log",Poco::Message::PRIO_INFORMATION,Poco::Message::PRIO_INFORMATION );
+	//CAppLogger::Instance( "app.log",Poco::Message::PRIO_DEBUG,Poco::Message::PRIO_DEBUG );
 
 	CAppLogger::Instance().Log("Starting logging sessions\n login 10.0.0.5 61613 username password",Poco::Message::PRIO_INFORMATION);
 
