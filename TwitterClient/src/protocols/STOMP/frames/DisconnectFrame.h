@@ -9,11 +9,15 @@
 #define DISCONNECTFRAME_H_
 
 #include "StompFrame.h"
+#include <sstream>
 
 class DisconnectFrame: public StompFrame {
 public:
-	DisconnectFrame();
+	DisconnectFrame(int receipt);
 	virtual ~DisconnectFrame();
+	virtual string toString();
+private:
+	int _currentReceipt;
 };
 
 #endif /* DISCONNECTFRAME_H_ */

@@ -10,6 +10,9 @@
 
 #include "Protocol.h"
 #include "connectionHandler.h"
+#include <boost/thread.hpp>
+#include <sstream>
+
 class Protocol;
 
 #include <string>
@@ -20,11 +23,13 @@ public:
 	virtual ~Client();
 	void start();
 	bool connect(const string& host, unsigned short port);
+	void disconnect();
 	bool isConnected();
 private:
 	Protocol* _protocol;
 	bool _isConnected;
 	ConnectionHandler* _pConnectionHanlder;
+	void startListenning();
 };
 
 #endif /* CLIENT_H_ */

@@ -17,7 +17,7 @@ class StompFrame {
 public:
 	StompFrame();
 	virtual ~StompFrame();
-	virtual string toString();
+	virtual string toString() =0;
 
 protected:
 	string makeFrame(const string& header, vector<pair<string,string> > pairs,const string& body);

@@ -21,12 +21,19 @@ void Client::start() {
         const short bufsize = 1024;
         char buf[bufsize];
         std::cin.getline(buf, bufsize);
-        string msgToSend = _protocol->processUserInput(string(buf));
+        string userInputMsg(buf);
+
+        string msgToSend;
+        bool shouldDisconnect = _protocol->processUserInput(userInputMsg, msgToSend);
 		if(_isConnected && msgToSend != "INVALID"){
 			if (!_pConnectionHanlder->sendLine(msgToSend)) {
 				std::cout << "Disconnected. Exiting...\n" << std::endl;
 				break;
 			}
+		}
+
+		if( shouldDisconnect ){
+			disconnect();
 		}
 //        if (!connectionHandler.sendLine(line)) {
 //            std::cout << "Disconnected. Exiting...\n" << std::endl;
@@ -67,12 +74,28 @@ bool Client::connect(const string& host, unsigned short port) {
         return false;
     }
     _isConnected = true;
+    boost::thread listener(&Client::startListenning, this);
     return true;
 }
 
 bool Client::isConnected() {
 	return _isConnected;
 }
+
+void Client::disconnect() {
+    _isConnected = false;
+    _pConnectionHanlder->close();
+}
+
+void Client::startListenning() {
+	while(_isConnected){
+		string incomingMessage;
+		_pConnectionHanlder->getLine(incomingMessage); //BLOCKING
+		_protocol->chunkUpMsg(incomingMessage);
+		CAppLogger::Instance().Log("SERVER ANSWER:\n "+incomingMessage,Poco::Message::PRIO_DEBUG);
+	}
+}
+
 
 
 

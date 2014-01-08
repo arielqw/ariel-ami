@@ -9,8 +9,10 @@
 #define STOMPPROTOCOL_H_
 
 #include "../../../include/Protocol.h"
+#include <vector>
 #include "frames/ConnectFrame.h"
-//#include "frames/DisconnectFrame.h"
+#include "frames/DisconnectFrame.h"
+
 //#include "frames/SendFrame.h"
 //#include "frames/SubscribeFrame.h"
 //TODO: add more
@@ -19,8 +21,12 @@ class StompProtocol: public Protocol {
 public:
 	StompProtocol();
 	virtual ~StompProtocol();
-	virtual string processUserInput(const string& msg);
-	virtual void processMsg(const string& msg);
+	virtual bool processUserInput(const string& inputMsg, string& outputMsg);
+	void chunkUpMsg(const string& str);
+protected:
+	virtual void processMsg();
+private:
+	int _receipt;
 };
 
 #endif /* STOMPPROTOCOL_H_ */

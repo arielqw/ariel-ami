@@ -16,9 +16,6 @@ StompFrame::~StompFrame() {
 	// TODO Auto-generated destructor stub
 }
 
-string StompFrame::toString() {
-	//TODO: shouldnt be here - it is pure virtual
-}
 
 string StompFrame::makeFrame(const string& header,vector<pair<string, string> > pairs, const string& body) {
 	ostringstream output;

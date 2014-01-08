@@ -4,21 +4,27 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
+../src/AppLogger.cpp \
 ../src/Client.cpp \
 ../src/Main.cpp \
 ../src/Protocol.cpp \
+../src/Utility.cpp \
 ../src/connectionHandler.cpp 
 
 OBJS += \
+./src/AppLogger.o \
 ./src/Client.o \
 ./src/Main.o \
 ./src/Protocol.o \
+./src/Utility.o \
 ./src/connectionHandler.o 
 
 CPP_DEPS += \
+./src/AppLogger.d \
 ./src/Client.d \
 ./src/Main.d \
 ./src/Protocol.d \
+./src/Utility.d \
 ./src/connectionHandler.d 
 
 
