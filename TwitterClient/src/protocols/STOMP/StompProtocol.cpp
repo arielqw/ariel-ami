@@ -24,6 +24,7 @@ void StompProtocol::chunkUpMsg(const string& str) {
 		processMsg();
 		_msgChunks.str("");
 	}
+
 }
 
 void StompProtocol::processMsg() {
@@ -31,9 +32,20 @@ void StompProtocol::processMsg() {
 	vector<string> vec;
 	Utility::splitString(_msgChunks.str(),'\n',vec);
 	string command = vec[0];
-	if		(command == "ERROR"){ 		CAppLogger::Instance().Log(vec[1].substr(9,vec[1].length()-2),Poco::Message::PRIO_INFORMATION); }
-	else if	(command == "CONNECTED"){ 	CAppLogger::Instance().Log("Login Successfully",Poco::Message::PRIO_INFORMATION); }
-	else if	(command == "RECEIPT"){		CAppLogger::Instance().Log(" RECIEVED RECEIPT. DISCONNECTING..",Poco::Message::PRIO_DEBUG); _client->disconnect();}
+
+	if		(command == "ERROR"){
+		CAppLogger::Instance().Log(vec[1].substr(9,vec[1].length()-2),Poco::Message::PRIO_INFORMATION);
+	}
+	else if	(command == "CONNECTED"){
+		CAppLogger::Instance().Log("Login Successfully",Poco::Message::PRIO_INFORMATION);
+	}
+	else if	(command == "RECEIPT"){
+		CAppLogger::Instance().Log(" RECIEVED RECEIPT. DISCONNECTING..",Poco::Message::PRIO_DEBUG);
+		_client->disconnect();
+	}
+	else if	(command == "MESSAGE"){
+
+	}
 
 }
 
@@ -87,15 +99,10 @@ bool StompProtocol::processUserInput(const string& inputMsg, string& outputMsg) 
         	_subscriptions.erase(it);
     	}
     }
-//    else if	(tokens[0] == "follow")    	frame = new SubscribeFrame(tokens[1]);
-//    else if	(tokens[0] == "unfollow")	frame = new UnsubscribeFrame(tokens[1]);
-//    else if	(tokens[0] == "tweet")		frame = new d(tokens[1]);
-//    else if	(tokens[0] == "logout")		frame = new SendFrame(tokens[1]);
-//    else if	(tokens[0] == "stop")		frame = new SendFrame(tokens[1]);
-//    else if	(tokens[0] == "clients")	frame = new SendFrame(tokens[1]);
-//    else if	(tokens[0] == "stats")		frame = new SendFrame(tokens[1]);
+
     if(frame == NULL) outputMsg = "INVALID";
 
     outputMsg = frame->toString();
+    delete frame;
     return shouldDisconnect;
 }
