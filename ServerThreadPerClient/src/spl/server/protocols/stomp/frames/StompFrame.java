@@ -1,22 +1,17 @@
+package spl.server.protocols.stomp.frames;
+
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
 
 
+import spl.server.MessageFrame;
 
 
-public class StompFrame extends MessageFrame
-{
-
-	@Override
-	public String getString()
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	protected String getInTemplate(String header, Map<String, String> map, String body)
+public abstract class StompFrame extends MessageFrame
+{	
+	protected String makeFrame(String header, Map<String, String> map, String body)
 	{
 		StringBuilder builder = new StringBuilder();
 		builder.append(header);
@@ -30,6 +25,8 @@ public class StompFrame extends MessageFrame
 			builder.append("\n");
 		}
 		builder.append("\n");
+		builder.append("\n");
+		builder.append(body);
 		builder.append("\u0000");
 		builder.append("\n");
 		return builder.toString();

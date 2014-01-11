@@ -1,6 +1,8 @@
+package spl.server.protocols.stomp;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
- 
+ import spl.server.Tokenizer;
 public class StompTokenizer implements Tokenizer {
  
     public final char _delimiter;
@@ -16,7 +18,6 @@ public class StompTokenizer implements Tokenizer {
     public String nextToken() throws IOException {
         if (!isAlive())
             throw new IOException("tokenizer is closed");
- 
         String ans = null;
         try {
             // we are using a blocking stream, so we should always end up

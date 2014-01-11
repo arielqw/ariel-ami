@@ -1,10 +1,15 @@
+package spl.server;
+
+import java.io.IOException;
+
 public interface MessagingProtocol {
     /**
      * Process a given message.
      * 
      * @return the answer to send back, or null if no answer is required
+     * @throws IOException 
      */
-    String processMessage(String msg);
+    boolean processMessage(String msg) throws IOException;
  
     /**
     * determine whether the given message is the termination message
@@ -22,5 +27,7 @@ public interface MessagingProtocol {
      * called when the connection was not gracefully shut down.
      */
     void connectionTerminated();
+
+	void setConnectionHanlder(ConnectionHandler connectionHandler);
  
 }

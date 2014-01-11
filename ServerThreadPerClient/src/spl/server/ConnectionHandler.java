@@ -1,6 +1,7 @@
+package spl.server;
 import java.io.IOException;
 import java.net.Socket;
-import encoding.Encoder;
+import spl.server.encoding.Encoder;
  
 public class ConnectionHandler implements Runnable {
  
@@ -17,17 +18,19 @@ public class ConnectionHandler implements Runnable {
     }
  
     public void run() {
+    	_protocol.setConnectionHanlder(this);
         while (!_protocol.shouldClose() && !_socket.isClosed()) {                          
             try {
                 if (!_tokenizer.isAlive())
                     _protocol.connectionTerminated();
                 else {
                     String msg = _tokenizer.nextToken();
-                    String ans = _protocol.processMessage(msg);
-                    if (ans != null) {
-                        byte[] buf = _encoder.toBytes(ans);
-                        _socket.getOutputStream().write(buf, 0, buf.length);
+                    //System.out.println("[message received start]\n"+msg+"[message end]");
+                    boolean shouldDisconnect = _protocol.processMessage(msg);
+                    if (shouldDisconnect) {
+                    	//TODO:disconnect?
                     }
+                    
                 }
             } catch (IOException e) {
                 _protocol.connectionTerminated();
@@ -38,6 +41,11 @@ public class ConnectionHandler implements Runnable {
             _socket.close();
         } catch (IOException ignored) {
         }
-        System.out.println("thread done");
+        System.out.println("[Client is closed]");
+    }
+    
+    public void send(String msg) throws IOException{
+        byte[] buf = _encoder.toBytes(msg);
+        _socket.getOutputStream().write(buf, 0, buf.length);
     }
 }

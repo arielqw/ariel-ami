@@ -1,4 +1,4 @@
-package encoding;
+package spl.server.encoding;
 import java.nio.charset.Charset;
  
 public interface Encoder {
