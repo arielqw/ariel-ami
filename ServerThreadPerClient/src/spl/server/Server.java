@@ -10,15 +10,17 @@ import spl.server.encoding.*;
 import spl.server.protocols.stomp.StompProtocol;
 import spl.server.protocols.stomp.StompTokenizer;
  
-class Server {
+public class Server {
 	private int _port;
 	private UsersDatabase _usersDatabase;
 	private TopicsDatabase _entriesDatabase;
-	
+	private boolean _shutdown;
+	private ServerSocket _socketAcceptor;
 	public Server(int port) {
 		_port =port;
 		_usersDatabase = new UsersDatabase();
 		_entriesDatabase = new TopicsDatabase(_usersDatabase);
+		_shutdown = false;
 	}
 	
 	public void start() throws NumberFormatException, IOException{
@@ -27,15 +29,26 @@ class Server {
 	    instance (SingleThread, ThreadPerClient or ThreadPool - as described in the next sections)*/
 	    ServerConcurrencyModel scm = new ThreadPerClient();  
 	    Encoder encoder = new StringEncoder("UTF-8");
-	    ServerSocket socketAcceptor = new ServerSocket(_port);
-	    while (true) {
-	        Socket clientSocket = socketAcceptor.accept();
+	    _socketAcceptor = new ServerSocket(_port);
+	    while (!_shutdown) {
+	        Socket clientSocket = _socketAcceptor.accept();
 	        System.out.println("[client accepted="+clientSocket.getInetAddress()+"]");
 	        Tokenizer tokenizer = new StompTokenizer(new InputStreamReader(clientSocket.getInputStream(),encoder.getCharset()),'\u0000');
-	        MessagingProtocol protocol = new StompProtocol(_usersDatabase,_entriesDatabase);
+	        MessagingProtocol protocol = new StompProtocol(_usersDatabase,_entriesDatabase,this);
 	        Runnable connectionHandler = new ConnectionHandler(clientSocket, encoder, tokenizer, protocol);
 	        scm.apply(connectionHandler);
 	    }		
+
+	}
+	public void shutdown(){
+		System.out.println("[server shutdown]");
+		_shutdown = true;
+		try {
+			_socketAcceptor.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
  

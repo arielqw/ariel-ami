@@ -48,4 +48,9 @@ public class ConnectionHandler implements Runnable {
         byte[] buf = _encoder.toBytes(msg);
         _socket.getOutputStream().write(buf, 0, buf.length);
     }
+    
+    public void terminate() throws IOException{
+    	_socket.close();
+    	_protocol.terminate();
+    }
 }

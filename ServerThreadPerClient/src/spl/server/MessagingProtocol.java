@@ -29,5 +29,7 @@ public interface MessagingProtocol {
     void connectionTerminated();
 
 	void setConnectionHanlder(ConnectionHandler connectionHandler);
+
+	void terminate();
  
 }

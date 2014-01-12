@@ -142,4 +142,17 @@ public class User {
 		return _username.equals("server");
 	}
 
+
+
+	public void terminate() {
+		try {
+			_connectionHanlder.terminate();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("[terminated][username="+_username+"]");
+
+	}
+
 }

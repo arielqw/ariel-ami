@@ -1,10 +1,10 @@
 package spl.server.protocols.stomp;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.Vector;
 
 import spl.server.ConnectionHandler;
+import spl.server.Server;
 import spl.server.TopicsDatabase;
 import spl.server.Topic;
 import spl.server.MessageFrame;
@@ -31,14 +31,16 @@ public class StompProtocol implements MessagingProtocol {
     private String _username;
 	private ConnectionHandler _connectionHandler;
 	static private volatile long messageIdCounter=0;
-	
-    public StompProtocol(UsersDatabase usersDatabase, TopicsDatabase entriesDatabase) {
+	private Server _server;
+    public StompProtocol(UsersDatabase usersDatabase, TopicsDatabase entriesDatabase, Server server) {
         _shouldClose = false;
         _lineNumber = 0;
         _usersDatabase = usersDatabase;
         _topicsDatabase = entriesDatabase;
         _username = null;
         _connectionHandler = null;
+        _server = server;
+        
         
     }
  
@@ -121,9 +123,53 @@ public class StompProtocol implements MessagingProtocol {
  
     private void send(SendFrame sendFrame) {
 		System.out.println("[send request][destination="+sendFrame.getDestination()+"][message="+sendFrame.getMessage()+"]");
-		_topicsDatabase.addMessageToTopic(sendFrame.getDestination(),sendFrame.getMessage());
-		handleMentionedUsers(sendFrame); //[twitter] send to attached users '@otheruser'
+		String toUser = sendFrame.getDestination();
+		String message = sendFrame.getMessage();
+
+		if(toUser.equals("server")){
+	    	String[] splited = message.split(" ");
+	    	switch (splited[0]) {
+			case "clients":
+				boolean online = false;
+				if(splited.length > 1 && splited[1].equals("online")){
+					online = true;
+				}
+				String listOfUsers = getListOfUsers(online);
+				_topicsDatabase.addMessageToTopic("server",listOfUsers);
+				break;
+			case "stats":
+				
+				break;
+			case "stop":
+				stopServer();
+				break;
+
+			default:
+				break;
+			}
+		}
+		else{
+			_topicsDatabase.addMessageToTopic(toUser,message);
+			handleMentionedUsers(sendFrame); //[twitter] send to attached users '@otheruser'
+		}
     }
+
+	private void stopServer() {
+		System.out.println("[server shutdown request]");
+		_usersDatabase.closeConnections();
+		_server.shutdown();
+	}
+
+	private String getListOfUsers(boolean online) {
+		StringBuilder usersList = new StringBuilder();
+		usersList.append("[");
+		if(online) usersList.append("online ");
+		usersList.append("users] ");
+
+		usersList.append(_usersDatabase.printUsers(online));
+			
+		return usersList.toString();
+	}
 
 	private void handleMentionedUsers(SendFrame sendFrame) {
 		Vector<String> users = getMentionedUsers(sendFrame.getMessage());
@@ -264,6 +310,12 @@ public class StompProtocol implements MessagingProtocol {
 	@Override
 	public void setConnectionHanlder(ConnectionHandler connectionHandler) {
 		_connectionHandler = connectionHandler;
+		
+	}
+
+	@Override
+	public void terminate() {
+		_shouldClose = true;
 		
 	}
 

@@ -1,6 +1,8 @@
 package spl.server;
 
 import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import spl.server.protocols.stomp.frames.ErrorFrame;
@@ -78,6 +80,30 @@ public class UsersDatabase {
 
 	public User getUser(String username) {
 		return _db.get(username);
+	}
+
+	public Object printUsers(boolean online) {
+		StringBuilder builder = new StringBuilder();
+
+		Set<Entry<String, User>> entries = _db.entrySet();
+		for (Entry<String, User> entry : entries)
+		{
+			if((!online || entry.getValue().isLoggedIn()) && !entry.getKey().equals("server")){
+				builder.append(String.format("%s ", entry.getKey()));
+			}
+		}
+
+		return builder.toString();
+	}
+
+	public void closeConnections() {
+		Set<Entry<String, User>> entries = _db.entrySet();
+		for (Entry<String, User> entry : entries)
+		{
+			if(entry.getValue().isLoggedIn() && !entry.getKey().equals("server")){
+				entry.getValue().terminate();
+			}
+		}		
 	}
 	
 }
