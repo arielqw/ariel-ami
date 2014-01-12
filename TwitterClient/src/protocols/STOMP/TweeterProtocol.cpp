@@ -32,8 +32,8 @@ bool TweeterProtocol::processUserInput(const string& inputMsg,string& outputMsg)
 	else if	(tokens[0] == "unfollow"){ 		//unfollow username
 		stompInputMsg << "unsubscribe " << tokens[1];
 	}
-	else if	(tokens[0] == "tweet"){ 		//tweet msg
-		stompInputMsg << "send " << _username << " " << tokens[1];
+	else if	(tokens[0] == "tweet" && inputMsg.size()>6){ 		//tweet msg
+		stompInputMsg << "send " << _username << " " << inputMsg.substr(6);
 	}
 	else if	(tokens[0] == "stop"){
 		stompInputMsg << "send server stop";

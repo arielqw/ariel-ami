@@ -91,7 +91,11 @@ bool StompProtocol::processUserInput(const string& inputMsg, string& outputMsg) 
     	_client->shutdown();
     }
     else if	(tokens[0] == "send"){ //"send destination body"
-    	frame = new SendFrame(tokens[1], tokens[2]);
+    	int msgStartIndex = tokens[0].size()+tokens[1].size()+2;
+    	if (msgStartIndex < inputMsg.size())
+    	{
+    		frame = new SendFrame(tokens[1], inputMsg.substr(tokens[0].size()+tokens[1].size()+2));
+    	}
     }
     else if	(tokens[0] == "subscribe"){ //"subscribe destination"
     	_subscriptions[tokens[1]]=_subscriptionCounter;
