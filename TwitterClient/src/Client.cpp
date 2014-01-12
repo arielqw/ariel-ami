@@ -34,8 +34,6 @@ void Client::start() {
 		}
 
 		if( shouldDisconnect ){
-			CAppLogger::Instance().Log("got to should ",Poco::Message::PRIO_DEBUG);
-
 			_pServerResponseHandlerThread->join(); //... waiting for disconnecting gracefully..
 		}
 

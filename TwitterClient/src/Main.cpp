@@ -12,7 +12,8 @@ int main (int argc, char *argv[]) {
 	CAppLogger::Instance( "app.log",Poco::Message::PRIO_INFORMATION,Poco::Message::PRIO_INFORMATION );
 	//CAppLogger::Instance( "app.log",Poco::Message::PRIO_DEBUG,Poco::Message::PRIO_DEBUG );
 
-	CAppLogger::Instance().Log("Starting logging sessions\n login 127.0.0.1 61613 user password",Poco::Message::PRIO_INFORMATION);
+	//CAppLogger::Instance().Log("Starting logging sessions\n login 127.0.0.1 61613 user password",Poco::Message::PRIO_INFORMATION);
+	CAppLogger::Instance().Log("Starting logging sessions\n login 10.0.0.2 33342 ami password",Poco::Message::PRIO_INFORMATION);
 	//CAppLogger::Instance().Log("Starting logging sessions\n login 79.177.215.3 33342 ami password",Poco::Message::PRIO_INFORMATION);
 
 	//StompProtocol protocol;
