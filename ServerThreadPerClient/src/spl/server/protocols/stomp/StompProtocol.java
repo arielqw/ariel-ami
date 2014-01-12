@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import spl.server.ConnectionHandler;
 import spl.server.Server;
+import spl.server.Statistics;
 import spl.server.TopicsDatabase;
 import spl.server.Topic;
 import spl.server.MessageFrame;
@@ -32,7 +33,9 @@ public class StompProtocol implements MessagingProtocol {
 	private ConnectionHandler _connectionHandler;
 	static private volatile long messageIdCounter=0;
 	private Server _server;
-    public StompProtocol(UsersDatabase usersDatabase, TopicsDatabase entriesDatabase, Server server) {
+	private Statistics _statistics;
+	
+    public StompProtocol(UsersDatabase usersDatabase, TopicsDatabase entriesDatabase, Server server, Statistics statistics) {
         _shouldClose = false;
         _lineNumber = 0;
         _usersDatabase = usersDatabase;
@@ -40,7 +43,7 @@ public class StompProtocol implements MessagingProtocol {
         _username = null;
         _connectionHandler = null;
         _server = server;
-        
+        _statistics = statistics;
         
     }
  
@@ -99,6 +102,7 @@ public class StompProtocol implements MessagingProtocol {
 			String destination = getValueFromArray(splited, "destination");
 			String subscribeId = getValueFromArray(splited, "id");
 			if( subscribe( new SubscribeFrame(destination,subscribeId) )){ //[twitter] success following user
+				_usersDatabase.getUser(destination).incrementFollowers();
 				_connectionHandler.send(new ServerMessageFrame(_username,"-1","following "+destination).getEncodedString());
 			}
 			break;
@@ -122,10 +126,13 @@ public class StompProtocol implements MessagingProtocol {
     }
  
     private void send(SendFrame sendFrame) {
+    	Long currentTime = System.currentTimeMillis();
 		System.out.println("[send request][destination="+sendFrame.getDestination()+"][message="+sendFrame.getMessage()+"]");
 		String toUser = sendFrame.getDestination();
 		String message = sendFrame.getMessage();
 
+		_usersDatabase.incrementTweets(toUser); //user tweets ++
+		
 		if(toUser.equals("server")){
 	    	String[] splited = message.split(" ");
 	    	switch (splited[0]) {
@@ -138,7 +145,7 @@ public class StompProtocol implements MessagingProtocol {
 				_topicsDatabase.addMessageToTopic("server",listOfUsers);
 				break;
 			case "stats":
-				
+				_topicsDatabase.addMessageToTopic("server",_statistics.generateStatisticsInformation());
 				break;
 			case "stop":
 				stopServer();
@@ -149,9 +156,11 @@ public class StompProtocol implements MessagingProtocol {
 			}
 		}
 		else{
+			_statistics.addTweet();
 			_topicsDatabase.addMessageToTopic(toUser,message);
 			handleMentionedUsers(sendFrame); //[twitter] send to attached users '@otheruser'
 		}
+		_statistics.addTweetPassTime(System.currentTimeMillis()-currentTime);
     }
 
 	private void stopServer() {
@@ -173,9 +182,13 @@ public class StompProtocol implements MessagingProtocol {
 
 	private void handleMentionedUsers(SendFrame sendFrame) {
 		Vector<String> users = getMentionedUsers(sendFrame.getMessage());
+		int numOfMentions = 0;
 		for (String user : users) {
+			_usersDatabase.incrementMentions(user);
 			_topicsDatabase.addMessageToTopic(user,sendFrame.getMessage());
+			numOfMentions++;
 		}
+		_usersDatabase.incrementMentioning(sendFrame.getDestination(),numOfMentions);
 	}
 
 	private Vector<String> getMentionedUsers(String message) {
@@ -228,6 +241,7 @@ public class StompProtocol implements MessagingProtocol {
 			_connectionHandler.send(new ErrorFrame("Trying to unfollow itself", "You can not unfollow yourself").getEncodedString());
 			break;
 		case 0: //success
+			_usersDatabase.getUser(userToUnfollow).decreaseFollowers();
 			_connectionHandler.send(new ServerMessageFrame(_username,"-1","No longer following "+userToUnfollow).getEncodedString());
 			break;
 		case 1: // trying to unfollow user that im not following

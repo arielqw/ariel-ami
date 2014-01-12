@@ -19,6 +19,11 @@ public class User {
 	private Queue<MessageFrame> _myMessages;
 	private Map<String, Topic> _myEntries;
 	
+	private int _numOfMentionsIwrote;
+	private int _numOfMentionsOfMe;
+	private int _numOfTweets;
+	private int _numOfFollowers;
+	
 	public User(String username, String password) {
 		_username = username;
 		_password = password;
@@ -26,8 +31,36 @@ public class User {
 		_connectionHanlder = null;
 		_myMessages = new ConcurrentLinkedQueue<>();
 		_myEntries = new ConcurrentHashMap<String, Topic>();
+		_numOfMentionsIwrote = 0;
+		_numOfMentionsOfMe = 0;
+		_numOfTweets = 0;
+		_numOfFollowers = 0;
 	}
 	
+
+
+	public String getUsername() {
+		return _username;
+	}
+
+
+
+	public int getNumOfMentionsIwrote() {
+		return _numOfMentionsIwrote;
+	}
+
+
+
+	public int getNumOfMentionsOfMe() {
+		return _numOfMentionsOfMe;
+	}
+
+
+
+	public int getNumOfTweets() {
+		return _numOfTweets;
+	}
+
 
 
 	public void login(ConnectionHandler connectionHandler){
@@ -153,6 +186,46 @@ public class User {
 		}
 		System.out.println("[terminated][username="+_username+"]");
 
+	}
+
+
+
+	public int getNumOfFollowers() {
+		return _numOfFollowers;
+	}
+
+
+
+	public void incrementMyTweets() {
+		_numOfTweets++;
+		
+	}
+
+
+
+	public void incrementMentionsOfMe() {
+		_numOfMentionsOfMe++;
+	}
+
+
+
+	public void incrementMentionsIwrote(int numOfMentions) {
+		_numOfMentionsIwrote +=numOfMentions;
+		
+	}
+
+
+
+	public void incrementFollowers() {
+		_numOfFollowers++;
+		
+	}
+
+
+
+	public void decreaseFollowers() {
+		_numOfFollowers--;
+		
 	}
 
 }

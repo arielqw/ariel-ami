@@ -54,7 +54,7 @@ public class UsersDatabase {
 			
 			// [Twitter] - follow myself
 			Topic topic = topicsDatabase.addUserToTopic(username, username);
-			user.addTopic( topic,"-0");
+			user.addTopic( topic,"-1");
 		}
 		user.login(connectionHandler);
 		return Status.LOGIN_SUCCESS;
@@ -104,6 +104,116 @@ public class UsersDatabase {
 				entry.getValue().terminate();
 			}
 		}		
+	}
+
+	public void incrementTweets(String username) {
+		User user = getUser(username);
+		if(user != null){
+			user.incrementMyTweets();
+		}
+		
+	}
+
+	public void incrementMentions(String username) {
+		User user = getUser(username);
+		if(user != null){
+			user.incrementMentionsOfMe();
+		}		
+	}
+
+	public void incrementMentioning(String username, int numOfMentions) {
+		User user = getUser(username);
+		if(user != null){
+			user.incrementMentionsIwrote(numOfMentions);
+		}		
+	}
+
+	public User computeMostFamousUser() {
+		User mostFamousUser=null;
+		
+		Set<Entry<String, User>> entries = _db.entrySet();
+		for (Entry<String, User> entry : entries)
+		{
+			if(entry.getKey().equals("server")) continue;
+			
+			User tmpUser = entry.getValue();
+			if(mostFamousUser == null){
+				mostFamousUser = tmpUser;
+				continue;
+			}
+			
+			if( tmpUser.getNumOfFollowers() > mostFamousUser.getNumOfFollowers() ){
+				mostFamousUser = tmpUser;
+			}
+		}		
+
+		return mostFamousUser;
+	}
+
+	public User computeMaxTweetsUser() {
+		User maxTweetsUser=null;
+		
+		Set<Entry<String, User>> entries = _db.entrySet();
+		for (Entry<String, User> entry : entries)
+		{
+			if(entry.getKey().equals("server")) continue;
+			
+			User tmpUser = entry.getValue();
+			if(maxTweetsUser == null){
+				maxTweetsUser = tmpUser;
+				continue;
+			}
+			
+			if( tmpUser.getNumOfTweets() > maxTweetsUser.getNumOfTweets() ){
+				maxTweetsUser = tmpUser;
+			}
+		}		
+
+		return maxTweetsUser;
+	}
+
+	public User computeMaxMentioningUser() {
+		User maxMentioningUser=null;
+		
+		Set<Entry<String, User>> entries = _db.entrySet();
+		for (Entry<String, User> entry : entries)
+		{
+			if(entry.getKey().equals("server")) continue;
+			
+			User tmpUser = entry.getValue();
+			if(maxMentioningUser == null){
+				maxMentioningUser = tmpUser;
+				continue;
+			}
+			
+			if( tmpUser.getNumOfMentionsIwrote() > maxMentioningUser.getNumOfMentionsIwrote() ){
+				maxMentioningUser = tmpUser;
+			}
+		}		
+
+		return maxMentioningUser;
+	}
+
+	public User computeMaxMentionedUser() {
+		User maxMentionedUser=null;
+		
+		Set<Entry<String, User>> entries = _db.entrySet();
+		for (Entry<String, User> entry : entries)
+		{
+			if(entry.getKey().equals("server")) continue;
+			
+			User tmpUser = entry.getValue();
+			if(maxMentionedUser == null){
+				maxMentionedUser = tmpUser;
+				continue;
+			}
+			
+			if( tmpUser.getNumOfMentionsOfMe() > maxMentionedUser.getNumOfMentionsOfMe() ){
+				maxMentionedUser = tmpUser;
+			}
+		}		
+
+		return maxMentionedUser;
 	}
 	
 }
