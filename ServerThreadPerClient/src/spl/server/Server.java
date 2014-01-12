@@ -32,7 +32,6 @@ class Server {
 	        Socket clientSocket = socketAcceptor.accept();
 	        System.out.println("[client accepted="+clientSocket.getInetAddress()+"]");
 	        Tokenizer tokenizer = new StompTokenizer(new InputStreamReader(clientSocket.getInputStream(),encoder.getCharset()),'\u0000');
-	      //  Tokenizer tokenizer = new StompTokenizer(new InputStreamReader(clientSocket.getInputStream(),encoder.getCharset()),'*');
 	        MessagingProtocol protocol = new StompProtocol(_usersDatabase,_entriesDatabase);
 	        Runnable connectionHandler = new ConnectionHandler(clientSocket, encoder, tokenizer, protocol);
 	        scm.apply(connectionHandler);

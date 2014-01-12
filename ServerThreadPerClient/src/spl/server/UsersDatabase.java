@@ -3,6 +3,8 @@ package spl.server;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import spl.server.protocols.stomp.frames.ErrorFrame;
+
 public class UsersDatabase {
 	private Map<String, User> _db;
 	
@@ -13,6 +15,7 @@ public class UsersDatabase {
 	
 	public UsersDatabase() {
 		_db = new ConcurrentHashMap<>();
+		register("server", "h4rdP455W0rd"); //[twitter] fake username server 
 	}
 	
 	private User register(String username, String password){
@@ -31,7 +34,7 @@ public class UsersDatabase {
 		return true;
 	}
 	
-	public UsersDatabase.Status login(String username, String password, ConnectionHandler connectionHandler){
+	public UsersDatabase.Status login(String username, String password, ConnectionHandler connectionHandler, TopicsDatabase topicsDatabase){
 		User user = null;
 		if( userExists(username) ){
 			user = _db.get(username);
@@ -46,6 +49,10 @@ public class UsersDatabase {
 		}
 		else{ //user doesn't exists -> register
 			user = register(username, password);
+			
+			// [Twitter] - follow myself
+			Topic topic = topicsDatabase.addUserToTopic(username, username);
+			user.addTopic( topic,"-0");
 		}
 		user.login(connectionHandler);
 		return Status.LOGIN_SUCCESS;

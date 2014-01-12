@@ -29,7 +29,9 @@ public class Topic {
 
 	public void addMessage(String message) {
 		for (User user : _users) {
-			user.sendMessage(_topicName,message);
+			if(!user.isServer()){
+				user.sendMessage(_topicName,message);
+			}
 		}
 	}
 

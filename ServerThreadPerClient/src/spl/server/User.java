@@ -28,6 +28,8 @@ public class User {
 		_myEntries = new ConcurrentHashMap<String, Topic>();
 	}
 	
+
+
 	public void login(ConnectionHandler connectionHandler){
 		_isLoggedIn = true;
 		_connectionHanlder = connectionHandler;
@@ -57,7 +59,7 @@ public class User {
 	
 	public void sendMessage(String destination, String message){
 		String subscriptionId = getSubscriptionId(destination);
-		if(subscriptionId.equals("not found")) return;
+		if(subscriptionId.equals("not_found")) return;
 		
 		ServerMessageFrame serverMessageFrame = new ServerMessageFrame(destination, subscriptionId, message);
 		
@@ -103,18 +105,41 @@ public class User {
 		}
 	}
 
-	public void addTopic(Topic topic, String id) {
+	public boolean addTopic(Topic topic, String id) {
+		Topic tmp = _myEntries.get(id);
+		if(tmp != null){
+			return true; // [twitter] allready following user
+		}
 		_myEntries.put(id, topic);
+		return false;
 	}
 	
-	public boolean removeTopic(String id) {
+	public int removeTopic(String id) {
 		Topic topic = _myEntries.get(id);
 		if(topic != null){
+			if(topic.getName() == _username){
+				return -1;
+			}
 			_myEntries.remove(id);
 			topic.removeUser(this);
-			return true;
+			return 0;
 		}
-		return false;
+		return 1;
+	}
+
+
+
+	public String getTopicName(String unsubscribeId) {
+		Topic topic = _myEntries.get(unsubscribeId);
+		if(topic == null ) return null;
+		
+		return topic.getName();
+	}
+
+
+
+	public boolean isServer() {
+		return _username.equals("server");
 	}
 
 }

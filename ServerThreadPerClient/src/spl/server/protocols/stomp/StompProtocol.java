@@ -2,12 +2,14 @@ package spl.server.protocols.stomp;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.Vector;
 
 import spl.server.ConnectionHandler;
 import spl.server.TopicsDatabase;
 import spl.server.Topic;
 import spl.server.MessageFrame;
 import spl.server.MessagingProtocol;
+import spl.server.User;
 import spl.server.UsersDatabase;
 import spl.server.protocols.stomp.frames.ConnectFrame;
 import spl.server.protocols.stomp.frames.ConnectedFrame;
@@ -25,7 +27,7 @@ public class StompProtocol implements MessagingProtocol {
     private boolean _shouldClose;
     private int _lineNumber;
     private UsersDatabase _usersDatabase;
-    private TopicsDatabase _entriesDatabase;
+    private TopicsDatabase _topicsDatabase;
     private String _username;
 	private ConnectionHandler _connectionHandler;
 	static private volatile long messageIdCounter=0;
@@ -34,7 +36,7 @@ public class StompProtocol implements MessagingProtocol {
         _shouldClose = false;
         _lineNumber = 0;
         _usersDatabase = usersDatabase;
-        _entriesDatabase = entriesDatabase;
+        _topicsDatabase = entriesDatabase;
         _username = null;
         _connectionHandler = null;
         
@@ -47,7 +49,8 @@ public class StompProtocol implements MessagingProtocol {
     public void connectionTerminated() {
         _shouldClose = true;
     }
-    private String getValueFromArray(String[] strArr,String stringToFind){
+    
+    protected String getValueFromArray(String[] strArr,String stringToFind){
     	for (String string : strArr) {
     		if(string.length() >= stringToFind.length()){
     			if(string.substring(0,stringToFind.length()).equals(stringToFind)){
@@ -57,7 +60,7 @@ public class StompProtocol implements MessagingProtocol {
 		}
     	return "not_found";
     }
-    private String getBody(String[] strArr){
+    protected String getBody(String[] strArr){
     	for (int i = 0; i < strArr.length; i++) {
 			if(i!=0 && strArr[i].equals("")&& i+1 < strArr.length){
 				return strArr[i+1];
@@ -93,7 +96,9 @@ public class StompProtocol implements MessagingProtocol {
 		case "SUBSCRIBE":
 			String destination = getValueFromArray(splited, "destination");
 			String subscribeId = getValueFromArray(splited, "id");
-			subscribe( new SubscribeFrame(destination,subscribeId) );
+			if( subscribe( new SubscribeFrame(destination,subscribeId) )){ //[twitter] success following user
+				_connectionHandler.send(new ServerMessageFrame(_username,"-1","following "+destination).getEncodedString());
+			}
 			break;
 			
 		case "UNSUBSCRIBE":
@@ -116,8 +121,47 @@ public class StompProtocol implements MessagingProtocol {
  
     private void send(SendFrame sendFrame) {
 		System.out.println("[send request][destination="+sendFrame.getDestination()+"][message="+sendFrame.getMessage()+"]");
-		_entriesDatabase.addMessageToTopic(sendFrame.getDestination(),sendFrame.getMessage());
+		_topicsDatabase.addMessageToTopic(sendFrame.getDestination(),sendFrame.getMessage());
+		handleMentionedUsers(sendFrame); //[twitter] send to attached users '@otheruser'
     }
+
+	private void handleMentionedUsers(SendFrame sendFrame) {
+		Vector<String> users = getMentionedUsers(sendFrame.getMessage());
+		for (String user : users) {
+			_topicsDatabase.addMessageToTopic(user,sendFrame.getMessage());
+		}
+	}
+
+	private Vector<String> getMentionedUsers(String message) {
+		Vector<String> users = new Vector<>();
+		
+		int from=0;
+		boolean found = false;
+		for (int i = 0; i < message.length(); i++) {
+			if(!found){
+				if(message.charAt(i) == '@'){
+					from = i;
+					found = true;
+				}
+			}
+			else if(found){
+				if(message.charAt(i) == ' '){
+					users.add(message.substring(from+1,i));
+					found = false;
+				}
+				if(message.charAt(i) == '@'){
+					users.add(message.substring(from+1,i));
+					from = i;
+				}
+			}
+			
+		}
+		if(found){
+			users.add(message.substring(from+1,message.length()));
+		}
+		return users;
+	}
+
 
 	public static String generateMessageId() {
 		String id = Long.toString(StompProtocol.messageIdCounter);
@@ -125,16 +169,46 @@ public class StompProtocol implements MessagingProtocol {
 		return id;
 	}
 
-	private void unsubscribe(UnsubscribeFrame unsubscribeFrame) {
-		System.out.println("[unsubscribe request][id="+unsubscribeFrame.getId()+"]");
-		_usersDatabase.getUser(_username).removeTopic(unsubscribeFrame.getId());
+	private void unsubscribe(UnsubscribeFrame unsubscribeFrame) throws IOException{
+		String unsubscribeId = unsubscribeFrame.getId();
+		System.out.println("[unsubscribe request][id="+unsubscribeId+"]");
+		User user = _usersDatabase.getUser(_username);
+		String userToUnfollow = user.getTopicName(unsubscribeId);
+		
+		int success = user.removeTopic(unsubscribeId);
+		
+		switch (success) { //[twitter] unfollow errors
+		case -1: //trying to unfollow myself
+			_connectionHandler.send(new ErrorFrame("Trying to unfollow itself", "You can not unfollow yourself").getEncodedString());
+			break;
+		case 0: //success
+			_connectionHandler.send(new ServerMessageFrame(_username,"-1","No longer following "+userToUnfollow).getEncodedString());
+			break;
+		case 1: // trying to unfollow user that im not following
+			_connectionHandler.send(new ErrorFrame("Not following this user", "").getEncodedString());
+			break;
+
+		default:
+			break;
+		}
+
 	}
 
-	private void subscribe(SubscribeFrame subscribeFrame) {
+	private boolean subscribe(SubscribeFrame subscribeFrame) throws IOException {
+		boolean success = true;
 		System.out.println("[subscribe request][topic="+subscribeFrame.getDestination()+"][id="+subscribeFrame.getId()+"]");
 
-		Topic topic = _entriesDatabase.addUserToTopic(subscribeFrame.getDestination(), _username);
-		_usersDatabase.getUser(_username).addTopic( topic,subscribeFrame.getId() );
+		Topic topic = _topicsDatabase.addUserToTopic(subscribeFrame.getDestination(), _username);
+		if(topic == null){ //[twitter] username not found!
+			_connectionHandler.send(new ErrorFrame("Wrong username", "").getEncodedString());
+			success = false;
+		}
+		boolean allreadyFollowing = _usersDatabase.getUser(_username).addTopic( topic,subscribeFrame.getId() );
+		if(allreadyFollowing){ //[twitter] already following user
+			_connectionHandler.send(new ErrorFrame("Already following username", "").getEncodedString());
+			success = false;
+		}
+		return success;
 	}
 
 	public boolean isEnd(String msg) {
@@ -145,7 +219,7 @@ public class StompProtocol implements MessagingProtocol {
 		System.out.println("[login request][username="+connectFrame.getUsername()+"][password="+connectFrame.getPassword()+"]");
 
 		StompFrame ans = null;
-		UsersDatabase.Status status = _usersDatabase.login(connectFrame.getUsername(), connectFrame.getPassword(),_connectionHandler);
+		UsersDatabase.Status status = _usersDatabase.login(connectFrame.getUsername(), connectFrame.getPassword(),_connectionHandler,_topicsDatabase);
 		
 		switch (status) {
 		case ALLREADY_LOGGED_IN:
