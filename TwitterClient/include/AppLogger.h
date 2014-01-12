@@ -6,9 +6,17 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <map>
+
+
+#include <iostream>
+#include <string>
+#include <stdio.h>
+#include <time.h>
+
 
 #include "Poco/Message.h"
-
+using namespace std;
 // Forward decalrations (instant including h files)
 namespace Poco{class Logger;};
 class CMyLogger;
@@ -34,6 +42,9 @@ private:
              		const std::string& logFileName,
         		Poco::Message::Priority minFilePriority,
         		Poco::Message::Priority minConsolePriority);
+
+        const std::string CurrentDateTime();
+        void destroyHtmlLogger();
 
 public:
         ~CAppLogger(void);
@@ -70,9 +81,12 @@ public:
         // Write to log a STL string stream.
         void Log(const std::ostringstream& inLogString, Poco::Message::Priority inPriority/* = Poco::Message::PRIO_INFORMATION*/);
 
+        void StartHtmlLogger(const string& loggerName);
+        void LogHtmlRow(const string& loggerName, string arg0, string arg1);
 private:
         // Holds pointers to all loggers
         std::vector<Poco::Logger*> mLoggers;
+        std::map<string, Poco::Logger*> mHtmlLoggers;
 };
 
 #endif // APP_LOGGER_H

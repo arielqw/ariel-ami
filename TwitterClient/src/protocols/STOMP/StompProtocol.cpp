@@ -18,6 +18,7 @@ StompProtocol::~StompProtocol() {
 	// TODO Auto-generated destructor stub
 }
 
+/*
 void StompProtocol::chunkUpMsg(const string& str) {
 	_msgChunks << str; //add chunk to msg
 	if(str.length() > 1 && str.at(str.length()-2) == '\0'){ //when a full frame is saved process it
@@ -26,11 +27,15 @@ void StompProtocol::chunkUpMsg(const string& str) {
 	}
 
 }
+*/
 
-void StompProtocol::processMsg() {
-	CAppLogger::Instance().Log("Full Chunk recived: "+_msgChunks.str(),Poco::Message::PRIO_DEBUG);
+char StompProtocol::getDelimiter() {
+	return '\0';
+}
+
+void StompProtocol::processMsg(const string& msg) {
 	vector<string> vec;
-	Utility::splitString(_msgChunks.str(),'\n',vec);
+	Utility::splitString(msg,'\n',vec);
 	string command = vec[0];
 
 	if		(command == "ERROR"){
@@ -44,7 +49,11 @@ void StompProtocol::processMsg() {
 		_client->disconnect();
 	}
 	else if	(command == "MESSAGE"){
-
+		MessageFrame msgFrame(msg);
+		ostringstream debug;
+		debug << "Got MESSAGE from: " << msgFrame.getDestination() << std::endl << "msg says: " << msgFrame.getMsg();
+		CAppLogger::Instance().Log(debug, Poco::Message::PRIO_INFORMATION);
+		CAppLogger::Instance().LogHtmlRow(_username, msgFrame.getDestination(), msgFrame.getMsg());
 	}
 
 }
@@ -65,6 +74,7 @@ bool StompProtocol::processUserInput(const string& inputMsg, string& outputMsg) 
         	frame = new ConnectFrame(tokens[1], atoi(tokens[2].c_str()), tokens[3], tokens[4]);
         	_username = tokens[3];
         	_receipt ++;
+        	CAppLogger::Instance().StartHtmlLogger(_username);
     	}
     }
     else if	(tokens[0] == "logout"){ //"logout"
@@ -106,3 +116,11 @@ bool StompProtocol::processUserInput(const string& inputMsg, string& outputMsg) 
     delete frame;
     return shouldDisconnect;
 }
+
+void StompProtocol::fixMsg(string& msg) {
+	while (msg.length()>0 && msg.at(0)=='\n')	//remove unneeded line breaks
+	{
+		msg = msg.substr(1);
+	}
+}
+

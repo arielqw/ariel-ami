@@ -47,6 +47,9 @@ public:
 	
     // Close down the connection properly.
     void close();
+
+    bool sendString(const std::string& str);
+
  
 }; //class ConnectionHandler
  

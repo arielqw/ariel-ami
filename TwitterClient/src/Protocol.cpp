@@ -20,4 +20,8 @@ void Protocol::setClient(Client* client) {
 	_client = client;
 }
 
+void Protocol::fixMsg(string& msg) {
+}
+
+
 

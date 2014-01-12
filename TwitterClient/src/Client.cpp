@@ -27,7 +27,7 @@ void Client::start() {
         bool shouldDisconnect = _protocol->processUserInput(userInputMsg, msgToSend);
 
 		if(_isConnected && msgToSend != "INVALID"){
-			if (!_pConnectionHanlder->sendLine(msgToSend)) {
+			if (!_pConnectionHanlder->sendString(msgToSend)) {
 				std::cout << "Disconnected. Exiting...\n" << std::endl;
 				break;
 			}
@@ -72,12 +72,14 @@ void Client::shutdown() {
 void Client::startListenning() {
 	while(_isConnected){
 		string incomingMessage;
-		if (_pConnectionHanlder->getLine(incomingMessage)) //BLOCKING
+		if (_pConnectionHanlder->getFrameAscii(incomingMessage,_protocol->getDelimiter())) //BLOCKING
 		{
-			_protocol->chunkUpMsg(incomingMessage);
+			_protocol->fixMsg(incomingMessage);
+			_protocol->processMsg(incomingMessage);
 		}
 		else
 		{
+			//if there is a problem with receiving
 			break;
 		}
 	}

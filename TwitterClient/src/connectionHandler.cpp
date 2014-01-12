@@ -77,7 +77,7 @@ bool ConnectionHandler::getFrameAscii(std::string& frame, char delimiter) {
     // Notice that the null character is not appended to the frame string.
     try {
 		do{
-			getBytes(&ch, 1);
+			if (!getBytes(&ch, 1)) return false;
             frame.append(1, ch);
         }while (delimiter != ch);
     } catch (std::exception& e) {
@@ -92,7 +92,11 @@ bool ConnectionHandler::sendFrameAscii(const std::string& frame, char delimiter)
 	if(!result) return false;
 	return sendBytes(&delimiter,1);
 }
- 
+
+bool ConnectionHandler::sendString(const std::string& str) {
+	return sendBytes(str.c_str(),str.length());
+}
+
 // Close down the connection properly.
 void ConnectionHandler::close() {
     try{
