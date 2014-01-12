@@ -55,6 +55,7 @@ CAppLogger::~CAppLogger(void)
 			(*iterator)->getChannel()->release();
 		}
 	}
+	destroyHtmlLogger();
 }
 
 void CAppLogger::Log(const std::string& inLogString, Poco::Message::Priority inPriority/* = Poco::Message::PRIO_INFORMATION*/)
@@ -80,4 +81,70 @@ void CAppLogger::Log(const std::ostringstream& inLogString, Poco::Message::Prior
 {
 	Log(inLogString.str(), inPriority);
 }
+
+
+
+void CAppLogger::StartHtmlLogger(const string& loggerName) {
+	map<string, Poco::Logger*>::iterator it = mHtmlLoggers.find(loggerName);
+	if (it != mHtmlLoggers.end())	return;			//logger exists - do nothing
+
+	Poco::Logger* logger = &Logger::create(loggerName, LoggingFactory::defaultFactory().createChannel("FileChannel"), Poco::Message::PRIO_INFORMATION);
+	logger->getChannel()->setProperty("path", loggerName+".html");
+	mHtmlLoggers[loggerName] = logger;
+	logger->getChannel()->open();
+	Message msg;
+	msg.setPriority(Poco::Message::PRIO_INFORMATION);
+	msg.setText("<html><body><h3>username: " + loggerName + "</h3><table border='solid black'>");
+	logger->log(msg);
+
+}
+
+void CAppLogger::destroyHtmlLogger() {
+
+	for(map<string, Poco::Logger*>::iterator p = mHtmlLoggers.begin(); p!=mHtmlLoggers.end(); ++p)
+	{
+		Logger* logger = p->second;
+		Message msg;
+		msg.setPriority(Poco::Message::PRIO_INFORMATION);
+		msg.setText("</table></body></html>");
+		logger->log(msg);
+		//destroy
+		logger->getChannel()->close();
+		logger->getChannel()->release();
+	}
+	mHtmlLoggers.clear();
+
+}
+
+void CAppLogger::LogHtmlRow(const string& loggerName, string arg0, string arg1) {
+	map<string, Poco::Logger*>::iterator it = mHtmlLoggers.find(loggerName);
+	if (it == mHtmlLoggers.end())	return;		//logger wasnt found
+
+	Logger* logger = it->second;
+
+	stringstream ss;
+	ss << "<tr><td>" << arg0 << "</td><td>" << arg1 << "</td><td>" << CurrentDateTime() << "</td></tr>";
+	Message msg;
+	msg.setPriority(Poco::Message::PRIO_INFORMATION);
+	msg.setText(ss.str());
+	logger->log(msg);
+
+}
+
+
+// Get current date/time, format is YYYY-MM-DD.HH:mm:ss
+// Get current date/time, format is DD-MM-YYYY HH:mm:ss
+const std::string CAppLogger::CurrentDateTime() {
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+    // for more information about date/time format
+    strftime(buf, sizeof(buf), "%d/%m/%Y %X", &tstruct);
+
+    return buf;
+}
+
+
 

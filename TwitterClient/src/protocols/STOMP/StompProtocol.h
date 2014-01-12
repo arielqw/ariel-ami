@@ -16,6 +16,7 @@
 #include <map>
 #include "frames/SubscribeFrame.h"
 #include "frames/UnsubscribeFrame.h"
+#include "frames/MessageFrame.h"
 
 //TODO: add more
 
@@ -24,9 +25,12 @@ public:
 	StompProtocol();
 	virtual ~StompProtocol();
 	virtual bool processUserInput(const string& inputMsg, string& outputMsg);
-	void chunkUpMsg(const string& str);
+	virtual char getDelimiter();
+	virtual void processMsg(const string& msg);
+	//void chunkUpMsg(const string& str);
+	virtual void fixMsg(string& msg);	//corrects diversions from protocol
+
 protected:
-	virtual void processMsg();
 	string _username;
 private:
 	int _receipt;

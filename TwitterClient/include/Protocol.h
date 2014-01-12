@@ -22,12 +22,15 @@ public:
 	Protocol();
 	virtual ~Protocol();
 	virtual bool processUserInput(const string& inputMsg, string& outputMsg) = 0;
+	virtual char getDelimiter() = 0;
 	void setClient(Client* client);
-	virtual void chunkUpMsg(const string& str) = 0;
+	virtual void processMsg(const string& msg) = 0;
+	virtual void fixMsg(string& msg);	//corrects diversions from protocol
+
+	//virtual void chunkUpMsg(const string& str) = 0;
 protected:
 	Client* _client;
-	virtual void processMsg() = 0;
-	ostringstream _msgChunks;
+	//stringstream _msgChunks;
 };
 
 #endif /* PROTOCOL_H_ */
