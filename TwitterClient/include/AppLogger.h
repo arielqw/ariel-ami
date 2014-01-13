@@ -82,7 +82,7 @@ public:
         void Log(const std::ostringstream& inLogString, Poco::Message::Priority inPriority/* = Poco::Message::PRIO_INFORMATION*/);
 
         void StartHtmlLogger(const string& loggerName);
-        void LogHtmlRow(const string& loggerName, string arg0, string arg1);
+        void LogHtmlRow(const string& loggerName, const string& arg0, const string& arg1, const string& arg2);
 private:
         // Holds pointers to all loggers
         std::vector<Poco::Logger*> mLoggers;

@@ -116,14 +116,14 @@ void CAppLogger::destroyHtmlLogger() {
 
 }
 
-void CAppLogger::LogHtmlRow(const string& loggerName, string arg0, string arg1) {
+void CAppLogger::LogHtmlRow(const string& loggerName, const string& arg0, const string& arg1, const string& arg2) {
 	map<string, Poco::Logger*>::iterator it = mHtmlLoggers.find(loggerName);
 	if (it == mHtmlLoggers.end())	return;		//logger wasnt found
 
 	Logger* logger = it->second;
 
 	stringstream ss;
-	ss << "<tr><td>" << arg0 << "</td><td>" << arg1 << "</td><td>" << CurrentDateTime() << "</td></tr>";
+	ss << "<tr><td>" << arg0 << "</td><td>" << arg1 << "</td><td>" << arg2 << "</td></tr>";
 	Message msg;
 	msg.setPriority(Poco::Message::PRIO_INFORMATION);
 	msg.setText(ss.str());

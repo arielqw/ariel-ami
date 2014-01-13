@@ -60,7 +60,7 @@ void StompProtocol::processMsg(const string& msg) {
 			ostringstream debug;
 			debug << msgFrame.getDestination() << " tweets: " << msgFrame.getMsg();
 			CAppLogger::Instance().Log(debug, Poco::Message::PRIO_INFORMATION);
-			CAppLogger::Instance().LogHtmlRow(_username, msgFrame.getDestination(), msgFrame.getMsg());
+			CAppLogger::Instance().LogHtmlRow(_username, msgFrame.getDestination(), msgFrame.getMsg(), msgFrame.getTime());
 		}
 	}
 

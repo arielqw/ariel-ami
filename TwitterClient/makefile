@@ -5,7 +5,7 @@ RM := rm -rf
 
 USER_OBJS :=
 
-LIBS := -lboost_thread -lPocoFoundation -lPocoUtil -lboost_system -lboost_iostreams -lpthread
+LIBS := -lboost_thread -lPocoFoundation -lPocoUtil -lboost_system -lpthread
 
 CPP_SRCS += \
 ../src/protocols/STOMP/frames/ConnectFrame.cpp \
