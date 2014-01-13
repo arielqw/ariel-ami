@@ -21,7 +21,7 @@ MessageFrame::MessageFrame(const string& unencodedchars) {
 	{
 		if (vec[i].size()>=11 && vec[i].substr(0,11) == "destination")
 		{
-			_destination = vec[i].substr(11);
+			_destination = vec[i].substr(12);
 			break;
 		}
 	}

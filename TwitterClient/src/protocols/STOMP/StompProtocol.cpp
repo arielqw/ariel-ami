@@ -49,11 +49,19 @@ void StompProtocol::processMsg(const string& msg) {
 		_client->disconnect();
 	}
 	else if	(command == "MESSAGE"){
-		MessageFrame msgFrame(msg);
-		ostringstream debug;
-		debug << "Got MESSAGE from: " << msgFrame.getDestination() << std::endl << "msg says: " << msgFrame.getMsg();
-		CAppLogger::Instance().Log(debug, Poco::Message::PRIO_INFORMATION);
-		CAppLogger::Instance().LogHtmlRow(_username, msgFrame.getDestination(), msgFrame.getMsg());
+		if (msg.find("following") != msg.npos)
+		{
+			string nmsg = "Now "+msg.substr(msg.find("following"));
+			CAppLogger::Instance().Log(nmsg, Poco::Message::PRIO_INFORMATION);
+		}
+		else
+		{
+			MessageFrame msgFrame(msg);
+			ostringstream debug;
+			debug << msgFrame.getDestination() << " tweets: " << msgFrame.getMsg();
+			CAppLogger::Instance().Log(debug, Poco::Message::PRIO_INFORMATION);
+			CAppLogger::Instance().LogHtmlRow(_username, msgFrame.getDestination(), msgFrame.getMsg());
+		}
 	}
 
 }
