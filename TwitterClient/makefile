@@ -1,99 +1,126 @@
-# All Targets
-all: TweeterClient
+
+RM := rm -rf
+
+# All of the sources participating in the build are defined here
+
+USER_OBJS :=
+
+LIBS := -lboost_thread -lPocoFoundation -lPocoUtil -lboost_system -lpthread
+
+CPP_SRCS += \
+../src/protocols/STOMP/frames/ConnectFrame.cpp \
+../src/protocols/STOMP/frames/DisconnectFrame.cpp \
+../src/protocols/STOMP/frames/MessageFrame.cpp \
+../src/protocols/STOMP/frames/SendFrame.cpp \
+../src/protocols/STOMP/frames/StompFrame.cpp \
+../src/protocols/STOMP/frames/SubscribeFrame.cpp \
+../src/protocols/STOMP/frames/UnsubscribeFrame.cpp 
+
+OBJS += \
+./src/protocols/STOMP/frames/ConnectFrame.o \
+./src/protocols/STOMP/frames/DisconnectFrame.o \
+./src/protocols/STOMP/frames/MessageFrame.o \
+./src/protocols/STOMP/frames/SendFrame.o \
+./src/protocols/STOMP/frames/StompFrame.o \
+./src/protocols/STOMP/frames/SubscribeFrame.o \
+./src/protocols/STOMP/frames/UnsubscribeFrame.o 
+
+CPP_DEPS += \
+./src/protocols/STOMP/frames/ConnectFrame.d \
+./src/protocols/STOMP/frames/DisconnectFrame.d \
+./src/protocols/STOMP/frames/MessageFrame.d \
+./src/protocols/STOMP/frames/SendFrame.d \
+./src/protocols/STOMP/frames/StompFrame.d \
+./src/protocols/STOMP/frames/SubscribeFrame.d \
+./src/protocols/STOMP/frames/UnsubscribeFrame.d 
+
+
+# Each subdirectory must supply rules for building sources it contributes
+src/protocols/STOMP/frames/%.o: ../src/protocols/STOMP/frames/%.cpp
+	@echo 'Building file: $<'
+	@echo 'Invoking: GCC C++ Compiler'
+	g++ -I/usr/include -O0 -g3 -Wall -Weffc++ -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	@echo 'Finished building: $<'
+	@echo ' '-include src/protocols/STOMP/subdir.mk
+	
+# Add inputs and outputs from these tool invocations to the build variables 
+CPP_SRCS += \
+../src/AppLogger.cpp \
+../src/Client.cpp \
+../src/Main.cpp \
+../src/Protocol.cpp \
+../src/Utility.cpp \
+../src/connectionHandler.cpp 
+
+OBJS += \
+./src/AppLogger.o \
+./src/Client.o \
+./src/Main.o \
+./src/Protocol.o \
+./src/Utility.o \
+./src/connectionHandler.o 
+
+CPP_DEPS += \
+./src/AppLogger.d \
+./src/Client.d \
+./src/Main.d \
+./src/Protocol.d \
+./src/Utility.d \
+./src/connectionHandler.d 
+
+# Add inputs and outputs from these tool invocations to the build variables 
+CPP_SRCS += \
+../src/protocols/STOMP/StompProtocol.cpp \
+../src/protocols/STOMP/TweeterProtocol.cpp 
+
+OBJS += \
+./src/protocols/STOMP/StompProtocol.o \
+./src/protocols/STOMP/TweeterProtocol.o 
+
+CPP_DEPS += \
+./src/protocols/STOMP/StompProtocol.d \
+./src/protocols/STOMP/TweeterProtocol.d 
+
+
+# Each subdirectory must supply rules for building sources it contributes
+src/protocols/STOMP/%.o: ../src/protocols/STOMP/%.cpp
+	@echo 'Building file: $<'
+	@echo 'Invoking: GCC C++ Compiler'
+	g++ -I/usr/include -O0 -g3 -Wall -Weffc++ -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	@echo 'Finished building: $<'
+	@echo ' '
+
+# Each subdirectory must supply rules for building sources it contributes
+src/%.o: ../src/%.cpp
+	@echo 'Building file: $<'
+	@echo 'Invoking: GCC C++ Compiler'
+	g++ -I/usr/include -O0 -g3 -Wall -Weffc++ -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	@echo 'Finished building: $<'
+	@echo ' '
+
+
+# Add inputs and outputs from these tool invocations to the build variables 
+
+# All Target
+all: makedir TwitterClient
+
+makedir:
+	mkdir -p bin
 
 # Tool invocations
-#	AppLogger.o      imageoperations.o  MenuItem.o           Suppliers.o
-#	CoffeeManager.o  ImgTools.o         MenuItems.o          UniCoffeeShop.o
-#	Customer.o       Ingredient.o       RegularCustomer.o    VipCustomer.o
-#	Customers.o      Ingredients.o      SellingIngredient.o
-#	imageloader.o    Main.o             Supplier.o
-
-
-TweeterClient: bin/Main.o bin/AppLogger.o bin/imageoperations.o bin/MenuItem.o bin/Suppliers.o bin/CoffeeManager.o bin/ImgTools.o bin/MenuItems.o bin/UniCoffeeShop.o bin/Customer.o bin/Ingredient.o bin/RegularCustomer.o bin/VipCustomer.o bin/Customers.o bin/Ingredients.o bin/SellingIngredient.o bin/imageloader.o bin/Supplier.o
-
-	@echo 'Building target: TweeterClient...'
-	@echo 'Invoking: C++ Linker...'
-	
-	g++ -o "bin/tweeter_client" bin/MenuItems.o bin/UniCoffeeShop.o bin/Customer.o  bin/Ingredient.o bin/RegularCustomer.o bin/VipCustomer.o bin/Customers.o bin/Ingredients.o bin/SellingIngredient.o bin/Suppliers.o bin/Supplier.o bin/MenuItem.o bin/CoffeeManager.o bin/Main.o	bin/ImgTools.o bin/imageoperations.o bin/imageloader.o bin/AppLogger.o -L/usr/local/lib -L/usr/lib -lPocoFoundation -lPocoUtil -lopencv_objdetect -lopencv_core -lopencv_imgproc -lopencv_highgui
-	
-	@echo 'Finished building target: TweeterClient'
+TwitterClient: $(OBJS) $(USER_OBJS)
+	@echo 'Building target: $@'
+	@echo 'Invoking: GCC C++ Linker'
+	g++ -L/usr/lib -L/usr/local/lib -o "bin/TwitterClient" $(OBJS) $(USER_OBJS) $(LIBS)
+	@echo 'Finished building target: $@'
 	@echo ' '
-	
+	-$(RM) $(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS)
 
-# Depends on the source and header files
-bin/AppLogger.o: src/AppLogger.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/AppLogger.o src/AppLogger.cpp
+# Other Targets
+clean:
+	-$(RM) $(OBJS)$(C++_DEPS)$(C_DEPS)$(CC_DEPS)$(CPP_DEPS)$(EXECUTABLES)$(CXX_DEPS)$(C_UPPER_DEPS) bin/TwitterClient
+	-@echo ' '
 
-# Depends on the source and header files
-bin/CoffeeManager.o: src/CoffeeManager.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/CoffeeManager.o src/CoffeeManager.cpp
-	
-# Depends on the source and header files
-bin/Customer.o: src/Customer.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/Customer.o src/Customer.cpp
+.PHONY: all clean dependents
+.SECONDARY:
 
-# Depends on the source and header files 
-bin/Customers.o: src/Customers.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/Customers.o src/Customers.cpp
-
-# Depends on the source and header files
-bin/imageloader.o: src/imageloader.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/imageloader.o src/imageloader.cpp
-	
-# Depends on the source and header files
-bin/imageoperations.o: src/imageoperations.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/imageoperations.o src/imageoperations.cpp
-
-# Depends on the source and header files
-bin/ImgTools.o: src/ImgTools.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/ImgTools.o src/ImgTools.cpp
-
-# Depends on the source and header files
-bin/Ingredient.o: src/Ingredient.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/Ingredient.o src/Ingredient.cpp
-	
-# Depends on the source and header files
-bin/Ingredients.o: src/Ingredients.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/Ingredients.o src/Ingredients.cpp
-	
-# Depends on the source and header files
-bin/Main.o: src/Main.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/Main.o src/Main.cpp
-	
-# Depends on the source and header files
-bin/MenuItem.o: src/MenuItem.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/MenuItem.o src/MenuItem.cpp
-	
-# Depends on the source and header files
-bin/MenuItems.o: src/MenuItems.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/MenuItems.o src/MenuItems.cpp
-	
-# Depends on the source and header files
-bin/RegularCustomer.o: src/RegularCustomer.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/RegularCustomer.o src/RegularCustomer.cpp
-	
-# Depends on the source and header files
-bin/SellingIngredient.o: src/SellingIngredient.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/SellingIngredient.o src/SellingIngredient.cpp
-		
-# Depends on the source and header files
-bin/Supplier.o: src/Supplier.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/Supplier.o src/Supplier.cpp
-		
-# Depends on the source and header files
-bin/Suppliers.o: src/Suppliers.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/Suppliers.o src/Suppliers.cpp
-		
-# Depends on the source and header files
-bin/UniCoffeeShop.o: src/UniCoffeeShop.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/UniCoffeeShop.o src/UniCoffeeShop.cpp
-		
-# Depends on the source and header files
-bin/VipCustomer.o: src/VipCustomer.cpp
-	g++ -g -Wall -Weffc++ -c -I/usr/local/include -Iinclude -o bin/VipCustomer.o src/VipCustomer.cpp
-		
-
-#Clean the build directory
-clean: 
-	@echo 'Cleaning Project Files...'
-	rm -f bin/*

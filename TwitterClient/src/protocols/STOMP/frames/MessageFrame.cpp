@@ -15,28 +15,23 @@ MessageFrame::MessageFrame(const string& unencodedchars) {
 
 	if (vec.size() < 3)		return;
 
+	string dest("destination");
+	string time("time");
+
 	//get destination from msg
 	unsigned int i = 1;
-	for ( ; i<vec.size(); i++)
+	for ( ; i<vec.size() && vec[i].size()>0; i++)
 	{
-		if (vec[i].size()>=11 && vec[i].substr(0,11) == "destination")
+		if (vec[i].size()>dest.size() && vec[i].substr(0,dest.size()) == dest)
 		{
-			_destination = vec[i].substr(11);
-			break;
+			_destination = vec[i].substr(dest.size()+1);
 		}
-	}
-
-	bool isNextStringBody = false;
-	for ( ; i<vec.size(); i++)
-	{
-		if (vec[i].size() == 0)
+		else if (vec[i].size()>time.size() && vec[i].substr(0,time.size()) == time)
 		{
-			isNextStringBody = true;
-			break;
+			_time = vec[i].substr(time.size()+1);
 		}
-	}
 
-	if (!isNextStringBody)	return;
+	}
 
 	stringstream ss;
 	for ( ; i<vec.size(); i++)
@@ -63,5 +58,10 @@ string& MessageFrame::getMsg() {
 string& MessageFrame::getDestination() {
 	return _destination;
 }
+
+string& MessageFrame::getTime() {
+	return _time;
+}
+
 
 

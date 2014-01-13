@@ -23,10 +23,12 @@ public:
 
 	string& getMsg();
 	string& getDestination();
+	string& getTime();
 
 private:
 	string _msg;
 	string _destination;
+	string _time;
 	string _originalFrameMsg;
 
 };

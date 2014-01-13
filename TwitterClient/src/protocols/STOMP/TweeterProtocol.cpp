@@ -35,14 +35,17 @@ bool TweeterProtocol::processUserInput(const string& inputMsg,string& outputMsg)
 	else if	(tokens[0] == "tweet" && inputMsg.size()>6){ 		//tweet msg
 		stompInputMsg << "send " << _username << " " << inputMsg.substr(6);
 	}
-	else if	(tokens[0] == "stop"){
-		stompInputMsg << "send server stop";
-	}
 	else if	(tokens[0] == "clients"){
 		stompInputMsg << "send server clients";
+		if (tokens[1] == "online") stompInputMsg << " online";
 	}
 	else if	(tokens[0] == "stats"){
 		stompInputMsg << "send server stats";
+	}
+	else if	(tokens[0] == "stop"){
+		stompInputMsg << "send server stop";
+		StompProtocol::processUserInput(stompInputMsg.str(), outputMsg);
+		return true;
 	}
 	else
 	{
