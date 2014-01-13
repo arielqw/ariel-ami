@@ -161,8 +161,8 @@ public class StompProtocol implements MessagingProtocol {
 			_statistics.addTweet();
 			_topicsDatabase.addMessageToTopic(toUser,message);
 			handleMentionedUsers(sendFrame); //[twitter] send to attached users '@otheruser'
+			_statistics.addTweetPassTime(System.currentTimeMillis()-currentTime);
 		}
-		_statistics.addTweetPassTime(System.currentTimeMillis()-currentTime);
     }
 
 	private void stopServer() {

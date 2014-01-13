@@ -47,6 +47,7 @@ public class Statistics {
 		for (Long time : _tweetsPassTime) {
 			totalTime += time;
 		}
+		if(_tweetsPassTime.size() ==0 ) return 0;
 		return totalTime/_tweetsPassTime.size();
 	}
 
