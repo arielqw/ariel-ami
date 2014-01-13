@@ -5,6 +5,7 @@ import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.logging.Logger;
 
 /**
  * Handles new client connections. An Acceptor is bound on a ServerSocketChannel
@@ -12,6 +13,8 @@ import java.nio.channels.SocketChannel;
  * <CODE>accept</CODE> method.
  */
 public class ConnectionAcceptor<T> {
+	private static final Logger logger = Logger.getGlobal();
+
 	protected ServerSocketChannel _ssChannel;
 
 	protected ReactorData<T> _data;
@@ -50,7 +53,8 @@ public class ConnectionAcceptor<T> {
 		if (sChannel != null) {
 			SocketAddress address = sChannel.socket().getRemoteSocketAddress();
 
-			System.out.println("Accepting connection from " + address);
+			logger.info("[server] [event=connection accepted] [address='"+address+"']");
+
 			sChannel.configureBlocking(false);
 			SelectionKey key = sChannel.register(_data.getSelector(), 0);
 

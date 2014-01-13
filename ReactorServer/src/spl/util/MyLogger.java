@@ -17,7 +17,7 @@ public class MyLogger
 	{
 		Logger logger = Logger.getGlobal();
 		
-		logger.setLevel(Level.ALL);
+		logger.setLevel(Level.INFO);
 		
 		logger.setUseParentHandlers(false);
 		Formatter formatter = new MyFormatter();

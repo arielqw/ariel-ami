@@ -1,6 +1,7 @@
 package reactor;
 
 import java.io.IOException;
+import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.ClosedSelectorException;
@@ -71,7 +72,7 @@ public class Reactor<T> implements Runnable {
 			ssChannel.socket().bind(new InetSocketAddress(port));
 			return ssChannel;
 		} catch (IOException e) {
-			logger.info("Port " + port + " is busy");
+			logger.fine("Port " + port + " is busy");
 			throw e;
 		}
 	}
@@ -99,7 +100,7 @@ public class Reactor<T> implements Runnable {
 			selector = Selector.open();
 			ssChannel = createServerSocket(_port);
 		} catch (IOException e) {
-			logger.info("cannot create the selector -- server socket is busy?");
+			logger.fine("cannot create the selector -- server socket is busy?");
 			return;
 		}
 
@@ -124,7 +125,7 @@ public class Reactor<T> implements Runnable {
 				// Get list of selection keys with pending events
 				it = selector.selectedKeys().iterator();
 			} catch (IOException e){
-				logger.info("trouble with selector: " + e.getMessage());
+				logger.fine("trouble with selector: " + e.getMessage());
 				continue;
 			}
 			catch (ClosedSelectorException e) {
@@ -144,12 +145,12 @@ public class Reactor<T> implements Runnable {
 
 				// Check if it's a connection request
 				if (selKey.isValid() && selKey.isAcceptable()) {
-					logger.info("Accepting a connection");
+					logger.fine("Accepting a connection");
 					ConnectionAcceptor<T> acceptor = (ConnectionAcceptor<T>) selKey.attachment();
 					try {
 						acceptor.accept();
 					} catch (IOException e) {
-						logger.info("problem accepting a new connection: "
+						logger.fine("problem accepting a new connection: "
 								+ e.getMessage());
 					}
 					continue;
@@ -157,18 +158,19 @@ public class Reactor<T> implements Runnable {
 				// Check if a message has been sent
 				if (selKey.isValid() && selKey.isReadable()) {
 					ConnectionHandler<T> handler = (ConnectionHandler<T>) selKey.attachment();
-					logger.info("Channel is ready for reading");
+					logger.fine("Channel is ready for reading");
 					handler.read();
 				}
 				// Check if there are messages to send
 				if (selKey.isValid() && selKey.isWritable()) {
 					ConnectionHandler<T> handler = (ConnectionHandler<T>) selKey.attachment();
-					logger.info("Channel is ready for writing");
+					logger.fine("Channel is ready for writing");
 					handler.write();
 				}
 			}
 		}
 		stopReactor();
+		logger.info("[server] [event=server offline]");
 	}
 
 	/**
@@ -222,7 +224,9 @@ public class Reactor<T> implements Runnable {
 
 			Thread thread = new Thread(reactor);
 			thread.start();
-			logger.info("Reactor is ready on port " + reactor.getPort());
+			
+			logger.info("[server] [event=server online] [protocol='tweeter/STOMP'] [type='Reactor'] [pool size ="+poolSize+"] [IP address='"+Inet4Address.getLocalHost().getHostAddress()+"'] [port='"+reactor.getPort()+"'] [encoding='UTF-8']");
+
 			thread.join();
 		} catch (Exception e) {
 			e.printStackTrace();

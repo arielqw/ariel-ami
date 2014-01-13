@@ -100,7 +100,7 @@ public class ConnectionHandler<T> {
 		}
 
 		SocketAddress address = _sChannel.socket().getRemoteSocketAddress();
-		logger.info("Reading from " + address);
+		logger.fine("Reading from " + address);
 
 		ByteBuffer buf = ByteBuffer.allocate(BUFFER_SIZE);
 		int numBytesRead = 0;
@@ -112,7 +112,7 @@ public class ConnectionHandler<T> {
 		// is the channel closed??
 		if (numBytesRead == -1) {
 			// No more bytes can be read from the channel
-			logger.info("client on " + address + " has disconnected");
+			logger.fine("client on " + address + " has disconnected");
 			closeConnection();
 			// tell the protocol that the connection terminated.
 			_protocol.connectionTerminated();
@@ -163,7 +163,7 @@ public class ConnectionHandler<T> {
 			if (buf.remaining() == 0) {
 				closeConnection();
 				SocketAddress address = _sChannel.socket().getRemoteSocketAddress();
-				logger.info("disconnecting client on " + address);
+				logger.fine("disconnecting client on " + address);
 			}
 		}
 	}
