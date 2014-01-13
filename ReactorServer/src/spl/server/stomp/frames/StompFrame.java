@@ -1,14 +1,17 @@
-package spl.server.protocols.stomp.frames;
+package spl.server.stomp.frames;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import tokenizer.Message;
 
-import spl.server.MessageFrame;
 
-public abstract class StompFrame extends MessageFrame
+
+public abstract class StompFrame implements Message<StompFrame>
 {	
+	
 	protected String makeFrame(String header, Map<String, String> map, String body)
 	{
 		StringBuilder builder = new StringBuilder();
@@ -29,5 +32,14 @@ public abstract class StompFrame extends MessageFrame
 		builder.append("\n");
 		return builder.toString();
 	}
+
+	public abstract String getEncodedString();
+	
+	@Override
+	public byte[] getBytes()
+	{
+		return getEncodedString().getBytes();
+	}
+	
 
 }

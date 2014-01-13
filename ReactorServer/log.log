@@ -1,0 +1,50 @@
+20:19:46 Reactor is ready on port 33342
+20:20:03 Accepting a connection
+20:20:03 Channel is ready for reading
+20:20:03 Reading from /10.0.0.9:3098
+20:20:03 [<<] [request=login] [username='ami'] [password=oren]
+20:20:03 [info] [login success] [username='ami']
+20:20:03 Channel is ready for writing
+20:20:03 Channel is ready for writing
+20:20:16 Channel is ready for reading
+20:20:16 Reading from /10.0.0.9:3098
+20:20:16 [<<] [request=disconnect] [username='ami'][receipt=1]
+20:20:16 Channel is ready for writing
+20:20:16 Channel is ready for writing
+20:20:16 Channel is ready for reading
+20:20:16 Reading from /10.0.0.9:3098
+20:20:16 client on /10.0.0.9:3098 has disconnected
+20:20:44 Accepting a connection
+20:20:44 Channel is ready for reading
+20:20:44 Reading from /10.0.0.9:3099
+20:20:44 [<<] [request=login] [username='ami'] [password=oren]
+20:20:44 [info] [login success] [username='ami']
+20:20:44 Channel is ready for writing
+20:20:44 Channel is ready for writing
+20:20:59 Channel is ready for reading
+20:20:59 Reading from /10.0.0.9:3099
+20:20:59 [<<] [request=send] [username='ami'] [destination=ami] [message=dsfsdfsd]
+20:20:59 Channel is ready for writing
+20:20:59 Channel is ready for writing
+20:21:05 Channel is ready for reading
+20:21:05 Reading from /10.0.0.9:3099
+20:21:05 [<<] [request=disconnect] [username='ami'][receipt=1]
+20:21:05 Channel is ready for writing
+20:21:05 Channel is ready for writing
+20:21:05 Channel is ready for reading
+20:21:05 Reading from /10.0.0.9:3099
+20:21:05 client on /10.0.0.9:3099 has disconnected
+20:21:17 Accepting a connection
+20:21:17 Channel is ready for reading
+20:21:17 Reading from /10.0.0.9:3104
+20:21:17 [<<] [request=login] [username='ami'] [password=djfiodjf]
+20:21:17 [error] [type=login failed] [username='null'] [reason=wrong password]
+20:21:17 Channel is ready for writing
+20:21:17 Channel is ready for writing
+20:21:46 Accepting a connection
+20:21:46 Channel is ready for reading
+20:21:46 Reading from /10.0.0.9:3109
+20:21:46 [<<] [request=login] [username='ami'] [password=oren]
+20:21:46 [info] [login success] [username='ami']
+20:21:46 Channel is ready for writing
+20:21:46 Channel is ready for writing
