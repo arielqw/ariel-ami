@@ -4,7 +4,10 @@ import java.net.Socket;
 import java.util.logging.Logger;
 
 import spl.server.encoding.Encoder;
- 
+
+/**
+ * Handles messages from clients
+ */ 
 public class ConnectionHandler implements Runnable {
 	private final static Logger LOGGER = Logger.getGlobal();
 
@@ -20,8 +23,13 @@ public class ConnectionHandler implements Runnable {
         _protocol= protocol;
     }
  
-    public void run() {
+    private void init(){
     	_protocol.setConnectionHanlder(this);
+    }
+    
+    public void run() {
+    	init();
+    	
         while (!_protocol.shouldClose() && !_socket.isClosed()) {                          
             try {
                 if (!_tokenizer.isAlive())
@@ -30,7 +38,7 @@ public class ConnectionHandler implements Runnable {
                     String msg = _tokenizer.nextToken();
                     boolean shouldDisconnect = _protocol.processMessage(msg);
                     if (shouldDisconnect) {
-                    	//TODO:disconnect?
+                    	_protocol.connectionTerminated();
                     }
                     
                 }

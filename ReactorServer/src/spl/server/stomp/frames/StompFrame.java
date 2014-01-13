@@ -1,6 +1,5 @@
 package spl.server.stomp.frames;
 
-import java.io.Serializable;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -8,10 +7,15 @@ import java.util.Set;
 import tokenizer.Message;
 
 
-
 public abstract class StompFrame implements Message<StompFrame>
 {	
-	
+	/**
+	 * return a string represents a valid STOMP syntax
+	 * @param header
+	 * @param map
+	 * @param body
+	 * @return
+	 */	
 	protected String makeFrame(String header, Map<String, String> map, String body)
 	{
 		StringBuilder builder = new StringBuilder();
@@ -36,6 +40,9 @@ public abstract class StompFrame implements Message<StompFrame>
 	public abstract String getEncodedString();
 	
 	@Override
+	/**
+	 * returns a byte[] of this frame
+	 */
 	public byte[] getBytes()
 	{
 		return getEncodedString().getBytes();

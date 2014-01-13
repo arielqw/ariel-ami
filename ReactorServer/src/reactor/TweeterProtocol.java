@@ -1,7 +1,8 @@
 package reactor;
 
 import java.nio.ByteBuffer;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 import protocol.AsyncServerProtocol;
@@ -43,7 +44,13 @@ public class TweeterProtocol implements AsyncServerProtocol<StringMessage>
         
     }
  
-
+    /**
+     * gets an array of strings representing the rows of the msg
+     * and returns the value of a provided key according to stomp msg specs
+     * @param strArr
+     * @param stringToFind is the key
+     * @return
+     */
     protected String getValueFromArray(String[] strArr,String stringToFind){
     	for (String string : strArr) {
     		if(string.length() >= stringToFind.length()){
@@ -54,6 +61,13 @@ public class TweeterProtocol implements AsyncServerProtocol<StringMessage>
 		}
     	return "not_found";
     }
+    
+    /**
+     * gets an array of strings representing the rows of the msg
+     * and returns the body of the msg according to stomp specs
+     * @param strArr
+     * @return the body of the msg
+     */
     protected String getBody(String[] strArr){
     	for (int i = 0; i < strArr.length; i++) {
 			if(i!=0 && strArr[i].equals("")&& i+1 < strArr.length){
@@ -117,6 +131,11 @@ public class TweeterProtocol implements AsyncServerProtocol<StringMessage>
         return false;
     }
  
+	/**
+	 * processes SendFrame from a user
+	 * @param sendFrame
+	 * @return
+	 */
     private boolean processSendFrameFromUser(SendFrame sendFrame) {
     	Long currentTime = System.currentTimeMillis();
 		LOGGER.info("[<<] [request=send] [username='"+_username+"'] [destination="+sendFrame.getDestination()+"] [message="+sendFrame.getMessage()+"]");
@@ -126,29 +145,31 @@ public class TweeterProtocol implements AsyncServerProtocol<StringMessage>
 		_usersDatabase.incrementTweets(toUser); //user tweets ++
 		
 		if(toUser.equals("server")){
+			//speical server command received from user
 	    	String[] splited = message.split(" ");
 	    	switch (splited[0]) {
 			case "clients":
+				//user should now get back a list of all the registered clients in the system
 				boolean online = false;
 				if(splited.length > 1 && splited[1].equals("online")){
+					//user should now get all online users
 					online = true;
 				}
 				String listOfUsers = getListOfUsers(online);
 				_topicsDatabase.addMessageToTopic("server",listOfUsers);
 				break;
 			case "stats":
+				//users should get all gathered statistics
 				_topicsDatabase.addMessageToTopic("server",_statistics.generateStatisticsInformation());
 				break;
 			case "stop":
-//				stopServer();
 				return true;
-				//break;
-
 			default:
 				break;
 			}
 		}
 		else{
+			//regular msg from a user to a topic
 			_statistics.addTweet();
 			_topicsDatabase.addMessageToTopic(toUser,message);
 			handleMentionedUsers(sendFrame); //[twitter] send to attached users '@otheruser'
@@ -159,11 +180,6 @@ public class TweeterProtocol implements AsyncServerProtocol<StringMessage>
 		
     }
 
-//	private void stopServer() {
-//		LOGGER.info("[<<] [request=stop server] [username='"+_username+"']");
-//		_usersDatabase.closeConnections();
-//		_server.shutdown();
-//	}
 
 	private String getListOfUsers(boolean online) {
 		StringBuilder usersList = new StringBuilder();
@@ -176,8 +192,12 @@ public class TweeterProtocol implements AsyncServerProtocol<StringMessage>
 		return usersList.toString();
 	}
 
+	/**
+	 * checks the msg for mentionings of other users and tags them
+	 * @param sendFrame
+	 */
 	private void handleMentionedUsers(SendFrame sendFrame) {
-		Vector<String> users = getMentionedUsers(sendFrame.getMessage());
+		List<String> users = getMentionedUsers(sendFrame.getMessage());
 		int numOfMentions = 0;
 		for (String user : users) {
 			_usersDatabase.incrementMentions(user);
@@ -187,8 +207,8 @@ public class TweeterProtocol implements AsyncServerProtocol<StringMessage>
 		_usersDatabase.incrementMentioning(sendFrame.getDestination(),numOfMentions);
 	}
 
-	private Vector<String> getMentionedUsers(String message) {
-		Vector<String> users = new Vector<>();
+	private List<String> getMentionedUsers(String message) {
+		List<String> users = new ArrayList<String>();
 		
 		int from=0;
 		boolean found = false;
@@ -218,12 +238,6 @@ public class TweeterProtocol implements AsyncServerProtocol<StringMessage>
 	}
 
 
-//	public static String generateMessageId() {
-//		String id = Long.toString(StompProtocol.messageIdCounter);
-//		StompProtocol.messageIdCounter++;
-//		return id;
-//	}
-
 	private void unsubscribe(UnsubscribeFrame unsubscribeFrame){
 		String unsubscribeId = unsubscribeFrame.getId();
 		LOGGER.info("[<<] [request=unsubscribe] [username='"+_username+"'] [id="+unsubscribeId+"]");
@@ -235,16 +249,13 @@ public class TweeterProtocol implements AsyncServerProtocol<StringMessage>
 		
 		switch (success) { //[twitter] unfollow errors
 		case -1: //trying to unfollow myself
-//			_connectionHandler.send(new ErrorFrame("Trying to unfollow itself", "You can not unfollow yourself").getEncodedString());
 			writeToHandler(new ErrorFrame("Trying to unfollow itself", "You can not unfollow yourself"));
 			break;
 		case 0: //success
 			_usersDatabase.getUser(userToUnfollow).decreaseFollowers();
-//			_connectionHandler.send(new ServerMessageFrame(_username,"-1","No longer following "+userToUnfollow).getEncodedString());
 			writeToHandler(new ServerMessageFrame(_username,"-1","No longer following "+userToUnfollow));
 			break;
 		case 1: // trying to unfollow user that im not following
-//			_connectionHandler.send(new ErrorFrame("Not following this user", "").getEncodedString());
 			writeToHandler(new ErrorFrame("Not following this user", ""));
 			break;
 
@@ -259,13 +270,11 @@ public class TweeterProtocol implements AsyncServerProtocol<StringMessage>
 		LOGGER.info("[<<] [request=subscribe] [username='"+_username+"'] [topic="+subscribeFrame.getDestination()+"] [id="+subscribeFrame.getId()+"]");
 		Topic topic = _topicsDatabase.addUserToTopic(subscribeFrame.getDestination(), _username);
 		if(topic == null){ //[twitter] username not found!
-//			_connectionHandler.send(new ErrorFrame("Wrong username", "").getEncodedString());
 			writeToHandler(new ErrorFrame("Wrong username", ""));
 			success = false;
 		}
 		boolean allreadyFollowing = _usersDatabase.getUser(_username).addTopic( topic,subscribeFrame.getId() );
 		if(allreadyFollowing){ //[twitter] already following user
-//			_connectionHandler.send(new ErrorFrame("Already following username", "").getEncodedString());
 			writeToHandler(new ErrorFrame("Already following username", ""));
 			success = false;
 		}
@@ -286,18 +295,15 @@ public class TweeterProtocol implements AsyncServerProtocol<StringMessage>
 			LOGGER.info("[error] [type=login failed] [username='"+_username+"'] [reason=user already logged in]");
 
 			writeToHandler(new ErrorFrame("User allready logged in",""));
-//			_connectionHandler.send(ans.getEncodedString());
 			break;
 		case INVALID_PASSWORD:
 			LOGGER.info("[error] [type=login failed] [username='"+_username+"'] [reason=wrong password]");
 			writeToHandler( new ErrorFrame("Wrong password",""));
-//			_connectionHandler.send(ans.getEncodedString());
 			break;
 		case LOGIN_SUCCESS:
 			_username = connectFrame.getUsername();
 			LOGGER.info("[info] [login success] [username='"+_username+"']");
 			writeToHandler(new ConnectedFrame());
-//			_connectionHandler.send(ans.getEncodedString());
 			_usersDatabase.getUser( connectFrame.getUsername() ).sendUnreadMessages();
 			break;
 
@@ -313,7 +319,6 @@ public class TweeterProtocol implements AsyncServerProtocol<StringMessage>
 	
 	private void disconnect(DisconnectFrame disconnectFrame) {
 		LOGGER.info("[<<] [request=disconnect] [username='"+_username+"'][receipt="+disconnectFrame.getReceipt()+"]");
-//		StompFrame ans = null;
 		if(_username != null){
 			_usersDatabase.logout(_username);
 			writeToHandler(new ReceiptFrame(disconnectFrame.getReceipt()));
@@ -323,7 +328,6 @@ public class TweeterProtocol implements AsyncServerProtocol<StringMessage>
 
 			writeToHandler(new ErrorFrame("User not logged in",""));
 		}
-//		_connectionHandler.send(ans.getEncodedString());
 	}
 
 	public void setConnectionHanlder(ConnectionHandler connectionHandler) {
@@ -331,21 +335,11 @@ public class TweeterProtocol implements AsyncServerProtocol<StringMessage>
 		
 	}
 
-//	@Override
-//	public void terminate() {
-//		_shouldClose = true;
-//		
-//	}
-
 	public String getUsername() {
 		return _username;
 	}
 	
 	
-	//////////////////////////////////////////////////////////////////////////////////////// INTERFACE MUSTS
-	
-
-
 	@Override
 	public boolean isEnd(StringMessage msg)
 	{

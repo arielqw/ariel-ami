@@ -3,6 +3,11 @@ package spl.server;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * Database of topics ('users' in tweeter)
+ *
+ */
+
 public class TopicsDatabase {
 	private Map<String, Topic> _topics;
 	private UsersDatabase _users;
@@ -21,7 +26,12 @@ public class TopicsDatabase {
 		return topic;
 	}
 	
-
+	/**
+	 * handling follow option in tweeter
+	 * @param topicName username to follow
+	 * @param username follower username
+	 * @return topic (user) to follow
+	 */
 	public Topic addUserToTopic(String topicName,String username){
 		Topic topic = _topics.get(topicName);
 		if(topic == null){ //not found
@@ -36,6 +46,11 @@ public class TopicsDatabase {
 		return topic;
 	}
 
+	/**
+	 * add tweet to a user
+	 * @param topicName username
+	 * @param message tweet
+	 */
 	public void addMessageToTopic(String topicName, String message) {
 		Topic topic = _topics.get(topicName);
 		if(topic != null) topic.addMessage(message); //[twitter] can't tweet to a new topic

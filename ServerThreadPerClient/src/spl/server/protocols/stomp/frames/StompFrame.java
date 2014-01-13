@@ -4,11 +4,17 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-
 import spl.server.MessageFrame;
 
 public abstract class StompFrame extends MessageFrame
 {	
+	/**
+	 * return a string represents a valid STOMP syntax
+	 * @param header
+	 * @param map
+	 * @param body
+	 * @return
+	 */
 	protected String makeFrame(String header, Map<String, String> map, String body)
 	{
 		StringBuilder builder = new StringBuilder();

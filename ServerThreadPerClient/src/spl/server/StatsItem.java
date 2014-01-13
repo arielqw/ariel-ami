@@ -1,5 +1,9 @@
 package spl.server;
 
+/**
+ * utility object to help calculate server statistics
+ *
+ */
 public class StatsItem {
 	private UsersDatabase _usersDB;
 	

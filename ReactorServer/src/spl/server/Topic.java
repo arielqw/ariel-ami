@@ -2,7 +2,10 @@ package spl.server;
 
 import java.util.Vector;
 
-
+/**
+ * a topic which users can subscribe to. in tweeter, a username to follow
+ *
+ */
 public class Topic {
 	private String _topicName;
 	private Vector<User> _users;

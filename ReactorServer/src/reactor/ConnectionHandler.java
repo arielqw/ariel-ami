@@ -1,16 +1,16 @@
 package reactor;
 
-import java.nio.channels.SocketChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.ClosedChannelException;
-import java.nio.ByteBuffer;
 import java.io.IOException;
 import java.net.SocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.SocketChannel;
 import java.util.Vector;
 import java.util.logging.Logger;
 
-import protocol.*;
-import tokenizer.*;
+import protocol.AsyncServerProtocol;
+import tokenizer.MessageTokenizer;
 
 /**
  * Handles messages from clients
