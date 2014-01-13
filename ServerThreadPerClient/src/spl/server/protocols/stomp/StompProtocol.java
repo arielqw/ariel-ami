@@ -2,6 +2,7 @@ package spl.server.protocols.stomp;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import spl.server.ConnectionHandler;
 import spl.server.Server;
@@ -24,7 +25,8 @@ import spl.server.protocols.stomp.frames.SubscribeFrame;
 import spl.server.protocols.stomp.frames.UnsubscribeFrame;
 import spl.server.UsersDatabase;
 public class StompProtocol implements MessagingProtocol {
- 
+	private final static Logger LOGGER = Logger.getGlobal();
+
     private boolean _shouldClose;
     private int _lineNumber;
     private UsersDatabase _usersDatabase;
@@ -127,7 +129,7 @@ public class StompProtocol implements MessagingProtocol {
  
     private void send(SendFrame sendFrame) {
     	Long currentTime = System.currentTimeMillis();
-		System.out.println("[send request][destination="+sendFrame.getDestination()+"][message="+sendFrame.getMessage()+"]");
+		LOGGER.info("[<<] [request=send] [username='"+_username+"'] [destination="+sendFrame.getDestination()+"] [message="+sendFrame.getMessage()+"]");
 		String toUser = sendFrame.getDestination();
 		String message = sendFrame.getMessage();
 
@@ -164,7 +166,7 @@ public class StompProtocol implements MessagingProtocol {
     }
 
 	private void stopServer() {
-		System.out.println("[server shutdown request]");
+		LOGGER.info("[<<] [request=stop server] [username='"+_username+"']");
 		_usersDatabase.closeConnections();
 		_server.shutdown();
 	}
@@ -230,7 +232,8 @@ public class StompProtocol implements MessagingProtocol {
 
 	private void unsubscribe(UnsubscribeFrame unsubscribeFrame) throws IOException{
 		String unsubscribeId = unsubscribeFrame.getId();
-		System.out.println("[unsubscribe request][id="+unsubscribeId+"]");
+		LOGGER.info("[<<] [request=unsubscribe] [username='"+_username+"'] [id="+unsubscribeId+"]");
+
 		User user = _usersDatabase.getUser(_username);
 		String userToUnfollow = user.getTopicName(unsubscribeId);
 		
@@ -256,8 +259,7 @@ public class StompProtocol implements MessagingProtocol {
 
 	private boolean subscribe(SubscribeFrame subscribeFrame) throws IOException {
 		boolean success = true;
-		System.out.println("[subscribe request][topic="+subscribeFrame.getDestination()+"][id="+subscribeFrame.getId()+"]");
-
+		LOGGER.info("[<<] [request=subscribe] [username='"+_username+"'] [topic="+subscribeFrame.getDestination()+"] [id="+subscribeFrame.getId()+"]");
 		Topic topic = _topicsDatabase.addUserToTopic(subscribeFrame.getDestination(), _username);
 		if(topic == null){ //[twitter] username not found!
 			_connectionHandler.send(new ErrorFrame("Wrong username", "").getEncodedString());
@@ -276,46 +278,46 @@ public class StompProtocol implements MessagingProtocol {
     }
 
 	private void connect(ConnectFrame connectFrame) throws IOException{
-		System.out.println("[login request][username="+connectFrame.getUsername()+"][password="+connectFrame.getPassword()+"]");
+		LOGGER.info("[<<] [request=login] [username='"+connectFrame.getUsername()+"'] [password="+connectFrame.getPassword()+"]");
 
 		StompFrame ans = null;
 		UsersDatabase.Status status = _usersDatabase.login(connectFrame.getUsername(), connectFrame.getPassword(),_connectionHandler,_topicsDatabase);
 		
 		switch (status) {
 		case ALLREADY_LOGGED_IN:
-			System.out.println("[login failed][reason=already logged in]");
+			LOGGER.info("[error] [type=login failed] [username='"+_username+"'] [reason=user already logged in]");
+
 			ans = new ErrorFrame("User allready logged in","");
 			_connectionHandler.send(ans.getEncodedString());
 			break;
 		case INVALID_PASSWORD:
-			System.out.println("[login failed][reason=wrong password]");
+			LOGGER.info("[error] [type=login failed] [username='"+_username+"'] [reason=wrong password]");
 			ans = new ErrorFrame("Wrong password","");
 			_connectionHandler.send(ans.getEncodedString());
 			break;
 		case LOGIN_SUCCESS:
-			System.out.println("[login success]");
 			_username = connectFrame.getUsername();
+			LOGGER.info("[info] [login success] [username='"+_username+"']");
 			ans = new ConnectedFrame();
 			_connectionHandler.send(ans.getEncodedString());
 			_usersDatabase.getUser( connectFrame.getUsername() ).sendUnreadMessages();
 			break;
 
 		default:
-			System.out.println("[DEFUALT]");
 			break;
 		}
 	}
 	
 	private void disconnect(DisconnectFrame disconnectFrame) throws IOException {
-		System.out.println("[disconnect request][receipt="+disconnectFrame.getReceipt()+"]");
-
+		LOGGER.info("[<<] [request=disconnect] [username='"+_username+"'][receipt="+disconnectFrame.getReceipt()+"]");
 		StompFrame ans = null;
 		if(_username != null){
 			_usersDatabase.logout(_username);
 			ans = new ReceiptFrame(disconnectFrame.getReceipt());
 		}
 		else{
-			System.out.println("[logout failed][reason=user not logged in]");
+			LOGGER.info("[error] [logout failed] [username='"+_username+"'] [reason=user not logged in");
+
 			ans = new ErrorFrame("User not logged in","");
 		}
 		_connectionHandler.send(ans.getEncodedString());
@@ -331,6 +333,11 @@ public class StompProtocol implements MessagingProtocol {
 	public void terminate() {
 		_shouldClose = true;
 		
+	}
+
+	@Override
+	public String getUsername() {
+		return _username;
 	}
 
 }

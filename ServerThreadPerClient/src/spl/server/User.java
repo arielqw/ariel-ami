@@ -7,11 +7,14 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 import spl.server.protocols.stomp.StompProtocol;
 import spl.server.protocols.stomp.frames.ServerMessageFrame;
 
 public class User {
+	private final static Logger LOGGER = Logger.getGlobal();
+
 	private String _username;
 	private String _password;
 	private boolean _isLoggedIn;
@@ -184,7 +187,7 @@ public class User {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("[terminated][username="+_username+"]");
+		LOGGER.info("[client terminated] [username="+_username+"]");
 
 	}
 

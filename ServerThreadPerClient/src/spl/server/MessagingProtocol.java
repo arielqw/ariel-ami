@@ -31,5 +31,7 @@ public interface MessagingProtocol {
 	void setConnectionHanlder(ConnectionHandler connectionHandler);
 
 	void terminate();
+
+	String getUsername();
  
 }

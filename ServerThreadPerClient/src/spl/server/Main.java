@@ -1,5 +1,7 @@
 package spl.server;
 
+import spl.util.MyLogger;
+
 public class Main{
 	public static void main(String[] args) {
 
@@ -7,6 +9,8 @@ public class Main{
             System.err.println("please supply only one argument, the port to bind.");
             return;
         }
+		new MyLogger().setup();
+
         Server server = new Server(Integer.parseInt(args[0]));
         try {
 			server.start();

@@ -1,10 +1,13 @@
 package spl.server;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.logging.Logger;
+
 import spl.server.encoding.Encoder;
  
 public class ConnectionHandler implements Runnable {
- 
+	private final static Logger LOGGER = Logger.getGlobal();
+
     private final Socket _socket;
     private final Encoder _encoder;
     private final Tokenizer _tokenizer;
@@ -25,7 +28,6 @@ public class ConnectionHandler implements Runnable {
                     _protocol.connectionTerminated();
                 else {
                     String msg = _tokenizer.nextToken();
-                    //System.out.println("[message received start]\n"+msg+"[message end]");
                     boolean shouldDisconnect = _protocol.processMessage(msg);
                     if (shouldDisconnect) {
                     	//TODO:disconnect?
@@ -41,7 +43,8 @@ public class ConnectionHandler implements Runnable {
             _socket.close();
         } catch (IOException ignored) {
         }
-        System.out.println("[Client is closed]");
+		LOGGER.info("[server] [event=client closed] [username='"+_protocol.getUsername()+"']");
+
     }
     
     public void send(String msg) throws IOException{
