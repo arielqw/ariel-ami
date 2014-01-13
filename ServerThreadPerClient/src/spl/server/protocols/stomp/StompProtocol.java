@@ -1,10 +1,12 @@
 package spl.server.protocols.stomp;
-
 import java.io.IOException;
 import java.util.Date;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 import spl.server.ConnectionHandler;
+import spl.server.Server;
+import spl.server.Statistics;
 import spl.server.TopicsDatabase;
 import spl.server.Topic;
 import spl.server.MessageFrame;
@@ -23,7 +25,8 @@ import spl.server.protocols.stomp.frames.SubscribeFrame;
 import spl.server.protocols.stomp.frames.UnsubscribeFrame;
 import spl.server.UsersDatabase;
 public class StompProtocol implements MessagingProtocol {
- 
+	private final static Logger LOGGER = Logger.getGlobal();
+
     private boolean _shouldClose;
     private int _lineNumber;
     private UsersDatabase _usersDatabase;
@@ -31,14 +34,18 @@ public class StompProtocol implements MessagingProtocol {
     private String _username;
 	private ConnectionHandler _connectionHandler;
 	static private volatile long messageIdCounter=0;
+	private Server _server;
+	private Statistics _statistics;
 	
-    public StompProtocol(UsersDatabase usersDatabase, TopicsDatabase entriesDatabase) {
+    public StompProtocol(UsersDatabase usersDatabase, TopicsDatabase entriesDatabase, Server server, Statistics statistics) {
         _shouldClose = false;
         _lineNumber = 0;
         _usersDatabase = usersDatabase;
         _topicsDatabase = entriesDatabase;
         _username = null;
         _connectionHandler = null;
+        _server = server;
+        _statistics = statistics;
         
     }
  
@@ -97,6 +104,7 @@ public class StompProtocol implements MessagingProtocol {
 			String destination = getValueFromArray(splited, "destination");
 			String subscribeId = getValueFromArray(splited, "id");
 			if( subscribe( new SubscribeFrame(destination,subscribeId) )){ //[twitter] success following user
+				_usersDatabase.getUser(destination).incrementFollowers();
 				_connectionHandler.send(new ServerMessageFrame(_username,"-1","following "+destination).getEncodedString());
 			}
 			break;
@@ -120,16 +128,69 @@ public class StompProtocol implements MessagingProtocol {
     }
  
     private void send(SendFrame sendFrame) {
-		System.out.println("[send request][destination="+sendFrame.getDestination()+"][message="+sendFrame.getMessage()+"]");
-		_topicsDatabase.addMessageToTopic(sendFrame.getDestination(),sendFrame.getMessage());
-		handleMentionedUsers(sendFrame); //[twitter] send to attached users '@otheruser'
+    	Long currentTime = System.currentTimeMillis();
+		LOGGER.info("[<<] [request=send] [username='"+_username+"'] [destination="+sendFrame.getDestination()+"] [message="+sendFrame.getMessage()+"]");
+		String toUser = sendFrame.getDestination();
+		String message = sendFrame.getMessage();
+
+		_usersDatabase.incrementTweets(toUser); //user tweets ++
+		
+		if(toUser.equals("server")){
+	    	String[] splited = message.split(" ");
+	    	switch (splited[0]) {
+			case "clients":
+				boolean online = false;
+				if(splited.length > 1 && splited[1].equals("online")){
+					online = true;
+				}
+				String listOfUsers = getListOfUsers(online);
+				_topicsDatabase.addMessageToTopic("server",listOfUsers);
+				break;
+			case "stats":
+				_topicsDatabase.addMessageToTopic("server",_statistics.generateStatisticsInformation());
+				break;
+			case "stop":
+				stopServer();
+				break;
+
+			default:
+				break;
+			}
+		}
+		else{
+			_statistics.addTweet();
+			_topicsDatabase.addMessageToTopic(toUser,message);
+			handleMentionedUsers(sendFrame); //[twitter] send to attached users '@otheruser'
+			_statistics.addTweetPassTime(System.currentTimeMillis()-currentTime);
+		}
     }
+
+	private void stopServer() {
+		LOGGER.info("[<<] [request=stop server] [username='"+_username+"']");
+		_usersDatabase.closeConnections();
+		_server.shutdown();
+	}
+
+	private String getListOfUsers(boolean online) {
+		StringBuilder usersList = new StringBuilder();
+		usersList.append("[");
+		if(online) usersList.append("online ");
+		usersList.append("users] ");
+
+		usersList.append(_usersDatabase.printUsers(online));
+			
+		return usersList.toString();
+	}
 
 	private void handleMentionedUsers(SendFrame sendFrame) {
 		Vector<String> users = getMentionedUsers(sendFrame.getMessage());
+		int numOfMentions = 0;
 		for (String user : users) {
+			_usersDatabase.incrementMentions(user);
 			_topicsDatabase.addMessageToTopic(user,sendFrame.getMessage());
+			numOfMentions++;
 		}
+		_usersDatabase.incrementMentioning(sendFrame.getDestination(),numOfMentions);
 	}
 
 	private Vector<String> getMentionedUsers(String message) {
@@ -171,7 +232,8 @@ public class StompProtocol implements MessagingProtocol {
 
 	private void unsubscribe(UnsubscribeFrame unsubscribeFrame) throws IOException{
 		String unsubscribeId = unsubscribeFrame.getId();
-		System.out.println("[unsubscribe request][id="+unsubscribeId+"]");
+		LOGGER.info("[<<] [request=unsubscribe] [username='"+_username+"'] [id="+unsubscribeId+"]");
+
 		User user = _usersDatabase.getUser(_username);
 		String userToUnfollow = user.getTopicName(unsubscribeId);
 		
@@ -182,6 +244,7 @@ public class StompProtocol implements MessagingProtocol {
 			_connectionHandler.send(new ErrorFrame("Trying to unfollow itself", "You can not unfollow yourself").getEncodedString());
 			break;
 		case 0: //success
+			_usersDatabase.getUser(userToUnfollow).decreaseFollowers();
 			_connectionHandler.send(new ServerMessageFrame(_username,"-1","No longer following "+userToUnfollow).getEncodedString());
 			break;
 		case 1: // trying to unfollow user that im not following
@@ -196,8 +259,7 @@ public class StompProtocol implements MessagingProtocol {
 
 	private boolean subscribe(SubscribeFrame subscribeFrame) throws IOException {
 		boolean success = true;
-		System.out.println("[subscribe request][topic="+subscribeFrame.getDestination()+"][id="+subscribeFrame.getId()+"]");
-
+		LOGGER.info("[<<] [request=subscribe] [username='"+_username+"'] [topic="+subscribeFrame.getDestination()+"] [id="+subscribeFrame.getId()+"]");
 		Topic topic = _topicsDatabase.addUserToTopic(subscribeFrame.getDestination(), _username);
 		if(topic == null){ //[twitter] username not found!
 			_connectionHandler.send(new ErrorFrame("Wrong username", "").getEncodedString());
@@ -216,46 +278,46 @@ public class StompProtocol implements MessagingProtocol {
     }
 
 	private void connect(ConnectFrame connectFrame) throws IOException{
-		System.out.println("[login request][username="+connectFrame.getUsername()+"][password="+connectFrame.getPassword()+"]");
+		LOGGER.info("[<<] [request=login] [username='"+connectFrame.getUsername()+"'] [password="+connectFrame.getPassword()+"]");
 
 		StompFrame ans = null;
 		UsersDatabase.Status status = _usersDatabase.login(connectFrame.getUsername(), connectFrame.getPassword(),_connectionHandler,_topicsDatabase);
 		
 		switch (status) {
 		case ALLREADY_LOGGED_IN:
-			System.out.println("[login failed][reason=already logged in]");
+			LOGGER.info("[error] [type=login failed] [username='"+_username+"'] [reason=user already logged in]");
+
 			ans = new ErrorFrame("User allready logged in","");
 			_connectionHandler.send(ans.getEncodedString());
 			break;
 		case INVALID_PASSWORD:
-			System.out.println("[login failed][reason=wrong password]");
+			LOGGER.info("[error] [type=login failed] [username='"+_username+"'] [reason=wrong password]");
 			ans = new ErrorFrame("Wrong password","");
 			_connectionHandler.send(ans.getEncodedString());
 			break;
 		case LOGIN_SUCCESS:
-			System.out.println("[login success]");
 			_username = connectFrame.getUsername();
+			LOGGER.info("[info] [login success] [username='"+_username+"']");
 			ans = new ConnectedFrame();
 			_connectionHandler.send(ans.getEncodedString());
 			_usersDatabase.getUser( connectFrame.getUsername() ).sendUnreadMessages();
 			break;
 
 		default:
-			System.out.println("[DEFUALT]");
 			break;
 		}
 	}
 	
 	private void disconnect(DisconnectFrame disconnectFrame) throws IOException {
-		System.out.println("[disconnect request][receipt="+disconnectFrame.getReceipt()+"]");
-
+		LOGGER.info("[<<] [request=disconnect] [username='"+_username+"'][receipt="+disconnectFrame.getReceipt()+"]");
 		StompFrame ans = null;
 		if(_username != null){
 			_usersDatabase.logout(_username);
 			ans = new ReceiptFrame(disconnectFrame.getReceipt());
 		}
 		else{
-			System.out.println("[logout failed][reason=user not logged in]");
+			LOGGER.info("[error] [logout failed] [username='"+_username+"'] [reason=user not logged in");
+
 			ans = new ErrorFrame("User not logged in","");
 		}
 		_connectionHandler.send(ans.getEncodedString());
@@ -265,6 +327,17 @@ public class StompProtocol implements MessagingProtocol {
 	public void setConnectionHanlder(ConnectionHandler connectionHandler) {
 		_connectionHandler = connectionHandler;
 		
+	}
+
+	@Override
+	public void terminate() {
+		_shouldClose = true;
+		
+	}
+
+	@Override
+	public String getUsername() {
+		return _username;
 	}
 
 }

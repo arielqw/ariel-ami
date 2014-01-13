@@ -5,9 +5,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 
-
 import spl.server.MessageFrame;
-
 
 public abstract class StompFrame extends MessageFrame
 {	

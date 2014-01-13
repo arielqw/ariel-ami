@@ -7,17 +7,25 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 import spl.server.protocols.stomp.StompProtocol;
 import spl.server.protocols.stomp.frames.ServerMessageFrame;
 
 public class User {
+	private final static Logger LOGGER = Logger.getGlobal();
+
 	private String _username;
 	private String _password;
 	private boolean _isLoggedIn;
 	private ConnectionHandler _connectionHanlder;
 	private Queue<MessageFrame> _myMessages;
 	private Map<String, Topic> _myEntries;
+	
+	private int _numOfMentionsIwrote;
+	private int _numOfMentionsOfMe;
+	private int _numOfTweets;
+	private int _numOfFollowers;
 	
 	public User(String username, String password) {
 		_username = username;
@@ -26,8 +34,36 @@ public class User {
 		_connectionHanlder = null;
 		_myMessages = new ConcurrentLinkedQueue<>();
 		_myEntries = new ConcurrentHashMap<String, Topic>();
+		_numOfMentionsIwrote = 0;
+		_numOfMentionsOfMe = 0;
+		_numOfTweets = 0;
+		_numOfFollowers = 0;
 	}
 	
+
+
+	public String getUsername() {
+		return _username;
+	}
+
+
+
+	public int getNumOfMentionsIwrote() {
+		return _numOfMentionsIwrote;
+	}
+
+
+
+	public int getNumOfMentionsOfMe() {
+		return _numOfMentionsOfMe;
+	}
+
+
+
+	public int getNumOfTweets() {
+		return _numOfTweets;
+	}
+
 
 
 	public void login(ConnectionHandler connectionHandler){
@@ -140,6 +176,59 @@ public class User {
 
 	public boolean isServer() {
 		return _username.equals("server");
+	}
+
+
+
+	public void terminate() {
+		try {
+			_connectionHanlder.terminate();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		LOGGER.info("[client terminated] [username="+_username+"]");
+
+	}
+
+
+
+	public int getNumOfFollowers() {
+		return _numOfFollowers;
+	}
+
+
+
+	public void incrementMyTweets() {
+		_numOfTweets++;
+		
+	}
+
+
+
+	public void incrementMentionsOfMe() {
+		_numOfMentionsOfMe++;
+	}
+
+
+
+	public void incrementMentionsIwrote(int numOfMentions) {
+		_numOfMentionsIwrote +=numOfMentions;
+		
+	}
+
+
+
+	public void incrementFollowers() {
+		_numOfFollowers++;
+		
+	}
+
+
+
+	public void decreaseFollowers() {
+		_numOfFollowers--;
+		
 	}
 
 }
