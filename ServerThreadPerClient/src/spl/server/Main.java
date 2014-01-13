@@ -6,7 +6,7 @@ public class Main{
 	public static void main(String[] args) {
 
         if (args.length != 1) {
-            System.err.println("please supply only one argument, the port to bind.");
+            System.err.println("Usage: server <port>");
             return;
         }
 		new MyLogger().setup();
