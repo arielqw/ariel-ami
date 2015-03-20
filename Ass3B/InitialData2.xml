@@ -1,0 +1,139 @@
+<?xml version="1.0" ?> 
+<Restaurant>
+    <Address>
+        <x>10</x>
+        <y>10</y>
+    </Address>
+    <Repository>
+        <Tools>
+            <KitchenTool>
+                <name>Oven</name>
+                <quantity>13</quantity>
+            </KitchenTool>
+            <KitchenTool>
+                <name>Stove</name>
+                <quantity>14</quantity>
+            </KitchenTool>
+            <KitchenTool>
+                <name>Fork</name>
+                <quantity>15</quantity>
+            </KitchenTool>
+            <KitchenTool>
+                <name>Cup</name>
+                <quantity>14</quantity>
+            </KitchenTool>
+            <KitchenTool>
+                <name>Bowl</name>
+                <quantity>19</quantity>
+            </KitchenTool>
+            <KitchenTool>
+                <name>Plate</name>
+                <quantity>15</quantity>
+            </KitchenTool>
+            <KitchenTool>
+                <name>Spoon</name>
+                <quantity>25</quantity>
+            </KitchenTool>
+            <KitchenTool>
+                <name>Knife</name>
+                <quantity>16</quantity>
+            </KitchenTool>
+            <KitchenTool>
+                <name>Pan</name>
+                <quantity>26</quantity>
+            </KitchenTool>
+        </Tools>
+        <Ingredients>
+            <Ingredient>
+                <name>Potato</name>
+                <quantity>5000</quantity>
+            </Ingredient>
+            <Ingredient>
+                <name>Butter</name>
+                <quantity>2000</quantity>
+            </Ingredient>
+            <Ingredient>
+                <name>Olive Oil</name>
+                <quantity>1500</quantity>
+            </Ingredient>
+            <Ingredient>
+                <name>Salt</name>
+                <quantity>1500</quantity>
+            </Ingredient>
+            <Ingredient>
+                <name>Cherry Tomato</name>
+                <quantity>1500</quantity>
+            </Ingredient>
+            <Ingredient>
+                <name>Bread</name>
+                <quantity>2500</quantity>
+            </Ingredient>			
+            <Ingredient>
+                <name>Bread Crumbs</name>
+                <quantity>1500</quantity>
+            </Ingredient>
+            <Ingredient>
+                <name>Egg</name>
+                <quantity>150</quantity>
+            </Ingredient>
+            <Ingredient>
+                <name>Flour</name>
+                <quantity>2500</quantity>
+            </Ingredient>
+            <Ingredient>
+                <name>Gouda Cheese</name>
+                <quantity>2500</quantity>
+            </Ingredient>
+            <Ingredient>
+                <name>Black Pepper</name>
+                <quantity>2500</quantity>
+            </Ingredient>
+        </Ingredients>
+    </Repository>
+    <Staff>
+        <Chefs>
+            <Chef>
+                <name>Gordon Ramsay</name>
+                <efficiencyRating>0.9</efficiencyRating>
+                <enduranceRating>50</enduranceRating>
+            </Chef>
+            <Chef>
+                <name>Rachael Ray</name>
+                <efficiencyRating>0.9</efficiencyRating>
+                <enduranceRating>45</enduranceRating>
+            </Chef>
+            <Chef>
+                <name>Wolfgang Puck</name>
+                <efficiencyRating>1.0</efficiencyRating>
+                <enduranceRating>30</enduranceRating>
+            </Chef>
+            <Chef>
+                <name>Paula Deen</name>
+                <efficiencyRating>1.1</efficiencyRating>
+                <enduranceRating>25</enduranceRating>
+            </Chef>
+        </Chefs>
+        <DeliveryPersonals>
+            <DeliveryPerson>
+                    <name>Garry Simpson</name>
+                    <speed>5</speed>
+            </DeliveryPerson>
+            <DeliveryPerson>
+                    <name>Ken Allen</name>
+                    <speed>7</speed>
+            </DeliveryPerson>
+            <DeliveryPerson>
+                    <name>Patrick Donahoe</name>
+                    <speed>6</speed>
+            </DeliveryPerson>
+            <DeliveryPerson>
+                    <name>Scott Davis</name>
+                    <speed>6</speed>
+            </DeliveryPerson>
+            <DeliveryPerson>
+                    <name>Frederick Smith</name>
+                    <speed>8</speed>
+            </DeliveryPerson>
+        </DeliveryPersonals>
+    </Staff>
+</Restaurant>

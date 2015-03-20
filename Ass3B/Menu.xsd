@@ -1,0 +1,52 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Menu">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Dishes">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Dish" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element type="xs:string" name="name"/>
+                    <xs:element type="xs:byte" name="difficultyRating"/>
+                    <xs:element type="xs:short" name="expectedCookTime"/>
+                    <xs:element type="xs:byte" name="reward"/>
+                    <xs:element name="KitchenTools">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="KitchenTool" maxOccurs="unbounded" minOccurs="0">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element type="xs:string" name="name"/>
+                                <xs:element type="xs:byte" name="quantity"/>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="Ingredients">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element name="Ingredient" maxOccurs="unbounded" minOccurs="0">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element type="xs:string" name="name"/>
+                                <xs:element type="xs:short" name="quantity"/>
+                              </xs:sequence>
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

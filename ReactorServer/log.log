@@ -1,0 +1,7 @@
+01:23:18 [server] [event=server online] [protocol='tweeter/STOMP'] [type='Reactor'] [pool size =10] [IP address='10.0.0.2'] [port='33342'] [encoding='UTF-8']
+01:24:08 [server] [event=connection accepted] [address='/10.0.0.9:5866']
+01:24:08 [<<] [request=login] [username='ami'] [password=oren]
+01:24:08 [info] [login success] [username='ami']
+01:24:21 [<<] [request=send] [username='ami'] [destination=ami] [message=bla]
+01:24:46 [<<] [request=subscribe] [username='ami'] [topic=server] [id=0]
+01:24:50 [<<] [request=send] [username='ami'] [destination=server] [message=stats]
