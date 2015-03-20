@@ -2,9 +2,10 @@ package spl.server;
 
 import java.util.Vector;
 
-import spl.server.protocols.stomp.StompProtocol;
-import spl.server.protocols.stomp.frames.ServerMessageFrame;
-
+/**
+ * a topic which users can subscribe to. in tweeter, a username to follow
+ *
+ */
 public class Topic {
 	private String _topicName;
 	private Vector<User> _users;
@@ -36,7 +37,6 @@ public class Topic {
 	}
 
 	public String getName() {
-		
 		return _topicName;
 	}
 }

@@ -2,16 +2,19 @@ package spl.server;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
-import spl.server.protocols.stomp.StompProtocol;
 import spl.server.protocols.stomp.frames.ServerMessageFrame;
 
+/**
+ * this class represents a user
+ *
+ */
 public class User {
 	private final static Logger LOGGER = Logger.getGlobal();
 
@@ -19,9 +22,10 @@ public class User {
 	private String _password;
 	private boolean _isLoggedIn;
 	private ConnectionHandler _connectionHanlder;
-	private Queue<MessageFrame> _myMessages;
-	private Map<String, Topic> _myEntries;
+	private Queue<MessageFrame> _myMessages; //queue of unread tweets
+	private Map<String, Topic> _myEntries; //queue of topics (users) I follow
 	
+	//stats
 	private int _numOfMentionsIwrote;
 	private int _numOfMentionsOfMe;
 	private int _numOfTweets;
@@ -40,32 +44,6 @@ public class User {
 		_numOfFollowers = 0;
 	}
 	
-
-
-	public String getUsername() {
-		return _username;
-	}
-
-
-
-	public int getNumOfMentionsIwrote() {
-		return _numOfMentionsIwrote;
-	}
-
-
-
-	public int getNumOfMentionsOfMe() {
-		return _numOfMentionsOfMe;
-	}
-
-
-
-	public int getNumOfTweets() {
-		return _numOfTweets;
-	}
-
-
-
 	public void login(ConnectionHandler connectionHandler){
 		_isLoggedIn = true;
 		_connectionHanlder = connectionHandler;
@@ -85,7 +63,6 @@ public class User {
 	}
 
 	public String getPw() {
-		// TODO Auto-generated method stub
 		return _password;
 	}
 
@@ -93,6 +70,12 @@ public class User {
 		_connectionHanlder = connectionHanlder;
 	}
 	
+	/**
+	 * send message to user
+	 * if offline -> store it in unread queue
+	 * @param destination from
+	 * @param message tweet
+	 */
 	public void sendMessage(String destination, String message){
 		String subscriptionId = getSubscriptionId(destination);
 		if(subscriptionId.equals("not_found")) return;
@@ -122,6 +105,9 @@ public class User {
 		return "not_found";
 	}
 
+	/**
+	 * send unread messages to user
+	 */
 	public void sendUnreadMessages(){
 		while(!_myMessages.isEmpty()){
 			try {
@@ -141,6 +127,12 @@ public class User {
 		}
 	}
 
+	/**
+	 * add a user to follow
+	 * @param topic user
+	 * @param id subscription id
+	 * @return
+	 */
 	public boolean addTopic(Topic topic, String id) {
 		Topic tmp = _myEntries.get(id);
 		if(tmp != null){
@@ -149,7 +141,13 @@ public class User {
 		_myEntries.put(id, topic);
 		return false;
 	}
-	
+
+	/**
+	 * unfollow a user
+	 * @param topic user
+	 * @param id subscription id
+	 * @return
+	 */
 	public int removeTopic(String id) {
 		Topic topic = _myEntries.get(id);
 		if(topic != null){
@@ -163,8 +161,6 @@ public class User {
 		return 1;
 	}
 
-
-
 	public String getTopicName(String unsubscribeId) {
 		Topic topic = _myEntries.get(unsubscribeId);
 		if(topic == null ) return null;
@@ -172,63 +168,36 @@ public class User {
 		return topic.getName();
 	}
 
-
-
 	public boolean isServer() {
 		return _username.equals("server");
 	}
 
-
-
+	
+	/**
+	 * terminating a client connection
+	 */
 	public void terminate() {
 		try {
 			_connectionHanlder.terminate();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		LOGGER.info("[client terminated] [username="+_username+"]");
 
 	}
 
+	//statistics getters
+	public String getUsername() { return _username; }
+	public int getNumOfMentionsIwrote() { return _numOfMentionsIwrote; }
+	public int getNumOfMentionsOfMe() { return _numOfMentionsOfMe; }
+	public int getNumOfTweets() { return _numOfTweets; }
+	public int getNumOfFollowers() { return _numOfFollowers; }
 
-
-	public int getNumOfFollowers() {
-		return _numOfFollowers;
-	}
-
-
-
-	public void incrementMyTweets() {
-		_numOfTweets++;
-		
-	}
-
-
-
-	public void incrementMentionsOfMe() {
-		_numOfMentionsOfMe++;
-	}
-
-
-
-	public void incrementMentionsIwrote(int numOfMentions) {
-		_numOfMentionsIwrote +=numOfMentions;
-		
-	}
-
-
-
-	public void incrementFollowers() {
-		_numOfFollowers++;
-		
-	}
-
-
-
-	public void decreaseFollowers() {
-		_numOfFollowers--;
-		
-	}
+	//statistics getters
+	public void incrementMyTweets() { _numOfTweets++; }
+	public void incrementMentionsOfMe() { _numOfMentionsOfMe++; }
+	public void incrementMentionsIwrote(int numOfMentions) { _numOfMentionsIwrote +=numOfMentions; }
+	public void incrementFollowers() { _numOfFollowers++; }
+	public void decreaseFollowers() { _numOfFollowers--; }
 
 }

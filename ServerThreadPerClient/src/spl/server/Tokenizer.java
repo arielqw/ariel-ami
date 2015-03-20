@@ -1,5 +1,5 @@
 package spl.server;
-import java.io.IOException;    
+import java.io.IOException;
  
 /**
  * This interface care of tokenizing an input stream into protocol specific

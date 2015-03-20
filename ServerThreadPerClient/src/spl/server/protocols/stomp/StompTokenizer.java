@@ -2,7 +2,8 @@ package spl.server.protocols.stomp;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
- import spl.server.Tokenizer;
+
+import spl.server.Tokenizer;
 public class StompTokenizer implements Tokenizer {
  
     public final char _delimiter;

@@ -2,10 +2,9 @@ package reactor;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.charset.CharacterCodingException;
 
-import protocol.*;
-import tokenizer.*;
+import protocol.ServerProtocol;
+import tokenizer.MessageTokenizer;
 
 /**
  * This class supplies some data to the protocol, which then processes the data,

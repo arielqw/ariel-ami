@@ -3,6 +3,9 @@ package spl.server;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * logging and generating server statistics
+ */
 public class Statistics {
 	private UsersDatabase _userDB;
 	private TopicsDatabase _topicsDB;
@@ -17,15 +20,32 @@ public class Statistics {
 		_tweetsPassTime = new ArrayList<Long>();
 		_serverStartingTime = System.currentTimeMillis();
 	}
- 	
+	
+	/**
+	 * logging tweet recieved time
+	 */	
 	public synchronized void addTweet(){
 		_tweets.add(System.currentTimeMillis());
 	}
-	
+
+	/**
+	 * logging time took to pass tweet to all relevant users
+	 * @param time
+	 */
 	public synchronized void addTweetPassTime(Long time){
 		_tweetsPassTime.add(time);
 	}
-	
+
+	/**
+	 * generating statistics about the server:
+	 * 1. max tweets per 5 seconds
+	 * 2. avg tweets per 5 seconds
+	 * 3. avg tweets pass time
+	 * 4. user with most followers
+	 * 5. user with most mentions
+	 * 6. most mentioning user
+	 * @return above
+	 */
 	public synchronized String generateStatisticsInformation(){
 		StringBuilder builder = new StringBuilder();
 		builder.append(String.format("[Max tweets per 5 secs=%d] \n", computeMaxNumberOfTweetsPer5Seconds()));

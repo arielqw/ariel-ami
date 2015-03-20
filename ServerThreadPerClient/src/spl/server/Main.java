@@ -11,12 +11,11 @@ public class Main{
         }
 		new MyLogger().setup();
 
-        Server server = new Server(Integer.parseInt(args[0]));
-        try {
-			server.start();
-		} catch (Exception e) {
-			
-		}
+		int port = Integer.parseInt(args[0]);
+		
+		//Initialize server
+        Server server = new Server(port);
+		server.start();
     }	
 }
 

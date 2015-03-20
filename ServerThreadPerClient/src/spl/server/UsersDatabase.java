@@ -1,12 +1,14 @@
 package spl.server;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import spl.server.protocols.stomp.frames.ErrorFrame;
-
+/** 
+ * Database of users
+ *
+ */
 public class UsersDatabase {
 	private Map<String, User> _db;
 	
@@ -22,7 +24,7 @@ public class UsersDatabase {
 	
 	private User register(String username, String password){
 		User user = null;
-		if( !userExists(username) ){
+		if( !userExists(username) ){ //register a new user or return existing user
 			user = new User(username, password);
 			_db.put(username, user);
 		}
@@ -36,6 +38,14 @@ public class UsersDatabase {
 		return true;
 	}
 	
+	/**
+	 * login method
+	 * @param username
+	 * @param password
+	 * @param connectionHandler
+	 * @param topicsDatabase
+	 * @return INVALID_PASSWORD \ ALLREADY_LOGGED_IN \ LOGIN_SUCCESS
+	 */
 	public UsersDatabase.Status login(String username, String password, ConnectionHandler connectionHandler, TopicsDatabase topicsDatabase){
 		User user = null;
 		if( userExists(username) ){
@@ -60,6 +70,11 @@ public class UsersDatabase {
 		return Status.LOGIN_SUCCESS;
 	}
 	
+	/**
+	 * logout
+	 * @param username
+	 * @return NOT_LOGGED_IN \ LOGGED_OUT_SUCCESS \ USER_NOT_FOUND
+	 */
 	public UsersDatabase.Status logout(String username){
 		User user = null;
 		if( userExists(username) ){
@@ -82,6 +97,11 @@ public class UsersDatabase {
 		return _db.get(username);
 	}
 
+	/**
+	 * printing a list of users {online}
+	 * @param online
+	 * @return
+	 */
 	public Object printUsers(boolean online) {
 		StringBuilder builder = new StringBuilder();
 
@@ -96,6 +116,9 @@ public class UsersDatabase {
 		return builder.toString();
 	}
 
+	/**
+	 * go through all online users and terminates
+	 */
 	public void closeConnections() {
 		Set<Entry<String, User>> entries = _db.entrySet();
 		for (Entry<String, User> entry : entries)
