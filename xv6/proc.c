@@ -191,6 +191,7 @@ exit(int status)
   end_op();
   proc->cwd = 0;
 
+  proc->status = status;
   acquire(&ptable.lock);
 
   // Parent might be sleeping in wait().
