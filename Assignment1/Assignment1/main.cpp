@@ -17,20 +17,50 @@ GLubyte *newpic, *newpic1, *newpic2, *newpic3;
 GLubyte *tmp;
 GLubyte *tmp2;
 
+void writeArrayToFile(char questionNum, GLubyte* content, int size, BOOL isMonochrome)
+{
+	char filename[30];
+	strcpy(filename, "assignment\\imgX.txt");
+	filename[14] = questionNum;
+	FILE * pFile;
+	CreateDirectory("assignment", NULL);
+	pFile = fopen(filename, "wb");
+	if (isMonochrome)
+	{
+		for (size_t i = 0; i < size; i++)
+		{
+			if (content[i] == 255)	fwrite("1", sizeof(char), 1, pFile);
+			else					fwrite("0", sizeof(char), 1, pFile);
+
+			if (i < size - 1)	fwrite(",", sizeof(char), 1, pFile);
+
+		}
+	}
+	else
+	{
+		for (size_t i = 0; i < size; i++)
+		{
+			int value = content[i] / 16;
+			char str[4];
+			_itoa(value, str, 10);
+			fwrite(str, sizeof(char)*strlen(str), 1, pFile);
+
+			if (i < size - 1)	fwrite(",", sizeof(char), 1, pFile);
+		}
+	}
+	fclose(pFile);
+}
+
 void halftone(GLubyte *tmp)
 {
+	memset(tmp, 255, height1*width1 * 4 * sizeof(GLubyte));
 
-	memset(tmp, 255, height1*width1 * 9 * sizeof(GLubyte));
-	for (int i = 0; i<width1; i++)
+	for (int i = 0; i<height1; i++)
 	{
-
-		for (int j = 0; j<height1; j++)
-		{
-			/*
+		for (int j = 0; j<width1; j++)
+		{			
 			int k=j*2;
 			int l=i*2;
-
-
 
 			if(pic1[i+j*width1]<=255*1/5.0)
 			tmp[l+k*width1*2]=0;
@@ -42,42 +72,6 @@ void halftone(GLubyte *tmp)
 			tmp[l+1+(k+1)*width1*2]=0;
 			if(pic1[i+j*width1]<=255*4/5.0)
 			tmp[l+(k+1)*width1*2]=0;
-			*/
-
-
-
-
-			//newpic[i+j*width1]=255;
-
-			int k = j * 3 + 1;
-			int l = i * 3 + 1;
-
-			if (pic1[i + j*width1] <= 255 * 9 / 10.0)
-				tmp[l + (k - 1)*width1 * 3] = 0;
-
-			if (pic1[i + j*width1] <= 255 * 8 / 10.0)
-				tmp[l - 1 + (k + 1)*width1 * 3] = 0;
-
-			if (pic1[i + j*width1] <= 255 * 7 / 10.0)
-				tmp[l + 1 + (k + 1)*width1 * 3] = 0;
-
-			if (pic1[i + j*width1] <= 255 * 6 / 10.0)
-				tmp[l + 1 + (k + 1)*width1 * 3] = 0;
-
-			if (pic1[i + j*width1] <= 255 * 5 / 10.0)
-				tmp[l - 1 + k*width1 * 3] = 0;
-
-			if (pic1[i + j*width1] <= 255 * 4 / 10.0)
-				tmp[l - 1 + (k + 1)*width1 * 3] = 0;
-
-			if (pic1[i + j*width1] <= 255 * 3 / 10.0)
-				tmp[l + (k - 1)*width1 * 3] = 0;
-
-			if (pic1[i + j*width1] <= 255 * 2 / 10.0)
-				tmp[l + 1 + k*width1 * 3] = 0;
-
-			if (pic1[i + j*width1] <= 255 / 10.0)
-				tmp[l + k*width1 * 3] = 0;
 
 		}
 	}
@@ -309,12 +303,25 @@ void init()
 
 	//************ second image **************************	
 
-
-
-	halftone(tmp);
+	halftone(tmp2);
 
 	glGenTextures(1, &texture[1]);
 	glBindTexture(GL_TEXTURE_2D, texture[1]);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+	writeArrayToFile('5', tmp2, width1*height1 * 4, TRUE);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1 * 2, height1 * 2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tmp2);
+
+
+	//************ third image **************************	
+	details();
+	glGenTextures(1, &texture[2]);
+	glBindTexture(GL_TEXTURE_2D, texture[2]);
 
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -322,50 +329,24 @@ void init()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-	printf("\n***********halfton*****************\n");
-	for (int i = 0; i<width1 * 6; i++)
-		if (tmp[i] == 255)
-			printf("%d  ", i);
-		else printf("bla  ");
-		printf("\n****************************\n");
 
-		gluScaleImage(GL_LUMINANCE, width1 * 3, height1 * 3, GL_UNSIGNED_BYTE, tmp, width1 * 2, height1 * 2, GL_UNSIGNED_BYTE, tmp2);
-		for (int i = 0; i<width1 * 2; i++)
-			for (int j = 0; j<height1 * 2; j++)
-				if (tmp2[i + j*width1 * 2]>178)
-					tmp2[i + j*width1 * 2] = 255;
-				else tmp2[i + j*width1 * 2] = 0;
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1 * 2, height1 * 2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, tmp2);
-
-				//************ third image **************************	
-				details();
-				glGenTextures(1, &texture[2]);
-				glBindTexture(GL_TEXTURE_2D, texture[2]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, newpic2);
 
 
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//************ forth image **************************	
+
+	dithering();
+	glGenTextures(1, &texture[3]);
+	glBindTexture(GL_TEXTURE_2D, texture[3]);
 
 
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, newpic2);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 
-				//************ forth image **************************	
-
-				dithering();
-				glGenTextures(1, &texture[3]);
-				glBindTexture(GL_TEXTURE_2D, texture[3]);
-
-
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, newpic3);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width1, height1, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, newpic3);
 }
 
 
@@ -384,17 +365,17 @@ void mydisplay(void){
 
 	//glShadeModel(GL_FLAT);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0); //adapt texture to shape
-	glVertex3f(-1.0, -1.0f, 1.0);
+		glTexCoord2f(0, 0); //adapt texture to shape
+		glVertex3f(-1.0, -1.0f, 1.0);
 
-	glTexCoord2f(1, 0);  //adapt texture to shape
-	glVertex3f(1.0, -1.0f, 1.0);
+		glTexCoord2f(1, 0);  //adapt texture to shape
+		glVertex3f(1.0, -1.0f, 1.0);
 
-	glTexCoord2f(1, 1);//adapt texture to shape
-	glVertex3f(1.0, 1.0f, 1.0);
+		glTexCoord2f(1, 1);//adapt texture to shape
+		glVertex3f(1.0, 1.0f, 1.0);
 
-	glTexCoord2f(0, 1);//adapt texture to shape
-	glVertex3f(-1.0, 1.0f, 1.0);
+		glTexCoord2f(0, 1);//adapt texture to shape
+		glVertex3f(-1.0, 1.0f, 1.0);
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -404,17 +385,17 @@ void mydisplay(void){
 	glBindTexture(GL_TEXTURE_2D, texture[2]); //using first texture
 	//glScalef(0.5,0.5,1);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0);
-	glVertex3f(-1.0, -1.0f, -1.0);
+		glTexCoord2f(0, 0);
+		glVertex3f(-1.0, -1.0f, -1.0);
 
-	glTexCoord2f(1, 0);
-	glVertex3f(1.0, -1.0f, -1.0);
+		glTexCoord2f(1, 0);
+		glVertex3f(1.0, -1.0f, -1.0);
 
-	glTexCoord2f(1, 1);
-	glVertex3f(1.0, 1.0f, -1.0);
+		glTexCoord2f(1, 1);
+		glVertex3f(1.0, 1.0f, -1.0);
 
-	glTexCoord2f(0, 1);
-	glVertex3f(-1.0, 1.0f, -1.0);
+		glTexCoord2f(0, 1);
+		glVertex3f(-1.0, 1.0f, -1.0);
 	glEnd();
 	//glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -423,17 +404,17 @@ void mydisplay(void){
 	glBindTexture(GL_TEXTURE_2D, texture[0]); //using first texture
 	//glScalef(0.5,0.5,1);
 	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0);
-	glVertex3f(-1.0, -1.0f, -1.0);
+		glTexCoord2f(0, 0);
+		glVertex3f(-1.0, -1.0f, -1.0);
 
-	glTexCoord2f(1, 0);
-	glVertex3f(1.0, -1.0f, -1.0);
+		glTexCoord2f(1, 0);
+		glVertex3f(1.0, -1.0f, -1.0);
 
-	glTexCoord2f(1, 1);
-	glVertex3f(1.0, 1.0f, -1.0);
+		glTexCoord2f(1, 1);
+		glVertex3f(1.0, 1.0f, -1.0);
 
-	glTexCoord2f(0, 1);
-	glVertex3f(-1.0, 1.0f, -1.0);
+		glTexCoord2f(0, 1);
+		glVertex3f(-1.0, 1.0f, -1.0);
 	glEnd();
 
 	glViewport(256, 0, 256, 256);
@@ -442,16 +423,16 @@ void mydisplay(void){
 	//glScalef(0.5,0.5,1);
 	glBegin(GL_QUADS);
 	glTexCoord2f(0, 0);
-	glVertex3f(-1.0, -1.0f, -1.0);
+		glVertex3f(-1.0, -1.0f, -1.0);
 
-	glTexCoord2f(1, 0);
-	glVertex3f(1.0, -1.0f, -1.0);
+		glTexCoord2f(1, 0);
+		glVertex3f(1.0, -1.0f, -1.0);
 
-	glTexCoord2f(1, 1);
-	glVertex3f(1.0, 1.0f, -1.0);
+		glTexCoord2f(1, 1);
+		glVertex3f(1.0, 1.0f, -1.0);
 
-	glTexCoord2f(0, 1);
-	glVertex3f(-1.0, 1.0f, -1.0);
+		glTexCoord2f(0, 1);
+		glVertex3f(-1.0, 1.0f, -1.0);
 	glEnd();
 
 
@@ -462,13 +443,15 @@ void mydisplay(void){
 }
 
 
+
+
 int main(int  argc, char** argv)
 {
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
 	glutInitWindowSize(512, 512);
-	glutCreateWindow("Simple");
+	glutCreateWindow("Assignment1");
 	init();
 	// glutReshapeFunc(myReshape);
 	glutDisplayFunc(mydisplay);
@@ -476,6 +459,8 @@ int main(int  argc, char** argv)
 	// printf("pi = %f",3.14);
 	//glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
 	glutMainLoop();
+
+
 
 	delete newpic1;
 
