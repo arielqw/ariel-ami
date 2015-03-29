@@ -4,17 +4,11 @@
 #include "GL\glut.h"
 
 GLuint texture[4];
-GLuint bitTex;
-//first image
-GLubyte *pic;
-GLint width;
-GLint height;
-//second image
+
 GLubyte *pic1;
 GLint width1;
 GLint height1;
-GLubyte *newpic, *newpic1, *newpic2, *newpic3;
-GLubyte *tmp;
+GLubyte *newpic, *newpic2, *newpic3;
 GLubyte *tmp2;
 
 void writeArrayToFile(char questionNum, GLubyte* content, int size, BOOL isMonochrome)
@@ -152,7 +146,7 @@ void details()
 	}
 	*/
 
-	delete tmp;
+	delete tmp1;
 }
 
 void dithering()
@@ -200,66 +194,23 @@ void dithering()
 void init()
 {
 	FILE *f, *f1;
-	int picSize, picSize1;
+	//int picSize, picSize1;
 	int rd;
 	GLubyte header[54], colorTable[1024];
-	//GLubyte *newpic;
 	glEnable(GL_TEXTURE_2D);
 	glOrtho(-1.0, 1.0, -1.0, 1.0, 2.0, -2.0);
-	//gluPerspective(20,1,0.5,8);
-	//glTranslatef(0,0,-4);
-
 	glClearColor(0, 0, 0, 0);
-	//glEnable(GL_DEPTH_TEST);
-	//glDepthFunc(GL_LEQUAL);
-	//	glDisable(GL_BLEND);
-	f = fopen("coloseum3.bmp", "rb");
-
-	/*************************/
-	//first image header reading
-	fread(header, 54, 1, f);
-	if (header[0] != 'B' || header[1] != 'M')
-		exit(1);  //not a BMP file
-	for (int i = 0; i<54; i++)
-		printf("%x  ", header[i]);
-
-
-	picSize = (*(int*)(header + 2) - 54);
-	width = *(int*)(header + 18);
-	height = *(int*)(header + 22);
-	printf("\n%d %d %d %d \n", picSize, width, height, width*height * 3);
-
-	/**********************************/
-
-	pic = new GLubyte[picSize];
-	rd = fread(pic, 1, picSize, f); //read image
-	fclose(f);
-	/*
-	for(int i = 0; i < height*width; i += 3)
-	{
-	unsigned char tmp = pic[i];
-	pic[i] = pic[i+2];
-	pic[i+2] = tmp;
-	}
-	*/
-	printf("*****  %d *******\n", rd);
 
 	f1 = fopen("lena256.bmp", "rb");
-	//f1=fopen("coloseum21.bmp","rb");
 
 	/*************************/
-	//second image header reading
+	//image header reading
 	fread(header, 54, 1, f1);
-	if (header[0] != 'B' || header[1] != 'M')
-		exit(1);  //not a BMP file
-	for (int i = 0; i<54; i++)
-		printf("%x  ", header[i]);
+	if (header[0] != 'B' || header[1] != 'M')		exit(1);  //not a BMP file
 
-
-	picSize1 = (*(int*)(header + 2) - 54);
 	width1 = *(int*)(header + 18);
 	height1 = *(int*)(header + 22);
-	printf("\nlena %d %d %d %d \n", picSize1, width1, height1, width1*height1);
+	printf("\nlena %d %d %d \n", width1, height1, width1*height1);
 
 	/**********************************/
 
@@ -267,27 +218,16 @@ void init()
 	newpic = new GLubyte[width1*height1];
 	newpic2 = new GLubyte[width1*height1];
 	newpic3 = new GLubyte[width1*height1];
-	newpic1 = new GLubyte[width1*height1 * 4];
-	tmp = new GLubyte[height1*width1 * 9];
 	tmp2 = new GLubyte[height1*width1 * 4];
-	printf("*****  color table *******\n", rd);
+
 	rd = fread(colorTable, 1, 1024, f1); //read color table
-	for (int i = 0; i<256 * 4; i++)
-		if (i % 4 == 0)
-			printf("%x  ", colorTable[i]);
-	printf("\n");
-
 	rd = fread(pic1, 1, width1*height1, f1); //read image
-
-	printf("*****  %d *******\n", rd);
 
 	fclose(f1);
 
 
-	printf("texture\n");
-
 	//************ first image **************************
-	//glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+
 	glGenTextures(1, &texture[0]);  //generate place for new texture
 	glBindTexture(GL_TEXTURE_2D, texture[0]); // initialize first texure 
 
@@ -351,19 +291,12 @@ void init()
 
 
 
-void mydisplay(void){
-
-	glClear(GL_COLOR_BUFFER_BIT);
+void paintQuadWithTexture(GLint x, GLint y, GLsizei width, GLsizei height, GLuint textureKey)
+{
+	glViewport(x, y, width, height);
 	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glBindTexture(GL_TEXTURE_2D, texture[1]); //using first texture
-	glViewport(0, 0, 256, 256);
+	glBindTexture(GL_TEXTURE_2D, textureKey); //using first texture
 
-
-	glColor3f(1.0f, 1.0f, 1.0f);
-
-
-
-	//glShadeModel(GL_FLAT);
 	glBegin(GL_QUADS);
 		glTexCoord2f(0, 0); //adapt texture to shape
 		glVertex3f(-1.0, -1.0f, 1.0);
@@ -378,67 +311,20 @@ void mydisplay(void){
 		glVertex3f(-1.0, 1.0f, 1.0);
 	glEnd();
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
 
+void mydisplay(void){
 
-	glViewport(256, 256, 256, 256);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glBindTexture(GL_TEXTURE_2D, texture[2]); //using first texture
-	//glScalef(0.5,0.5,1);
-	glBegin(GL_QUADS);
-		glTexCoord2f(0, 0);
-		glVertex3f(-1.0, -1.0f, -1.0);
+	glClear(GL_COLOR_BUFFER_BIT);
 
-		glTexCoord2f(1, 0);
-		glVertex3f(1.0, -1.0f, -1.0);
+	glColor3f(1.0f, 1.0f, 1.0f);
 
-		glTexCoord2f(1, 1);
-		glVertex3f(1.0, 1.0f, -1.0);
-
-		glTexCoord2f(0, 1);
-		glVertex3f(-1.0, 1.0f, -1.0);
-	glEnd();
-	//glBindTexture(GL_TEXTURE_2D, 0);
-
-	glViewport(0, 256, 256, 256);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glBindTexture(GL_TEXTURE_2D, texture[0]); //using first texture
-	//glScalef(0.5,0.5,1);
-	glBegin(GL_QUADS);
-		glTexCoord2f(0, 0);
-		glVertex3f(-1.0, -1.0f, -1.0);
-
-		glTexCoord2f(1, 0);
-		glVertex3f(1.0, -1.0f, -1.0);
-
-		glTexCoord2f(1, 1);
-		glVertex3f(1.0, 1.0f, -1.0);
-
-		glTexCoord2f(0, 1);
-		glVertex3f(-1.0, 1.0f, -1.0);
-	glEnd();
-
-	glViewport(256, 0, 256, 256);
-	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-	glBindTexture(GL_TEXTURE_2D, texture[3]); //using first texture
-	//glScalef(0.5,0.5,1);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0, 0);
-		glVertex3f(-1.0, -1.0f, -1.0);
-
-		glTexCoord2f(1, 0);
-		glVertex3f(1.0, -1.0f, -1.0);
-
-		glTexCoord2f(1, 1);
-		glVertex3f(1.0, 1.0f, -1.0);
-
-		glTexCoord2f(0, 1);
-		glVertex3f(-1.0, 1.0f, -1.0);
-	glEnd();
-
+	paintQuadWithTexture(0,	  0,   256, 256, texture[1]);	//halftone
+	paintQuadWithTexture(256, 256, 256, 256, texture[2]);
+	paintQuadWithTexture(0,	  256, 256, 256, texture[0]);
+	paintQuadWithTexture(256, 0,   256, 256, texture[3]);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
-
-
 	glFlush();
 }
 
@@ -453,22 +339,13 @@ int main(int  argc, char** argv)
 	glutInitWindowSize(512, 512);
 	glutCreateWindow("Assignment1");
 	init();
-	// glutReshapeFunc(myReshape);
 	glutDisplayFunc(mydisplay);
-	//glutIdleFunc(mydisplay);
-	// printf("pi = %f",3.14);
-	//glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
 	glutMainLoop();
 
 
-
-	delete newpic1;
-
-	delete newpic;
+	delete pic1;	//original
+	delete newpic;	
+	delete tmp2;	//halftone. X4 in size
 	delete newpic2;
 	delete newpic3;
-
-	delete(pic);
-	delete(pic1);
-	delete(tmp);
 }
