@@ -160,57 +160,6 @@ void floyd(GLubyte* pic)
 	
 }
 
-void details(GLubyte* pic)
-{
-	GLfloat *tmp1 = new GLfloat[original_height*original_width];
-	GLfloat log[9] = { 0.4, 0.8, 0.4, 0.8, -3.82, 0.8, 0.4, 0.8, 0.4 };
-	int sum;
-
-	for (int i = 0; i<original_width; i++)
-	{
-		for (int j = 0; j<original_height; j++)
-		{
-			sum = 0;
-			tmp1[i + j*original_width] = 0;
-			for (int k = i - 1; k <= i + 1; k++)
-				for (int l = j - 1; l <= j + 1; l++)
-					if (l >= 0 && k >= 0 && l<original_height && k<original_width)
-					{
-						tmp1[i + j*original_width] += originalPic[k + l*original_width] * log[i - k + 1 + 3 * (j - l + 1)];
-					}
-		}
-	}
-	memset(pic, 0, original_height*original_width*sizeof(GLubyte));
-
-	printf("\n***********details*****************\n");
-	for (int i = 0; i<original_width * 6 + 500; i++)
-		printf("%0.2f  ", tmp1[i]);
-
-	printf("\n****************************\n");
-
-	for (int i = 1; i<original_width; i++)
-	{
-		for (int j = 0; j<original_height; j++)
-		{
-			if (tmp1[i + j*original_width] * tmp1[i - 1 + j*original_width]<-650)
-				pic[i + j*original_width] = 255;
-		}
-	}
-	/*
-	for(int i=0;i<width1;i++)
-	{
-	for(int j=1;j<height1;j++)
-	{
-	if(tmp1[i+j*width1]*tmp1[i+(j-1)*width1]<0)
-	newpic2[i+j*width1]=255;
-
-	}
-	}
-	*/
-
-	delete tmp1;
-}
-
 void applyFilterToTexture(Filter filter, void(*function)(GLubyte*), int width, int height)
 {
 	if (function != NULL)	function(newPics[filter]);
@@ -314,7 +263,6 @@ int main(int  argc, char** argv)
 {
 	if (argc < 2){
 		printf("Please specify a filename. \n Exiting..");
-
 		exit(1);
 	}
 	glutInit(&argc, argv);
@@ -326,7 +274,5 @@ int main(int  argc, char** argv)
 	glutDisplayFunc(mydisplay);
 	glutMainLoop();
 
-
-	//delete originalPic;	//original
 	delete[] newPics;
 }
