@@ -48,15 +48,45 @@ void writeArrayToFile(char questionNum, GLubyte* content, int size, BOOL isMonoc
 
 void sobel(GLubyte* pic)
 {
-	GLdouble sx[3][3] = {	{ -1, 0, 1 },
-							{ -2, 0, 2 }, 
-							{ -1, 0, 1 }	};
+	double m = (1.0 / 8);
+	GLdouble sx[9] = { 
+		m*-1, m * 0, m * 1,
+		m*-2, m * 0, m * 2,
+		m*-1, m * 0, m * 1
+	};
 
-	GLdouble sx[3][3] = {	{ 1,   2,  1 },
-							{ 0,   0,  0 },
-							{ -1, -2, -1 }	};
+	GLdouble sy[9] = { 
+		m * 1, m * 2, m * 1,
+		m * 0, m * 0, m * 0,
+		m* -1, m *-2, m *-1
+	};
 
-
+	GLdouble* tmp_horizontal = new GLdouble[original_width*original_height];
+	GLdouble* tmp_vertical = new GLdouble[original_width*original_height];
+	/*
+		a b c
+		d e f
+		g h i 
+	*/
+	for (int i = 0; i < original_height; i++)
+	{
+		for (int j = 0; j < original_width; j++)
+		{
+			tmp_horizontal[i * original_width + j] = 0;
+			//going through the 9 neighbors 
+			for (int w = i - 1; w <= i + 1; w++){
+				for (int h = j - 1; h <= j + 1; h++){
+					//if inside pic borders
+					if (w >= 0 && h >= 0 && w < original_height && h < original_width){
+						//update pixel with neighbor multiplied 
+						tmp_horizontal[i * original_width + j] +=
+							originalPic[w * original_width + h] * sx[(w - i + 1) * 3 + (h - j + 1)];
+					}
+				}
+			}
+		}
+	}
+	memcpy(pic, tmp_horizontal, original_height * original_width);
 }
 
 void halftone(GLubyte* pic)
@@ -173,47 +203,6 @@ void details(GLubyte* pic)
 	}
 	}
 	*/
-
-	delete tmp1;
-}
-
-void dithering(GLubyte* pic)
-{
-	float *tmp1;
-	int colorNum = 16;
-	int sum;
-	tmp1 = new float[original_height*original_width];
-	memset(tmp1, 0, sizeof(float)*original_height*original_width);
-	for (int i = 0; i<original_width; i++)
-	{
-		for (int j = 0; j<original_height; j++)
-		{
-			sum = 0;
-			tmp1[i + j*original_width] += originalPic[i + j*original_width];
-			while (tmp1[i + j*original_width] >= 256 / colorNum && sum<255)
-			{
-				sum += 256 / colorNum;
-				tmp1[i + j*original_width] -= 256 / colorNum;
-			}
-			if (sum<255)
-				pic[i + j*original_width] = sum;
-			else pic[i + j*original_width] = 240;
-			if (i + j*original_width + 1<original_width*original_height)
-				tmp1[i + j*original_width + 1] += tmp1[i + j*original_width] * 7.0 / 16.0;
-			if (j<original_height - 1)
-			{
-				if (i<original_width - 1)
-					tmp1[i + (1 + j)*original_width + 1] += tmp1[i + j*original_width] * 1 / 16.0;
-				tmp1[i + (1 + j)*original_width] += tmp1[i + j*original_width] * 5.0 / 16.0;
-				tmp1[i + (1 + j)*original_width - 1] += tmp1[i + j*original_width] * 3.0 / 16.0;
-			}
-		}
-	}
-
-	printf("\n****************************\n");
-	for (int i = 0; i<264; i++)
-		printf("%d  ", pic[i]);
-	printf("\n****************************\n");
 
 	delete tmp1;
 }
