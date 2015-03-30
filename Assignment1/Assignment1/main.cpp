@@ -48,7 +48,9 @@ void writeArrayToFile(char questionNum, GLubyte* content, int size, BOOL isMonoc
 
 void sobel(GLubyte* pic)
 {
+	double threshold = 0.135 * 255;
 	double m = (1.0 / 8);
+
 	GLdouble sx[9] = { 
 		m*-1, m * 0, m * 1,
 		m*-2, m * 0, m * 2,
@@ -61,32 +63,34 @@ void sobel(GLubyte* pic)
 		m* -1, m *-2, m *-1
 	};
 
-	GLdouble* tmp_horizontal = new GLdouble[original_width*original_height];
-	GLdouble* tmp_vertical = new GLdouble[original_width*original_height];
-	/*
-		a b c
-		d e f
-		g h i 
-	*/
+	GLdouble* tmp_sobel = new GLdouble[original_width*original_height];
+
 	for (int i = 0; i < original_height; i++)
 	{
 		for (int j = 0; j < original_width; j++)
 		{
-			tmp_horizontal[i * original_width + j] = 0;
+			tmp_sobel[i * original_width + j] = 0;
+			int horizontal_weight = 0;
+			int vertical_weight = 0;
+
 			//going through the 9 neighbors 
 			for (int w = i - 1; w <= i + 1; w++){
 				for (int h = j - 1; h <= j + 1; h++){
 					//if inside pic borders
 					if (w >= 0 && h >= 0 && w < original_height && h < original_width){
 						//update pixel with neighbor multiplied 
-						tmp_horizontal[i * original_width + j] +=
-							originalPic[w * original_width + h] * sx[(w - i + 1) * 3 + (h - j + 1)];
+
+						horizontal_weight += originalPic[w * original_width + h] * sx[(w - i + 1) * 3 + (h - j + 1)];
+						vertical_weight   += originalPic[w * original_width + h] * sy[(w - i + 1) * 3 + (h - j + 1)];
 					}
 				}
 			}
+			tmp_sobel[i * original_width + j] = abs(horizontal_weight) + abs(vertical_weight);
 		}
 	}
-	memcpy(pic, tmp_horizontal, original_height * original_width);
+	for (int i = 0; i < original_width*original_height; i++){
+		pic[i] = (tmp_sobel[i] < threshold) ? 0 : 255;
+	}
 }
 
 void halftone(GLubyte* pic)
@@ -225,7 +229,7 @@ void applyFilterToTexture(Filter filter, void(*function)(GLubyte*), int width, i
 
 }
 
-void init()
+void init(const char* filename)
 {
 	FILE* f1;
 	int rd;
@@ -234,7 +238,7 @@ void init()
 	glOrtho(-1.0, 1.0, -1.0, 1.0, 2.0, -2.0);
 	glClearColor(0, 0, 0, 0);
 
-	fopen_s(&f1, "lena256.bmp", "rb");
+	fopen_s(&f1, filename, "rb");
 
 	/*************************/
 	//image header reading
@@ -308,12 +312,17 @@ void mydisplay(void){
 
 int main(int  argc, char** argv)
 {
+	if (argc < 2){
+		printf("Please specify a filename. \n Exiting..");
 
+		exit(1);
+	}
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
 	glutInitWindowSize(512, 512);
 	glutCreateWindow("Assignment1");
-	init();
+
+	init(argv[1]);
 	glutDisplayFunc(mydisplay);
 	glutMainLoop();
 
