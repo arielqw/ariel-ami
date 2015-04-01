@@ -172,6 +172,7 @@ fork(void)
 void
 exit(int status)
 {
+	//cprintf("Exiting with status %d\n", status);
   struct proc *p;
   int fd;
 
