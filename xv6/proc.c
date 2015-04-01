@@ -212,10 +212,11 @@ exit(int status)
   panic("zombie exit");
 }
 
+
 // Wait for a child process to exit and return its pid.
 // Return -1 if this process has no children.
 int
-wait(void)
+wait(int* status)
 {
   struct proc *p;
   int havekids, pid;
@@ -239,7 +240,13 @@ wait(void)
         p->parent = 0;
         p->name[0] = 0;
         p->killed = 0;
+
+        if(status){ // if user did not send status=0 (do not care)
+            *status = p->status; //return status to caller
+        }
+
         release(&ptable.lock);
+
         return pid;
       }
     }
@@ -252,6 +259,73 @@ wait(void)
 
     // Wait for children to exit.  (See wakeup1 call in proc_exit.)
     sleep(proc, &ptable.lock);  //DOC: wait-sleep
+  }
+}
+
+// Wait for a child process *with a specific pid* to exit and return its pid.
+// Return -1 if this process has no children.
+int
+waitpid(int childPid, int* status, int options)
+{
+  struct proc *p;
+  int havekids, pid, isMyChild;
+
+  acquire(&ptable.lock);
+  for(;;){
+    // Scan through table looking for zombie children.
+    havekids = 0;
+    isMyChild = 0;
+
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->parent != proc)
+        continue;
+      havekids = 1;
+      if( p->pid == childPid ){
+    	 isMyChild = 1;
+		 if(p->state == ZOMBIE ){
+			// Found one.
+			pid = p->pid;
+			kfree(p->kstack);
+			p->kstack = 0;
+			freevm(p->pgdir);
+			p->state = UNUSED;
+			p->pid = 0;
+			p->parent = 0;
+			p->name[0] = 0;
+			p->killed = 0;
+
+			if(status){ // if user did not send status=0 (do not care)
+				*status = p->status; //return status to caller
+			}
+
+			release(&ptable.lock);
+
+			return pid;
+		  }
+      }
+
+    }
+
+    // No point waiting if we don't have any children.
+    if(!havekids || !isMyChild || proc->killed){
+      release(&ptable.lock);
+      return -1;
+    }
+
+    switch (options) {
+		case BLOCKING:
+			sleep(proc, &ptable.lock);
+			break;
+		case NONBLOCKING:
+			release(&ptable.lock);
+			return -1;
+			break;
+		default:
+			release(&ptable.lock);
+			return -1;
+			break;
+	}
+
   }
 }
 
