@@ -23,11 +23,13 @@ int main(int argc, char *argv[]){
 int test_waitpid(int option){
 	printf(1, "*** Testing waitpid *** \n");
 
+	printf(1, "check invalid son: %d \n", waitpid(666,0,0));
 	int stat;
 	int childStatus = 9;
 	int pid;
 
 	if( !( pid = fork() )  ){
+		sleep(1000);
 	  printf(1, "Exiting with status: %d \n", childStatus);
 	  exit(childStatus);
 	}
@@ -35,11 +37,11 @@ int test_waitpid(int option){
 	switch (option) {
 		case BLOCKING:
 			printf(1, "testing BLOCKING \n");
-			waitpid(pid,&stat,BLOCKING);
+			printf(1, "waitpid returns: %d \n", waitpid(pid,&stat,option));
 			break;
 		case NONBLOCKING:
 			printf(1, "testing NONBLOCKING \n");
-			waitpid(pid,&stat,NONBLOCKING);
+			printf(1, "waitpid returns: %d \n", waitpid(pid,&stat,option));
 			break;
 		default:
 			break;
