@@ -7,6 +7,10 @@
 #include "x86.h"
 #include "elf.h"
 
+void implicit_exit(void){
+	exit(0);
+}
+
 int
 exec(char *path, char **argv)
 {
