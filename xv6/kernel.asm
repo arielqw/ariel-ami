@@ -9385,6 +9385,10 @@ wait_stat(int* wtime, int* rtime, int* iotime)
 80104c4b:	8b 45 10             	mov    0x10(%ebp),%eax
 80104c4e:	89 10                	mov    %edx,(%eax)
 
+#ifdef FRR
+	cprintf("\nFRR\n");
+#endif
+
 	return wait(0);
 80104c50:	c7 04 24 00 00 00 00 	movl   $0x0,(%esp)
 80104c57:	e8 14 fd ff ff       	call   80104970 <wait>
