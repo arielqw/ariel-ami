@@ -191,14 +191,15 @@ void listJobs(){
 
 int move_to_foreground(int job_id){
 	int i;//, desired_job_idx;
-	printf(1," asked to fg %d \n", job_id);
+	int fgRet = -1;
+	//printf(1," asked to fg %d \n", job_id);
 
 	if(job_id == -1){
 		for (i = 0; i < jobs_counter; i++) {
 			if( jobs_table[i].active){
-				foreground(jobs_table[i].gid);
+				fgRet = foreground(jobs_table[i].gid);
 				jobs_table[i].active = 0;
-				return 0;
+				if (fgRet != -1) return 0;
 			}
 		}
 	}

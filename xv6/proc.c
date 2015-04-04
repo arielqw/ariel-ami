@@ -174,7 +174,7 @@ fork(void)
 
   np->gid = gid;
 
-  cprintf("\n[debug] [fork] Created a new process son of '%s' with pid %d, and guid: %d\n", np->name, pid, gid);
+  //cprintf("\n[debug] [fork] Created a new process son of '%s' with pid %d, and guid: %d\n", np->name, pid, gid);
   // lock to force the compiler to emit the np->state write last.
   acquire(&ptable.lock);
   np->state = RUNNABLE;
@@ -193,7 +193,7 @@ exit(int status)
   struct proc *p;
   int fd;
 
-  cprintf("\n[debug] [exit] Process '%s' (%d) Exited with status code %d\n", proc->name, proc->pid, status);
+  //cprintf("\n[debug] [exit] Process '%s' (%d) Exited with status code %d\n", proc->name, proc->pid, status);
 
   if(proc == initproc)
     panic("init exiting");
@@ -288,6 +288,44 @@ wait(int* status)
   }
 }
 
+int
+shellWait(int childPid)
+{
+  struct proc *p;
+ // int havekids, pid, isMyChild;
+  int pid;
+
+  for(;;){
+    // Scan through table looking for zombie children.
+   // havekids = 0;
+   // isMyChild = 0;
+
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->parent != proc)
+        continue;
+    //  havekids = 1;
+      if( p->pid == childPid ){
+    	 //isMyChild = 1;
+		 if(p->state == ZOMBIE ){
+			// Found one.
+			pid = p->pid;
+			kfree(p->kstack);
+			p->kstack = 0;
+			freevm(p->pgdir);
+			p->state = UNUSED;
+			p->pid = 0;
+			p->parent = 0;
+			p->name[0] = 0;
+			p->killed = 0;
+			return pid;
+		  }
+      }
+
+    }
+	sleep(proc, &ptable.lock);
+  }
+}
+
 // Wait for a child process *with a specific pid* to exit and return its pid.
 // Return -1 if this process has no children.
 int
@@ -371,9 +409,11 @@ foreground(int gid)
 	struct proc* p;
 	int pids[64];
 	int counter = 0;
-	int i, status;
+//	int i, status;
+	int i;
+	int retVal = -1;
 
-	cprintf("called fg with gid: %d \n", gid);
+	//cprintf("called fg with gid: %d \n", gid);
 	acquire(&ptable.lock);
 	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 			if( ( p->state == RUNNING ||  p->state == RUNNABLE ||  p->state == SLEEPING) &&
@@ -383,17 +423,21 @@ foreground(int gid)
 				p->parent = &ptable.proc[1]; //parent = shell
 				pids[counter] = p->pid;
 				counter++;
-
 			}
 	}
+	for(i=0; i < counter; i++){
+		//cprintf("**waiting for: %d \n ",pids[i]);
+		if (shellWait(pids[i]) != -1)	retVal = 1;
+	}
 	release(&ptable.lock);
-
+/*
 	for(i=0; i < counter; i++){
 		cprintf("**waiting for: %d \n ",pids[i]);
 		waitpid(pids[i], &status, BLOCKING);
 	}
+	*/
 
-	return 0;
+	return retVal;
 }
 // Filling process_info_entry array with <pid,name> that is not zombie and has required <gid>
 // should be called with a 64(=MAX NUM OF PROCESSES), will set <size> accordingly
