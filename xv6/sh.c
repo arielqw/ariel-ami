@@ -174,7 +174,7 @@ void listJobs(){
 			list_pgroup(jobs_table[i].gid, arr, &size);
 			if( size > 0){
 				hasJobs = 1;
-				printf(1,"Job %d: %s\n", i, jobs_table[i].cmd, jobs_table[i].gid);
+				printf(1,"Job %d: %s (%d) \n", i, jobs_table[i].cmd, jobs_table[i].gid);
 				for(j=0; j< size; j++){
 					printf(1,"%d: %s \n", arr[j].pid, arr[j].name);
 				}
@@ -189,12 +189,55 @@ void listJobs(){
 	}
 }
 
+int move_to_foreground(int job_id){
+	int i;//, desired_job_idx;
+	printf(1," asked to fg %d \n", job_id);
+
+	if(job_id == -1){
+		for (i = 0; i < jobs_counter; i++) {
+			if( jobs_table[i].active){
+				foreground(jobs_table[i].gid);
+				jobs_table[i].active = 0;
+				return 0;
+			}
+		}
+	}
+	else if( jobs_table[job_id].active){
+		foreground(jobs_table[job_id].gid);
+		jobs_table[job_id].active = 0;
+		return 0;
+	}
+
+	return -1;
+}
+//	if(job_id == -1){
+//		for (i = 0; i < !found && jobs_counter; i++) {
+//			if( jobs_table[i].active){
+//				job_id = i;
+//				found = 1;
+//				break;
+//			}
+//		}
+//	}
+
+//	if(job_id != -1 && jobs_table[job_id].active ){
+//		while(  ret != -1){
+//			ret = foreground(jobs_table[i].gid);
+//		};
+//		foreground(jobs_table[i].gid);
+//		found = 1;
+////	}
+//
+//	printf(1," asta la vista babe ;\n");
+//	return (found? 0 : -1);
+//}
 int
 main(void)
 {
   static char buf[100];
   int fd;
   int child_pid;
+  int job_id;
   
   jobs_table[0].active = 0;
   if(jobs_table[0].active) printf(1, " just so it wont cry on unused");
@@ -221,6 +264,18 @@ main(void)
     if(buf[0] == 'j' && buf[1] == 'o' && buf[2] == 'b' && buf[3] == 's' && buf[4] == '\n'){
       listJobs();
 	  continue;
+	}
+
+    if(buf[0] == 'f' && buf[1] == 'g' ){
+		if( buf[2] == '\n' ){
+			job_id = -1;
+		}
+		else if( buf[2] == ' ' ){
+			job_id = atoi(buf+3);
+		}
+
+		move_to_foreground(job_id);
+		continue;
 	}
 
     if((child_pid = fork1()) == 0){

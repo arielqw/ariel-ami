@@ -23,4 +23,5 @@
 #define SYS_waitpid   22
 #define SYS_wait_stat 23
 #define SYS_list_pgroup 24
+#define SYS_foreground 25
 

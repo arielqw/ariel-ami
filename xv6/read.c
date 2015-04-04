@@ -5,20 +5,19 @@
 int
 main(int argc, char *argv[])
 {
-  char c = -1;
-  //int wtime, rtime, iotime;
-  while (c!='q')  {
-	  if (c!=-1){
-		  if (write(1,&c,1) != 1)	exit(EXIT_STATUS_FAILURE);
-	  }
+	char c[2] = {0,0};
+	int pos = 0;
 
-//	  if (c=='p')
-//	  {
-//		  wait_stat(&wtime, &rtime, &iotime);
-//		  printf(1, "wtime %d, rtime %d, iotime %d", wtime, rtime, iotime);
-//	  }
+	while(1){
+		read(0,&c[pos],1);
+		write(1,&c[pos],1);
 
-	  if (read(0,&c,1) != 1)	exit(EXIT_STATUS_FAILURE);
-  }
-  exit(EXIT_STATUS_SUCCESS);
+		if(c[pos] == '\n' && c[!pos] == 'q'){
+			exit(0);
+		}
+
+		pos = !pos;
+
+	}
+	return 0;
 }

@@ -174,7 +174,7 @@ fork(void)
 
   np->gid = gid;
 
-  //cprintf("\n[debug] [%s] Created a new process son of '%s' with pid %d, and guid: %d\n", TAG, np->name, pid, gid);
+  cprintf("\n[debug] [fork] Created a new process son of '%s' with pid %d, and guid: %d\n", np->name, pid, gid);
   // lock to force the compiler to emit the np->state write last.
   acquire(&ptable.lock);
   np->state = RUNNABLE;
@@ -193,7 +193,7 @@ exit(int status)
   struct proc *p;
   int fd;
 
-//  cprintf("\n[debug] [%s] Process '%s' (%d) Exited with status code %d\n", TAG, proc->name, proc->pid, status);
+  cprintf("\n[debug] [exit] Process '%s' (%d) Exited with status code %d\n", proc->name, proc->pid, status);
 
   if(proc == initproc)
     panic("init exiting");
@@ -218,6 +218,8 @@ exit(int status)
   proc->ttime = ticks;
   // Parent might be sleeping in wait().
   wakeup1(proc->parent);
+//  cprintf("\n This is your captin speaking, here is : %s \n", ptable.proc[SHELL_PID].name);
+
 
   // Pass abandoned children to init.
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
@@ -363,6 +365,35 @@ wait_stat(int* wtime, int* rtime, int* iotime)
 	return wait(0);
 }
 
+int
+foreground(int gid)
+{
+	struct proc* p;
+	int pids[64];
+	int counter = 0;
+	int i, status;
+
+	cprintf("called fg with gid: %d \n", gid);
+	acquire(&ptable.lock);
+	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+			if( ( p->state == RUNNING ||  p->state == RUNNABLE ||  p->state == SLEEPING) &&
+				(p->parent == initproc) &&
+				(p->gid == gid) )
+			{
+				p->parent = &ptable.proc[1]; //parent = shell
+				pids[counter] = p->pid;
+				counter++;
+			}
+	}
+	release(&ptable.lock);
+
+	for(i=0; i < counter; i++){
+		cprintf("**waiting for: %d \n ",pids[i]);
+		waitpid(pids[i], &status, BLOCKING);
+	}
+
+	return 0;
+}
 // Filling process_info_entry array with <pid,name> that is not zombie and has required <gid>
 // should be called with a 64(=MAX NUM OF PROCESSES), will set <size> accordingly
 int
@@ -375,8 +406,11 @@ list_pgroup(int gid, process_info_entry* arr, int* size)
 
 //	cprintf("10 entire from process table:\n");
 //
+//	cprintf("pid   name   gid   father   father_name   \n");
+//
 //	for(p = ptable.proc; p < &ptable.proc[10]; p++){
-//		cprintf("pid %d - name %s gid (%d) \n", p->pid, p->name, p->gid);
+//		cprintf("%d %d   %s   %d   %d   %s  \n", j, p->pid, p->name, p->gid,p->parent->pid,p->parent->name);
+//		j++;
 //	}
 
 //	cprintf("requested listing of processes with group id %d \n", gid);

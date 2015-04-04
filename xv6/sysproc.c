@@ -85,6 +85,18 @@ sys_list_pgroup(void)
 }
 
 int
+sys_foreground(void)
+{
+	int gid;
+
+	if (argint(0, &gid) < 0){
+		return -1;
+	}
+
+	return foreground(gid);
+}
+
+int
 sys_kill(void)
 {
   int pid;

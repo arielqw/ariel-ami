@@ -1,5 +1,5 @@
 enum status { EXIT_STATUS_FAILURE, EXIT_STATUS_SUCCESS, EXIT_STATUS_DEFAULT };
-enum wait_options { BLOCKING, NONBLOCKING };
+enum wait_options { BLOCKING, NONBLOCKING, WAIT_GROUP };
 enum priority { HIGH, MEDIUM, LOW };
 
 
