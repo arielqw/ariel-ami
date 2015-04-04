@@ -7,3 +7,8 @@ typedef unsigned int   uint;
 typedef unsigned short ushort;
 typedef unsigned char  uchar;
 typedef uint pde_t;
+
+typedef struct process_info_entry{
+  int pid;
+  char name[16];
+} process_info_entry;

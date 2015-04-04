@@ -7,9 +7,16 @@
 
 
 int main(int argc, char *argv[]){
-	//printf(1, "Address is: %d\n", (int)(*(&argc-1)));
+//	int i, size;
+//	process_info_entry arr[64];
+//	list_pgroup(1, arr, &size);
+//
+//	for(i=0; i< size; i++){
+//		printf(1,"%d - %s (%d) \n", i, arr[i].name, arr[i].pid);
+//	}
 
-	//printf(1,"%s", argv[0]);
-	//exit(0);
+	while(1){
+		sleep(10000);
+	}
 	return 7;
 }

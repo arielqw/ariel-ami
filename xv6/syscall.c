@@ -98,6 +98,7 @@ extern int sys_unlink(void);
 extern int sys_wait(void);
 extern int sys_waitpid(void);
 extern int sys_wait_stat(void);
+extern int sys_list_pgroup(void);
 extern int sys_write(void);
 extern int sys_uptime(void);
 
@@ -125,6 +126,7 @@ static int (*syscalls[])(void) = {
 [SYS_close]   sys_close,
 [SYS_waitpid]    sys_waitpid,
 [SYS_wait_stat]    sys_wait_stat,
+[SYS_list_pgroup]    sys_list_pgroup,
 };
 
 void

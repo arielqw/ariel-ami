@@ -68,6 +68,23 @@ sys_wait_stat(void)
 }
 
 int
+sys_list_pgroup(void)
+{
+	int gid;
+	process_info_entry* arr;
+	int* size;
+
+	if (	(argint(0, &gid) < 0) ||
+			(argptr(1,(char**)&arr, sizeof(process_info_entry)) < 0) ||
+			(argptr(2,(char**)&size, sizeof(int)) < 0)){
+
+		return -1;
+	}
+
+	return list_pgroup(gid, arr, size);
+}
+
+int
 sys_kill(void)
 {
   int pid;

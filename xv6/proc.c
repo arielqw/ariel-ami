@@ -7,6 +7,8 @@
 #include "proc.h"
 #include "spinlock.h"
 
+#define SHELL_PID 2
+
 struct {
   struct spinlock lock;
   struct proc proc[NPROC];
@@ -129,7 +131,8 @@ growproc(int n)
 int
 fork(void)
 {
-  int i, pid;
+//  char* TAG = "fork";
+  int i, pid, gid;
   struct proc *np;
 
   // Allocate process.
@@ -159,6 +162,19 @@ fork(void)
  
   pid = np->pid;
 
+  //Set group id
+  //if father is shell -> gid = this new process pid
+  if( proc->pid == SHELL_PID){
+	  gid = pid;
+  }
+  //else, take father gid
+  else{
+	  gid = proc->gid;
+  }
+
+  np->gid = gid;
+
+  //cprintf("\n[debug] [%s] Created a new process son of '%s' with pid %d, and guid: %d\n", TAG, np->name, pid, gid);
   // lock to force the compiler to emit the np->state write last.
   acquire(&ptable.lock);
   np->state = RUNNABLE;
@@ -173,9 +189,11 @@ fork(void)
 void
 exit(int status)
 {
-	//cprintf("Exiting with status %d\n", status);
+//  char* TAG = "exit";
   struct proc *p;
   int fd;
+
+//  cprintf("\n[debug] [%s] Process '%s' (%d) Exited with status code %d\n", TAG, proc->name, proc->pid, status);
 
   if(proc == initproc)
     panic("init exiting");
@@ -214,6 +232,8 @@ exit(int status)
   proc->state = ZOMBIE;
   sched();
   panic("zombie exit");
+
+
 }
 
 
@@ -341,6 +361,42 @@ wait_stat(int* wtime, int* rtime, int* iotime)
 	*iotime = proc->stime;
 
 	return wait(0);
+}
+
+// Filling process_info_entry array with <pid,name> that is not zombie and has required <gid>
+// should be called with a 64(=MAX NUM OF PROCESSES), will set <size> accordingly
+int
+list_pgroup(int gid, process_info_entry* arr, int* size)
+{
+	struct proc* p;
+	int i = 0;
+
+	acquire(&ptable.lock);
+
+//	cprintf("10 entire from process table:\n");
+//
+//	for(p = ptable.proc; p < &ptable.proc[10]; p++){
+//		cprintf("pid %d - name %s gid (%d) \n", p->pid, p->name, p->gid);
+//	}
+
+//	cprintf("requested listing of processes with group id %d \n", gid);
+
+	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+		if( ( p->state == RUNNING ||  p->state == RUNNABLE ||  p->state == SLEEPING) &&
+			p->gid == gid ){
+
+			arr[i].pid = p->pid;
+			safestrcpy(arr[i].name, p->name, sizeof(arr[i].name));
+			i++;
+		}
+	}
+
+//	cprintf("found %d for group id %d  \n", i, gid);
+
+	*size = i;
+	release(&ptable.lock);
+
+	return 0;
 }
 
 //PAGEBREAK: 42

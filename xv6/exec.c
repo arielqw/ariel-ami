@@ -13,6 +13,7 @@ extern void implicit_exit_end();
 int
 exec(char *path, char **argv)
 {
+//  char* TAG = "exec";
   char *s, *last;
   int i, off;
   uint argc, sz, sp, ustack[3+MAXARG+1];
@@ -99,7 +100,7 @@ exec(char *path, char **argv)
     if(*s == '/')
       last = s+1;
   safestrcpy(proc->name, last, sizeof(proc->name));
-
+//  cprintf("\n[debug] [%s] executing '%s' \n", TAG, last);
   // Commit to the user image.
   oldpgdir = proc->pgdir;
   proc->pgdir = pgdir;
