@@ -383,6 +383,7 @@ foreground(int gid)
 				p->parent = &ptable.proc[1]; //parent = shell
 				pids[counter] = p->pid;
 				counter++;
+
 			}
 	}
 	release(&ptable.lock);
