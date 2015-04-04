@@ -47,6 +47,7 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  p->ctime = ticks;
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -192,9 +193,11 @@ exit(int status)
   end_op();
   proc->cwd = 0;
 
-  proc->status = status;
+
   acquire(&ptable.lock);
 
+  proc->status = status;
+  proc->ttime = ticks;
   // Parent might be sleeping in wait().
   wakeup1(proc->parent);
 
@@ -328,6 +331,16 @@ waitpid(int childPid, int* status, int options)
 	}
 
   }
+}
+
+int
+wait_stat(int* wtime, int* rtime, int* iotime)
+{
+	*wtime = proc->retime;
+	*rtime = proc->rutime;
+	*iotime = proc->stime;
+
+	return wait(0);
 }
 
 //PAGEBREAK: 42

@@ -32,6 +32,32 @@ idtinit(void)
   lidt(idt, sizeof(idt));
 }
 
+struct {
+  struct spinlock lock;
+  struct proc proc[NPROC];
+} ptable;
+
+void updateStats()
+{
+	struct proc* p;
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+		switch (p->state) {
+			case SLEEPING:
+				p->stime++;
+				break;
+			case RUNNABLE:
+				p->retime++;
+				break;
+			case RUNNING:
+				p->rutime++;
+				break;
+			default:
+				break;
+		}
+    }
+}
+
+
 //PAGEBREAK: 41
 void
 trap(struct trapframe *tf)
@@ -53,6 +79,10 @@ trap(struct trapframe *tf)
       ticks++;
       wakeup(&ticks);
       release(&tickslock);
+
+      updateStats();
+
+
     }
     lapiceoi();
     break;

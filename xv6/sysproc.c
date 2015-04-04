@@ -53,6 +53,21 @@ sys_waitpid(void)
 }
 
 int
+sys_wait_stat(void)
+{
+	int *wtime, *rtime, *iotime;
+
+	if (	(argptr(0,(char**)&wtime, sizeof(int)) < 0) ||
+			(argptr(1,(char**)&rtime, sizeof(int)) < 0) ||
+			(argptr(2,(char**)&iotime, sizeof(int)) < 0) ){
+
+		return -1;
+	}
+
+	return wait_stat(wtime, rtime, iotime);
+}
+
+int
 sys_kill(void)
 {
   int pid;
