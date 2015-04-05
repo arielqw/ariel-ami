@@ -90,7 +90,7 @@ main(int argc, char *argv[])
   71:	89 e5                	mov    %esp,%ebp
   73:	83 e4 f0             	and    $0xfffffff0,%esp
   76:	83 ec 10             	sub    $0x10,%esp
-  printf(1, "%d\n", getTheNPrimeNumber(8000));
+  printf(1, "%d\n", getTheNPrimeNumber(8000));	//8000 is about a minute
   79:	c7 04 24 40 1f 00 00 	movl   $0x1f40,(%esp)
   80:	e8 7b ff ff ff       	call   0 <getTheNPrimeNumber>
   85:	89 44 24 08          	mov    %eax,0x8(%esp)
