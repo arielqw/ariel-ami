@@ -81,8 +81,6 @@ trap(struct trapframe *tf)
       release(&tickslock);
 
       updateStats();
-
-
     }
     lapiceoi();
     break;
@@ -130,10 +128,13 @@ trap(struct trapframe *tf)
   if(proc && proc->killed && (tf->cs&3) == DPL_USER)
     exit(EXIT_STATUS_DEFAULT);
 
-  // Force process to give up CPU on clock tick.
+#ifdef DEFAULT //when SCHEDULAR=DEFAULT
+  // Force process to give up CPU on <QUANTA> clock tick.
   // If interrupts were on while locks held, would need to check nlock.
-  if(proc && proc->state == RUNNING && tf->trapno == T_IRQ0+IRQ_TIMER)
-    yield();
+  if(proc && proc->state == RUNNING && tf->trapno == T_IRQ0+IRQ_TIMER){
+	    if( !(ticks % QUANTA) ) yield();
+  }
+#endif
 
   // Check if the process has been killed since we yielded
   if(proc && proc->killed && (tf->cs&3) == DPL_USER)
