@@ -478,6 +478,9 @@ list_pgroup(int gid, process_info_entry* arr, int* size)
 	return 0;
 }
 
+
+#ifdef DEFAULT
+
 //PAGEBREAK: 42
 // Per-CPU process scheduler.
 // Each CPU calls scheduler() after setting itself up.
@@ -487,7 +490,7 @@ list_pgroup(int gid, process_info_entry* arr, int* size)
 //  - eventually that process transfers control
 //      via swtch back to the scheduler.
 void
-scheduler(void)
+scheduler_default(void)
 {
   struct proc *p;
 
@@ -517,6 +520,63 @@ scheduler(void)
     release(&ptable.lock);
 
   }
+}
+#endif
+
+#ifdef FRR
+void
+scheduler_frr(void)
+{
+  struct proc *p;
+
+  for(;;){
+    // Enable interrupts on this processor.
+    sti();
+
+    // Loop over process table looking for process to run.
+    acquire(&ptable.lock);
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->state != RUNNABLE)
+        continue;
+
+      // Switch to chosen process.  It is the process's job
+      // to release ptable.lock and then reacquire it
+      // before jumping back to us.
+      proc = p;
+      switchuvm(p);
+      p->state = RUNNING;
+      swtch(&cpu->scheduler, proc->context);
+      switchkvm();
+
+      // Process is done running for now.
+      // It should have changed its p->state before coming back.
+      proc = 0;
+    }
+    release(&ptable.lock);
+
+  }
+}
+#endif
+
+
+void
+scheduler(void)
+{
+	#ifdef DEFAULT
+		scheduler_default();
+
+	#elif FRR
+		cprintf("FRR!!");
+		scheduler_frr();
+
+	#elif FCFS
+//		scheduler_fcfs();
+
+	#elif CFS
+//		scheduler_cfs();
+	#endif
+
+	for(; ;){}; //just cause forced to be no-return (won't get here)
 }
 
 // Enter scheduler.  Must hold only ptable.lock
