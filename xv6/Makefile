@@ -28,6 +28,8 @@ OBJS = \
 	vectors.o\
 	vm.o\
 	implicit_return.o\
+	linkedList.o\
+	
 
 # Cross-compiling (e.g., on Mac OS X)
 # TOOLPREFIX = i386-jos-elf

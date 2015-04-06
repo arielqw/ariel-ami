@@ -7,6 +7,8 @@
 #include "proc.h"
 #include "spinlock.h"
 
+#include "linkedList.h"
+
 #define SHELL_PID 2
 
 struct {
@@ -15,6 +17,7 @@ struct {
 } ptable;
 
 static struct proc *initproc;
+static linkedList plist; //TODO ifdef
 
 int nextpid = 1;
 extern void forkret(void);
@@ -26,6 +29,7 @@ void
 pinit(void)
 {
   initlock(&ptable.lock, "ptable");
+  init_linkedList(&plist,NPROC);
 }
 
 //PAGEBREAK: 32
@@ -103,6 +107,9 @@ userinit(void)
   p->cwd = namei("/");
 
   p->state = RUNNABLE;
+
+  //TODO ifdef
+  plist.add(&plist, p->pid, p);
 }
 
 // Grow current process's memory by n bytes.
@@ -178,8 +185,13 @@ fork(void)
   // lock to force the compiler to emit the np->state write last.
   acquire(&ptable.lock);
   np->state = RUNNABLE;
-  release(&ptable.lock);
   
+  plist.add(&plist, pid, np); //todo ifdef
+  plist.print(&plist);
+  release(&ptable.lock);
+
+
+
   return pid;
 }
 
@@ -237,7 +249,26 @@ exit(int status)
 
 
 }
-
+int clean_proc_entry(struct proc* p){
+	int pid;
+    // Found one.
+    pid = p->pid;
+    kfree(p->kstack);
+    p->kstack = 0;
+    freevm(p->pgdir);
+    p->state = UNUSED;
+    p->pid = 0;
+    p->parent = 0;
+    p->name[0] = 0;
+    p->killed = 0;
+    p->retime = 0;
+    p->rutime = 0;
+    p->stime = 0;
+    p->ttime = 0;
+    p->ctime = 0;
+//    plist.remove_link(&plist,pid); //todo ifdef
+    return pid;
+}
 
 // Wait for a child process to exit and return its pid.
 // Return -1 if this process has no children.
@@ -257,15 +288,7 @@ wait(int* status)
       havekids = 1;
       if(p->state == ZOMBIE){
         // Found one.
-        pid = p->pid;
-        kfree(p->kstack);
-        p->kstack = 0;
-        freevm(p->pgdir);
-        p->state = UNUSED;
-        p->pid = 0;
-        p->parent = 0;
-        p->name[0] = 0;
-        p->killed = 0;
+        pid = clean_proc_entry(p);
 
         if(status){ // if user did not send status=0 (do not care)
             *status = p->status; //return status to caller
@@ -307,16 +330,9 @@ shellWait(int childPid)
       if( p->pid == childPid ){
     	 //isMyChild = 1;
 		 if(p->state == ZOMBIE ){
-			// Found one.
-			pid = p->pid;
-			kfree(p->kstack);
-			p->kstack = 0;
-			freevm(p->pgdir);
-			p->state = UNUSED;
-			p->pid = 0;
-			p->parent = 0;
-			p->name[0] = 0;
-			p->killed = 0;
+			pid = clean_proc_entry(p);
+			release(&ptable.lock);
+
 			return pid;
 		  }
       }
@@ -347,16 +363,7 @@ waitpid(int childPid, int* status, int options)
       if( p->pid == childPid ){
     	 isMyChild = 1;
 		 if(p->state == ZOMBIE ){
-			// Found one.
-			pid = p->pid;
-			kfree(p->kstack);
-			p->kstack = 0;
-			freevm(p->pgdir);
-			p->state = UNUSED;
-			p->pid = 0;
-			p->parent = 0;
-			p->name[0] = 0;
-			p->killed = 0;
+			pid = clean_proc_entry(p);
 
 			if(status){ // if user did not send status=0 (do not care)
 				*status = p->status; //return status to caller
@@ -446,7 +453,16 @@ list_pgroup(int gid, process_info_entry* arr, int* size)
 {
 	struct proc* p;
 	int i = 0;
-
+//	struct node* head;
+//
+//	linkedList plist;
+//	  init_linkedList(&plist, 64);
+//	  head = create_link(&plist);
+//	  head->id = 18;
+//	  head->data = 0;
+//
+//	  add_last(&plist,head);
+//	plist.print(&plist);
 	acquire(&ptable.lock);
 
 //	cprintf("10 entire from process table:\n");
@@ -527,35 +543,36 @@ scheduler_default(void)
 void
 scheduler_frr(void)
 {
-  struct proc *p;
+	  struct proc *p;
 
-  for(;;){
-    // Enable interrupts on this processor.
-    sti();
+	  for(;;){
+	    // Enable interrupts on this processor.
+	    sti();
 
-    // Loop over process table looking for process to run.
-    acquire(&ptable.lock);
-    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->state != RUNNABLE)
-        continue;
+	    // Loop over process table looking for process to run.
+	    acquire(&ptable.lock);
+	    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+	      if(p->state != RUNNABLE)
+	        continue;
 
-      // Switch to chosen process.  It is the process's job
-      // to release ptable.lock and then reacquire it
-      // before jumping back to us.
-      proc = p;
-      switchuvm(p);
-      p->state = RUNNING;
-      swtch(&cpu->scheduler, proc->context);
-      switchkvm();
+	      plist.remove_link(&plist, p->pid);
+	      // Switch to chosen process.  It is the process's job
+	      // to release ptable.lock and then reacquire it
+	      // before jumping back to us.
+	      proc = p;
+	      switchuvm(p);
+	      p->state = RUNNING;
+	      swtch(&cpu->scheduler, proc->context);
+	      switchkvm();
 
-      // Process is done running for now.
-      // It should have changed its p->state before coming back.
-      proc = 0;
-    }
-    release(&ptable.lock);
+	      // Process is done running for now.
+	      // It should have changed its p->state before coming back.
+	      proc = 0;
+	    }
+	    release(&ptable.lock);
 
-  }
-}
+	  }
+	}
 #endif
 
 
@@ -566,7 +583,7 @@ scheduler(void)
 		scheduler_default();
 
 	#elif FRR
-		cprintf("FRR!!");
+		cprintf("SCHEDULAR = FRR");
 		scheduler_frr();
 
 	#elif FCFS
@@ -604,7 +621,9 @@ void
 yield(void)
 {
   acquire(&ptable.lock);  //DOC: yieldlock
+  if(proc->state != RUNNABLE) plist.add(&plist, proc->pid, proc); //todo ifdef
   proc->state = RUNNABLE;
+
   sched();
   release(&ptable.lock);
 }
@@ -675,8 +694,10 @@ wakeup1(void *chan)
   struct proc *p;
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-    if(p->state == SLEEPING && p->chan == chan)
-      p->state = RUNNABLE;
+    if(p->state == SLEEPING && p->chan == chan){
+        p->state = RUNNABLE;
+        plist.add(&plist,p->pid, p); //todo ifdef
+    }
 }
 
 // Wake up all processes sleeping on chan.
@@ -701,8 +722,10 @@ kill(int pid)
     if(p->pid == pid){
       p->killed = 1;
       // Wake process from sleep if necessary.
-      if(p->state == SLEEPING)
+      if(p->state == SLEEPING){
         p->state = RUNNABLE;
+        plist.add(&plist,p->pid,p); //todo ifdef
+      }
       release(&ptable.lock);
       return 0;
     }
