@@ -9811,12 +9811,12 @@ list_pgroup(int gid, process_info_entry* arr, int* size)
 80104f07:	c9                   	leave  
 80104f08:	c3                   	ret    
 
-80104f09 <scheduler_frr>:
+80104f09 <scheduler_frr_fcfs>:
 #endif
 
-#ifdef FRR
+#if defined(FRR) || defined(FCFS)
 void
-scheduler_frr(void)
+scheduler_frr_fcfs(void)
 {
 80104f09:	55                   	push   %ebp
 80104f0a:	89 e5                	mov    %esp,%ebp
@@ -9834,7 +9834,7 @@ scheduler_frr(void)
 	    if (plist.size)
 80104f20:	a1 a8 c6 10 80       	mov    0x8010c6a8,%eax
 80104f25:	85 c0                	test   %eax,%eax
-80104f27:	74 75                	je     80104f9e <scheduler_frr+0x95>
+80104f27:	74 75                	je     80104f9e <scheduler_frr_fcfs+0x95>
 	    {
 			  p = plist.remove_first(&plist);
 80104f29:	a1 b8 cc 10 80       	mov    0x8010ccb8,%eax
@@ -9845,7 +9845,7 @@ scheduler_frr(void)
 80104f3a:	8b 45 f4             	mov    -0xc(%ebp),%eax
 80104f3d:	8b 40 0c             	mov    0xc(%eax),%eax
 80104f40:	83 f8 03             	cmp    $0x3,%eax
-80104f43:	74 0c                	je     80104f51 <scheduler_frr+0x48>
+80104f43:	74 0c                	je     80104f51 <scheduler_frr_fcfs+0x48>
 				  cprintf("ERROR: linkedlist contains a proc which is not RUNNABLE");
 80104f45:	c7 04 24 64 94 10 80 	movl   $0x80109464,(%esp)
 80104f4c:	e8 50 b4 ff ff       	call   801003a1 <cprintf>
@@ -9886,7 +9886,7 @@ scheduler_frr(void)
 80104fa5:	e8 eb 04 00 00       	call   80105495 <release>
 
 	  }
-80104faa:	e9 60 ff ff ff       	jmp    80104f0f <scheduler_frr+0x6>
+80104faa:	e9 60 ff ff ff       	jmp    80104f0f <scheduler_frr_fcfs+0x6>
 
 80104faf <scheduler>:
 #endif
@@ -9900,12 +9900,15 @@ scheduler(void)
 80104fb2:	83 ec 18             	sub    $0x18,%esp
 	#if FRR
 		cprintf("SCHEDULAR = FRR\n");
+		scheduler_frr_fcfs();
+	#elif FCFS
+		cprintf("SCHEDULAR = FCFS\n");
 80104fb5:	c7 04 24 9c 94 10 80 	movl   $0x8010949c,(%esp)
 80104fbc:	e8 e0 b3 ff ff       	call   801003a1 <cprintf>
-		scheduler_frr();
-80104fc1:	e8 43 ff ff ff       	call   80104f09 <scheduler_frr>
+		scheduler_frr_fcfs();
+80104fc1:	e8 43 ff ff ff       	call   80104f09 <scheduler_frr_fcfs>
+	#else
 		cprintf("SCHEDULAR = DEFAULT\n");
-		//DEFAULT
 		scheduler_default();
 	#endif
 
@@ -9930,7 +9933,7 @@ sched(void)
 80104fda:	85 c0                	test   %eax,%eax
 80104fdc:	75 0c                	jne    80104fea <sched+0x22>
     panic("sched ptable.lock");
-80104fde:	c7 04 24 ad 94 10 80 	movl   $0x801094ad,(%esp)
+80104fde:	c7 04 24 ae 94 10 80 	movl   $0x801094ae,(%esp)
 80104fe5:	e8 53 b5 ff ff       	call   8010053d <panic>
   if(cpu->ncli != 1)
 80104fea:	65 a1 00 00 00 00    	mov    %gs:0x0,%eax
@@ -9938,7 +9941,7 @@ sched(void)
 80104ff6:	83 f8 01             	cmp    $0x1,%eax
 80104ff9:	74 0c                	je     80105007 <sched+0x3f>
     panic("sched locks");
-80104ffb:	c7 04 24 bf 94 10 80 	movl   $0x801094bf,(%esp)
+80104ffb:	c7 04 24 c0 94 10 80 	movl   $0x801094c0,(%esp)
 80105002:	e8 36 b5 ff ff       	call   8010053d <panic>
   if(proc->state == RUNNING)
 80105007:	65 a1 04 00 00 00    	mov    %gs:0x4,%eax
@@ -9946,7 +9949,7 @@ sched(void)
 80105010:	83 f8 04             	cmp    $0x4,%eax
 80105013:	75 0c                	jne    80105021 <sched+0x59>
     panic("sched running");
-80105015:	c7 04 24 cb 94 10 80 	movl   $0x801094cb,(%esp)
+80105015:	c7 04 24 cc 94 10 80 	movl   $0x801094cc,(%esp)
 8010501c:	e8 1c b5 ff ff       	call   8010053d <panic>
   if(readeflags()&FL_IF)
 80105021:	e8 7e f3 ff ff       	call   801043a4 <readeflags>
@@ -9954,7 +9957,7 @@ sched(void)
 8010502b:	85 c0                	test   %eax,%eax
 8010502d:	74 0c                	je     8010503b <sched+0x73>
     panic("sched interruptible");
-8010502f:	c7 04 24 d9 94 10 80 	movl   $0x801094d9,(%esp)
+8010502f:	c7 04 24 da 94 10 80 	movl   $0x801094da,(%esp)
 80105036:	e8 02 b5 ff ff       	call   8010053d <panic>
   intena = cpu->intena;
 8010503b:	65 a1 00 00 00 00    	mov    %gs:0x0,%eax
@@ -10064,14 +10067,14 @@ sleep(void *chan, struct spinlock *lk)
 80105119:	85 c0                	test   %eax,%eax
 8010511b:	75 0c                	jne    80105129 <sleep+0x1c>
     panic("sleep");
-8010511d:	c7 04 24 ed 94 10 80 	movl   $0x801094ed,(%esp)
+8010511d:	c7 04 24 ee 94 10 80 	movl   $0x801094ee,(%esp)
 80105124:	e8 14 b4 ff ff       	call   8010053d <panic>
 
   if(lk == 0)
 80105129:	83 7d 0c 00          	cmpl   $0x0,0xc(%ebp)
 8010512d:	75 0c                	jne    8010513b <sleep+0x2e>
     panic("sleep without lk");
-8010512f:	c7 04 24 f3 94 10 80 	movl   $0x801094f3,(%esp)
+8010512f:	c7 04 24 f4 94 10 80 	movl   $0x801094f4,(%esp)
 80105136:	e8 02 b4 ff ff       	call   8010053d <panic>
   // change p->state and then call sched.
   // Once we hold ptable.lock, we can be
@@ -10314,7 +10317,7 @@ procdump(void)
 8010531b:	eb 07                	jmp    80105324 <procdump+0x55>
     else
       state = "???";
-8010531d:	c7 45 ec 04 95 10 80 	movl   $0x80109504,-0x14(%ebp)
+8010531d:	c7 45 ec 05 95 10 80 	movl   $0x80109505,-0x14(%ebp)
     cprintf("%d %s %s", p->pid, state, p->name);
 80105324:	8b 45 f0             	mov    -0x10(%ebp),%eax
 80105327:	8d 50 70             	lea    0x70(%eax),%edx
@@ -10324,7 +10327,7 @@ procdump(void)
 80105334:	8b 55 ec             	mov    -0x14(%ebp),%edx
 80105337:	89 54 24 08          	mov    %edx,0x8(%esp)
 8010533b:	89 44 24 04          	mov    %eax,0x4(%esp)
-8010533f:	c7 04 24 08 95 10 80 	movl   $0x80109508,(%esp)
+8010533f:	c7 04 24 09 95 10 80 	movl   $0x80109509,(%esp)
 80105346:	e8 56 b0 ff ff       	call   801003a1 <cprintf>
     if(p->state == SLEEPING){
 8010534b:	8b 45 f0             	mov    -0x10(%ebp),%eax
@@ -10347,7 +10350,7 @@ procdump(void)
 8010537a:	8b 45 f4             	mov    -0xc(%ebp),%eax
 8010537d:	8b 44 85 c4          	mov    -0x3c(%ebp,%eax,4),%eax
 80105381:	89 44 24 04          	mov    %eax,0x4(%esp)
-80105385:	c7 04 24 11 95 10 80 	movl   $0x80109511,(%esp)
+80105385:	c7 04 24 12 95 10 80 	movl   $0x80109512,(%esp)
 8010538c:	e8 10 b0 ff ff       	call   801003a1 <cprintf>
     else
       state = "???";
@@ -10365,7 +10368,7 @@ procdump(void)
         cprintf(" %p", pc[i]);
     }
     cprintf("\n");
-801053a6:	c7 04 24 15 95 10 80 	movl   $0x80109515,(%esp)
+801053a6:	c7 04 24 16 95 10 80 	movl   $0x80109516,(%esp)
 801053ad:	e8 ef af ff ff       	call   801003a1 <cprintf>
 801053b2:	eb 01                	jmp    801053b5 <procdump+0xe6>
   char *state;
@@ -10534,7 +10537,7 @@ acquire(struct spinlock *lk)
 80105449:	85 c0                	test   %eax,%eax
 8010544b:	74 0c                	je     80105459 <acquire+0x26>
     panic("acquire");
-8010544d:	c7 04 24 41 95 10 80 	movl   $0x80109541,(%esp)
+8010544d:	c7 04 24 42 95 10 80 	movl   $0x80109542,(%esp)
 80105454:	e8 e4 b0 ff ff       	call   8010053d <panic>
 
   // The xchg is atomic.
@@ -10583,7 +10586,7 @@ release(struct spinlock *lk)
 801054a6:	85 c0                	test   %eax,%eax
 801054a8:	75 0c                	jne    801054b6 <release+0x21>
     panic("release");
-801054aa:	c7 04 24 49 95 10 80 	movl   $0x80109549,(%esp)
+801054aa:	c7 04 24 4a 95 10 80 	movl   $0x8010954a,(%esp)
 801054b1:	e8 87 b0 ff ff       	call   8010053d <panic>
 
   lk->pcs[0] = 0;
@@ -10757,7 +10760,7 @@ popcli(void)
 801055d3:	85 c0                	test   %eax,%eax
 801055d5:	74 0c                	je     801055e3 <popcli+0x20>
     panic("popcli - interruptible");
-801055d7:	c7 04 24 51 95 10 80 	movl   $0x80109551,(%esp)
+801055d7:	c7 04 24 52 95 10 80 	movl   $0x80109552,(%esp)
 801055de:	e8 5a af ff ff       	call   8010053d <panic>
   if(--cpu->ncli < 0)
 801055e3:	65 a1 00 00 00 00    	mov    %gs:0x0,%eax
@@ -10768,7 +10771,7 @@ popcli(void)
 801055fe:	85 c0                	test   %eax,%eax
 80105600:	79 0c                	jns    8010560e <popcli+0x4b>
     panic("popcli");
-80105602:	c7 04 24 68 95 10 80 	movl   $0x80109568,(%esp)
+80105602:	c7 04 24 69 95 10 80 	movl   $0x80109569,(%esp)
 80105609:	e8 2f af ff ff       	call   8010053d <panic>
   if(cpu->ncli == 0 && cpu->intena)
 8010560e:	65 a1 00 00 00 00    	mov    %gs:0x0,%eax
@@ -11567,7 +11570,7 @@ syscall(void)
 80105b06:	89 54 24 0c          	mov    %edx,0xc(%esp)
 80105b0a:	89 4c 24 08          	mov    %ecx,0x8(%esp)
 80105b0e:	89 44 24 04          	mov    %eax,0x4(%esp)
-80105b12:	c7 04 24 6f 95 10 80 	movl   $0x8010956f,(%esp)
+80105b12:	c7 04 24 70 95 10 80 	movl   $0x80109570,(%esp)
 80105b19:	e8 83 a8 ff ff       	call   801003a1 <cprintf>
             proc->pid, proc->name, num);
     proc->tf->eax = -1;
@@ -12115,7 +12118,7 @@ isdirempty(struct inode *dp)
 80105fa5:	83 f8 10             	cmp    $0x10,%eax
 80105fa8:	74 0c                	je     80105fb6 <isdirempty+0x41>
       panic("isdirempty: readi");
-80105faa:	c7 04 24 8b 95 10 80 	movl   $0x8010958b,(%esp)
+80105faa:	c7 04 24 8c 95 10 80 	movl   $0x8010958c,(%esp)
 80105fb1:	e8 87 a5 ff ff       	call   8010053d <panic>
     if(de.inum != 0)
 80105fb6:	0f b7 45 e4          	movzwl -0x1c(%ebp),%eax
@@ -12199,14 +12202,14 @@ sys_unlink(void)
 
   // Cannot unlink "." or "..".
   if(namecmp(name, ".") == 0 || namecmp(name, "..") == 0)
-80106044:	c7 44 24 04 9d 95 10 	movl   $0x8010959d,0x4(%esp)
+80106044:	c7 44 24 04 9e 95 10 	movl   $0x8010959e,0x4(%esp)
 8010604b:	80 
 8010604c:	8d 45 d2             	lea    -0x2e(%ebp),%eax
 8010604f:	89 04 24             	mov    %eax,(%esp)
 80106052:	e8 70 c0 ff ff       	call   801020c7 <namecmp>
 80106057:	85 c0                	test   %eax,%eax
 80106059:	0f 84 45 01 00 00    	je     801061a4 <sys_unlink+0x1c1>
-8010605f:	c7 44 24 04 9f 95 10 	movl   $0x8010959f,0x4(%esp)
+8010605f:	c7 44 24 04 a0 95 10 	movl   $0x801095a0,0x4(%esp)
 80106066:	80 
 80106067:	8d 45 d2             	lea    -0x2e(%ebp),%eax
 8010606a:	89 04 24             	mov    %eax,(%esp)
@@ -12238,7 +12241,7 @@ sys_unlink(void)
 801060b2:	66 85 c0             	test   %ax,%ax
 801060b5:	7f 0c                	jg     801060c3 <sys_unlink+0xe0>
     panic("unlink: nlink < 1");
-801060b7:	c7 04 24 a2 95 10 80 	movl   $0x801095a2,(%esp)
+801060b7:	c7 04 24 a3 95 10 80 	movl   $0x801095a3,(%esp)
 801060be:	e8 7a a4 ff ff       	call   8010053d <panic>
   if(ip->type == T_DIR && !isdirempty(ip)){
 801060c3:	8b 45 f0             	mov    -0x10(%ebp),%eax
@@ -12279,7 +12282,7 @@ sys_unlink(void)
 8010612b:	83 f8 10             	cmp    $0x10,%eax
 8010612e:	74 0c                	je     8010613c <sys_unlink+0x159>
     panic("unlink: writei");
-80106130:	c7 04 24 b4 95 10 80 	movl   $0x801095b4,(%esp)
+80106130:	c7 04 24 b5 95 10 80 	movl   $0x801095b5,(%esp)
 80106137:	e8 01 a4 ff ff       	call   8010053d <panic>
   if(ip->type == T_DIR){
 8010613c:	8b 45 f0             	mov    -0x10(%ebp),%eax
@@ -12431,7 +12434,7 @@ create(char *path, short type, short major, short minor)
 80106287:	83 7d f0 00          	cmpl   $0x0,-0x10(%ebp)
 8010628b:	75 0c                	jne    80106299 <create+0xde>
     panic("create: ialloc");
-8010628d:	c7 04 24 c3 95 10 80 	movl   $0x801095c3,(%esp)
+8010628d:	c7 04 24 c4 95 10 80 	movl   $0x801095c4,(%esp)
 80106294:	e8 a4 a2 ff ff       	call   8010053d <panic>
 
   ilock(ip);
@@ -12472,7 +12475,7 @@ create(char *path, short type, short major, short minor)
 801062f1:	8b 45 f0             	mov    -0x10(%ebp),%eax
 801062f4:	8b 40 04             	mov    0x4(%eax),%eax
 801062f7:	89 44 24 08          	mov    %eax,0x8(%esp)
-801062fb:	c7 44 24 04 9d 95 10 	movl   $0x8010959d,0x4(%esp)
+801062fb:	c7 44 24 04 9e 95 10 	movl   $0x8010959e,0x4(%esp)
 80106302:	80 
 80106303:	8b 45 f0             	mov    -0x10(%ebp),%eax
 80106306:	89 04 24             	mov    %eax,(%esp)
@@ -12482,7 +12485,7 @@ create(char *path, short type, short major, short minor)
 80106312:	8b 45 f4             	mov    -0xc(%ebp),%eax
 80106315:	8b 40 04             	mov    0x4(%eax),%eax
 80106318:	89 44 24 08          	mov    %eax,0x8(%esp)
-8010631c:	c7 44 24 04 9f 95 10 	movl   $0x8010959f,0x4(%esp)
+8010631c:	c7 44 24 04 a0 95 10 	movl   $0x801095a0,0x4(%esp)
 80106323:	80 
 80106324:	8b 45 f0             	mov    -0x10(%ebp),%eax
 80106327:	89 04 24             	mov    %eax,(%esp)
@@ -12490,7 +12493,7 @@ create(char *path, short type, short major, short minor)
 8010632f:	85 c0                	test   %eax,%eax
 80106331:	79 0c                	jns    8010633f <create+0x184>
       panic("create dots");
-80106333:	c7 04 24 d2 95 10 80 	movl   $0x801095d2,(%esp)
+80106333:	c7 04 24 d3 95 10 80 	movl   $0x801095d3,(%esp)
 8010633a:	e8 fe a1 ff ff       	call   8010053d <panic>
   }
 
@@ -12506,7 +12509,7 @@ create(char *path, short type, short major, short minor)
 8010635b:	85 c0                	test   %eax,%eax
 8010635d:	79 0c                	jns    8010636b <create+0x1b0>
     panic("create: dirlink");
-8010635f:	c7 04 24 de 95 10 80 	movl   $0x801095de,(%esp)
+8010635f:	c7 04 24 df 95 10 80 	movl   $0x801095df,(%esp)
 80106366:	e8 d2 a1 ff ff       	call   8010053d <panic>
 
   iunlockput(dp);

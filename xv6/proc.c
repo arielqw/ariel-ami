@@ -556,9 +556,9 @@ scheduler_default(void)
 }
 #endif
 
-#ifdef FRR
+#if defined(FRR) || defined(FCFS)
 void
-scheduler_frr(void)
+scheduler_frr_fcfs(void)
 {
 	  struct proc *p;
 
@@ -599,16 +599,15 @@ scheduler(void)
 {
 	#if FRR
 		cprintf("SCHEDULAR = FRR\n");
-		scheduler_frr();
+		scheduler_frr_fcfs();
 	#elif FCFS
 		cprintf("SCHEDULAR = FCFS\n");
-//		scheduler_fcfs();
+		scheduler_frr_fcfs();
 	#elif CFS
 		cprintf("SCHEDULAR = CFS\n");
 //		scheduler_cfs();
 	#else
 		cprintf("SCHEDULAR = DEFAULT\n");
-		//DEFAULT
 		scheduler_default();
 	#endif
 

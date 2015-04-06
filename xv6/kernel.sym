@@ -221,6 +221,7 @@
 80102472 namei
 80107477 vector21
 80100034 binit
+80104f09 scheduler_frr_fcfs
 80107a86 vector177
 801077e0 vector118
 80107630 vector70
@@ -494,7 +495,6 @@
 80116f60 ticks
 80107b3a vector192
 80107a02 vector166
-80104f09 scheduler_frr
 80100a8d consoleinit
 80107666 vector76
 8010765d vector75
