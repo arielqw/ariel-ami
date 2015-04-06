@@ -25,14 +25,6 @@ long getTheNPrimeNumber(int n)
 	}
 }
 
-int set_priority(int priority){return 0;}
-/*
-void printStats(int pid, int wtime, int rtime, int iotime){
-
-	printf(1,"Done(%d): waiting (RUNNABLE) ||| %d, running (RUNNING) ||| turnaround : %d\n",
-			pid, wtime, rtime, wtime+rtime+iotime);
-}
-*/
 int
 main(int argc, char *argv[])
 {

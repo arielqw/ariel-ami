@@ -446,6 +446,20 @@ foreground(int gid)
 
 	return retVal;
 }
+
+int
+set_priority(int priority)
+{
+#ifndef CFS
+	return -1;
+#endif
+	acquire(&ptable.lock);
+	proc->priority = priority;
+	//todo: change queueus
+	release(&ptable.lock);
+	return 1;
+}
+
 // Filling process_info_entry array with <pid,name> that is not zombie and has required <gid>
 // should be called with a 64(=MAX NUM OF PROCESSES), will set <size> accordingly
 int

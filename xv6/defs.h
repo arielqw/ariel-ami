@@ -120,6 +120,8 @@ int             waitpid(int, int*, int);
 int             wait_stat(int*, int*, int*);
 int             list_pgroup(int, process_info_entry*, int* size);
 int             foreground(int);
+int 			set_priority(int);
+
 
 void            wakeup(void*);
 void            yield(void);

@@ -102,6 +102,8 @@ extern int sys_list_pgroup(void);
 extern int sys_write(void);
 extern int sys_uptime(void);
 extern int sys_foreground(void);
+extern int sys_set_priority(void);
+
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -129,6 +131,7 @@ static int (*syscalls[])(void) = {
 [SYS_wait_stat]    sys_wait_stat,
 [SYS_list_pgroup]    sys_list_pgroup,
 [SYS_foreground]    sys_foreground,
+[SYS_set_priority]	sys_set_priority,
 };
 
 void
