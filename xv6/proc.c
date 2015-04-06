@@ -109,7 +109,10 @@ userinit(void)
   p->state = RUNNABLE;
 
   //TODO ifdef
+  acquire(&ptable.lock);	//wasnt here
   plist.add(&plist, p->pid, p);
+  release(&ptable.lock);
+
 }
 
 // Grow current process's memory by n bytes.
@@ -187,7 +190,7 @@ fork(void)
   np->state = RUNNABLE;
   
   plist.add(&plist, pid, np); //todo ifdef
-  plist.print(&plist);
+  //plist.print(&plist);
   release(&ptable.lock);
 
 
@@ -563,25 +566,26 @@ scheduler_frr(void)
 	    // Enable interrupts on this processor.
 	    sti();
 
-	    // Loop over process table looking for process to run.
 	    acquire(&ptable.lock);
-	    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-	      if(p->state != RUNNABLE)
-	        continue;
+	    if (plist.size)
+	    {
+			  p = plist.remove_first(&plist);
+			  if(p->state != RUNNABLE){
+				  cprintf("ERROR: linkedlist contains a proc which is not RUNNABLE");
+			  }
 
-	      plist.remove_link(&plist, p->pid);
-	      // Switch to chosen process.  It is the process's job
-	      // to release ptable.lock and then reacquire it
-	      // before jumping back to us.
-	      proc = p;
-	      switchuvm(p);
-	      p->state = RUNNING;
-	      swtch(&cpu->scheduler, proc->context);
-	      switchkvm();
+			  // Switch to chosen process.  It is the process's job
+			  // to release ptable.lock and then reacquire it
+			  // before jumping back to us.
+			  proc = p;
+			  switchuvm(p);
+			  p->state = RUNNING;
+			  swtch(&cpu->scheduler, proc->context);
+			  switchkvm();
 
-	      // Process is done running for now.
-	      // It should have changed its p->state before coming back.
-	      proc = 0;
+			  // Process is done running for now.
+			  // It should have changed its p->state before coming back.
+			  proc = 0;
 	    }
 	    release(&ptable.lock);
 
@@ -593,21 +597,22 @@ scheduler_frr(void)
 void
 scheduler(void)
 {
-	#ifdef DEFAULT
-		scheduler_default();
-
-	#elif FRR
-		cprintf("SCHEDULAR = FRR");
+	#if FRR
+		cprintf("SCHEDULAR = FRR\n");
 		scheduler_frr();
-
 	#elif FCFS
+		cprintf("SCHEDULAR = FCFS\n");
 //		scheduler_fcfs();
-
 	#elif CFS
+		cprintf("SCHEDULAR = CFS\n");
 //		scheduler_cfs();
+	#else
+		cprintf("SCHEDULAR = DEFAULT\n");
+		//DEFAULT
+		scheduler_default();
 	#endif
 
-	for(; ;){}; //just cause forced to be no-return (won't get here)
+	for(;;){}	//must be no-return
 }
 
 // Enter scheduler.  Must hold only ptable.lock

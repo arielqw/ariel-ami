@@ -19,7 +19,7 @@ typedef struct linkedList
 	struct node nodes[LINKED_LIST_SIZE];
 	void (*add_last)(struct linkedList* list, node* link);
 	void (*add)(struct linkedList* list, int id, struct proc* p);
-	void (*remove_first)(struct linkedList* list);
+	struct proc* (*remove_first)(struct linkedList* list);
 	void (*print)(struct linkedList* list);
 	node* (*get_link)(struct linkedList* list,int position);
 	int (*remove_link)(struct linkedList* list,int id);
@@ -33,7 +33,7 @@ struct node* create_link(linkedList* list);
 
 void add_last(linkedList* list, node* link);
 
-void remove_first(linkedList* list);
+struct proc* remove_first(linkedList* list);
 
 void clean_up(struct node* link);
 

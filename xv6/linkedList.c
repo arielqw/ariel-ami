@@ -12,6 +12,7 @@ struct node* create_link(linkedList* list){
 	}
 
 	//error not found
+	cprintf("Error: linkedlist: cant create new link, list at full capacity!\n");
 	return 0;
 }
 
@@ -39,26 +40,34 @@ void add_last(linkedList* list, node* link){
 
 void add(struct linkedList* list, int id, struct proc* p){
 //	if( search(list,id) != 0 ) return; //add unique
-	cprintf("adding %d to linkedlist\n", id);
+	//cprintf("adding %d to linkedlist\n", id);
+	cprintf("(+%d)", id);
 	node* node;
 	node = create_link(list);
 	node->id = id;
 	node->data = p;
 	list->add_last(list,node);
-	print(list);
+	//print(list);
 }
 
 
-void remove_first(linkedList* list){
+struct proc* remove_first(linkedList* list){
+	struct proc* p;
 	node* tmp;
-	if( list->head == 0 ) return ;
+	if( list->head == 0 ){
+		cprintf("ERROR: list is empty. cant remove 1st link");
+		return 0;
+	}
 	tmp = list->head;
+	cprintf("(-%d)", tmp->id);
+	p = tmp->data;
 	list->head = list->head->next;
 	tmp->clean_up(tmp);
 	if(list->head != 0){
 		list->head->prev = 0;
 	}
 	list->size--;
+	return p;
 }
 void init_linkedList(linkedList* list,int fixed_size){
 	int i;
@@ -143,7 +152,7 @@ int remove_link(linkedList* list,int id){
 
 		}
 		tmp->clean_up(tmp);
-		list->print(list);
+		//list->print(list);
 
 		return 1;
 	}

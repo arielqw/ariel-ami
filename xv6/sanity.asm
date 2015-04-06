@@ -81,9 +81,8 @@ long getTheNPrimeNumber(int n)
   6e:	eb a4                	jmp    14 <getTheNPrimeNumber+0x14>
 
 00000070 <main>:
-			pid, wtime, rtime, wtime+rtime+iotime);
 }
-*/
+
 int
 main(int argc, char *argv[])
 {
