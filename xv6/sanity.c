@@ -2,8 +2,8 @@
 #include "stat.h"
 #include "user.h"
 
-#define NUM_OF_CHLIDREN 5
-#define CALC_SIZE		2000	//8000 is 1min for 1 proc in Ami's laptop
+#define NUM_OF_CHLIDREN 20
+#define CALC_SIZE		3000	//8000 is 1min for 1 proc in Ami's laptop
 
 
 long getTheNPrimeNumber(int n)
@@ -43,7 +43,7 @@ main(int argc, char *argv[])
 			printf(1, "(fork:%d)",pid);
 		}
 		else if (pid == 0){	//child
-			set_priority((i%3)+1);
+			set_priority((i%3));
 			sleep(100);
 			getTheNPrimeNumber(CALC_SIZE);
 			exit(getpid());

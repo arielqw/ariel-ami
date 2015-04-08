@@ -74,6 +74,7 @@ struct proc {
   int retime;					// Ready (Runnable) time
   int rutime;					// Running time
   int priority;					// Priority
+  int vruntime;					//Higher value means lower current priority
 };
 
 // Process memory is laid out contiguously, low addresses first:

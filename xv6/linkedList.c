@@ -40,8 +40,8 @@ void add_last(linkedList* list, node* link){
 
 void add(struct linkedList* list, int id, struct proc* p){
 //	if( search(list,id) != 0 ) return; //add unique
-	//cprintf("adding %d to linkedlist\n", id);
-	cprintf("(+%d)", id);
+
+	//cprintf("(+%d)", id);
 	node* node;
 	node = create_link(list);
 	node->id = id;
@@ -59,7 +59,7 @@ struct proc* remove_first(linkedList* list){
 		return 0;
 	}
 	tmp = list->head;
-	cprintf("(-%d)", tmp->id);
+	//cprintf("(-%d)", tmp->id);
 	p = tmp->data;
 	list->head = list->head->next;
 	tmp->clean_up(tmp);

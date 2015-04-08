@@ -50,6 +50,7 @@ void updateStats()
 				break;
 			case RUNNING:
 				p->rutime++;
+				p->vruntime += p->priority;
 				break;
 			default:
 				break;

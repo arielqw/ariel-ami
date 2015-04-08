@@ -17,7 +17,10 @@ struct {
 } ptable;
 
 static struct proc *initproc;
+
+#if defined(FRR) || defined(FCFS)
 static linkedList plist; //TODO ifdef
+#endif
 
 int nextpid = 1;
 extern void forkret(void);
@@ -29,7 +32,9 @@ void
 pinit(void)
 {
   initlock(&ptable.lock, "ptable");
-  init_linkedList(&plist,NPROC);
+	#if defined(FRR) || defined(FCFS)
+	  init_linkedList(&plist,NPROC);
+	#endif
 }
 
 //PAGEBREAK: 32
@@ -54,6 +59,7 @@ found:
   p->state = EMBRYO;
   p->pid = nextpid++;
   p->ctime = ticks;
+  p->priority = PRIORITY_MEDIUM;
   release(&ptable.lock);
 
   // Allocate kernel stack.
@@ -108,10 +114,11 @@ userinit(void)
 
   p->state = RUNNABLE;
 
-  //TODO ifdef
-  acquire(&ptable.lock);	//wasnt here
-  plist.add(&plist, p->pid, p);
-  release(&ptable.lock);
+  #if defined(FRR) || defined(FCFS)
+	  acquire(&ptable.lock);	//wasnt here
+	  plist.add(&plist, p->pid, p);
+	  release(&ptable.lock);
+  #endif
 
 }
 
@@ -189,8 +196,11 @@ fork(void)
   acquire(&ptable.lock);
   np->state = RUNNABLE;
   
+#if defined(FRR) || defined(FCFS)
+
   plist.add(&plist, pid, np); //todo ifdef
-  //plist.print(&plist);
+#endif
+
   release(&ptable.lock);
 
 
@@ -269,6 +279,8 @@ int clean_proc_entry(struct proc* p){
     p->stime = 0;
     p->ttime = 0;
     p->ctime = 0;
+    p->vruntime = 0;
+    p->priority = PRIORITY_MEDIUM;
 //    plist.remove_link(&plist,pid); //todo ifdef
     return pid;
 }
@@ -406,11 +418,44 @@ waitpid(int childPid, int* status, int options)
 int
 wait_stat(int* wtime, int* rtime, int* iotime)
 {
-	*wtime = proc->retime;
-	*rtime = proc->rutime;
-	*iotime = proc->stime;
+	  struct proc *p;
+	  int havekids, pid;
 
-	return wait(0);
+	  acquire(&ptable.lock);
+	  for(;;){
+	    // Scan through table looking for zombie children.
+	    havekids = 0;
+	    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+	      if(p->parent != proc)
+	        continue;
+	      havekids = 1;
+	      if(p->state == ZOMBIE){
+	        // Found one.
+	    	*wtime = p->retime;
+	    	*rtime = p->rutime;
+	    	*iotime = p->stime;
+
+	        pid = clean_proc_entry(p);
+
+	     //   if(status){ // if user did not send status=0 (do not care)
+	     //       *status = p->status; //return status to caller
+	     //   }
+
+	        release(&ptable.lock);
+
+	        return pid;
+	      }
+	    }
+
+	    // No point waiting if we don't have any children.
+	    if(!havekids || proc->killed){
+	      release(&ptable.lock);
+	      return -1;
+	    }
+
+	    // Wait for children to exit.  (See wakeup1 call in proc_exit.)
+	    sleep(proc, &ptable.lock);  //DOC: wait-sleep
+	  }
 }
 
 int
@@ -458,7 +503,6 @@ set_priority(int priority)
 #endif
 	acquire(&ptable.lock);
 	proc->priority = priority;
-	//todo: change queueus
 	release(&ptable.lock);
 	return 1;
 }
@@ -594,6 +638,57 @@ scheduler_frr_fcfs(void)
 #endif
 
 
+#ifdef CFS
+
+void
+scheduler_cfs(void)
+{
+  struct proc *p;
+  struct proc* minimum_vruntime_proc;
+
+
+  for(;;){
+    // Enable interrupts on this processor.
+    sti();
+
+    // Loop over process table looking for process to run.
+    acquire(&ptable.lock);
+
+    minimum_vruntime_proc = 0;	//null
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+      if(p->state != RUNNABLE)	continue;
+
+      if (!minimum_vruntime_proc || p->vruntime < minimum_vruntime_proc->vruntime){
+    	  minimum_vruntime_proc = p;
+      }
+
+    }
+    p = minimum_vruntime_proc;
+    if (p)
+    {
+    	//cprintf("[%d:%d]", p->pid, p->vruntime);
+		// Switch to chosen process.  It is the process's job
+		// to release ptable.lock and then reacquire it
+		// before jumping back to us.
+		proc = p;
+		switchuvm(p);
+		p->state = RUNNING;
+		swtch(&cpu->scheduler, proc->context);
+		switchkvm();
+
+		// Process is done running for now.
+		// It should have changed its p->state before coming back.
+		proc = 0;
+    }
+
+    release(&ptable.lock);
+
+  }
+}
+
+#endif
+
+
 void
 scheduler(void)
 {
@@ -605,7 +700,7 @@ scheduler(void)
 		scheduler_frr_fcfs();
 	#elif CFS
 		cprintf("SCHEDULAR = CFS\n");
-//		scheduler_cfs();
+		scheduler_cfs();
 	#else
 		cprintf("SCHEDULAR = DEFAULT\n");
 		scheduler_default();
@@ -639,7 +734,9 @@ void
 yield(void)
 {
   acquire(&ptable.lock);  //DOC: yieldlock
+#if defined(FRR) || defined(FCFS)
   if(proc->state != RUNNABLE) plist.add(&plist, proc->pid, proc); //todo ifdef
+#endif
   proc->state = RUNNABLE;
 
   sched();
@@ -714,7 +811,9 @@ wakeup1(void *chan)
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
     if(p->state == SLEEPING && p->chan == chan){
         p->state = RUNNABLE;
-        plist.add(&plist,p->pid, p); //todo ifdef
+		#if defined(FRR) || defined(FCFS)
+        	plist.add(&plist,p->pid, p); //todo ifdef
+		#endif
     }
 }
 
@@ -742,7 +841,9 @@ kill(int pid)
       // Wake process from sleep if necessary.
       if(p->state == SLEEPING){
         p->state = RUNNABLE;
-        plist.add(&plist,p->pid,p); //todo ifdef
+		#if defined(FRR) || defined(FCFS)
+        	plist.add(&plist,p->pid,p); //todo ifdef
+		#endif
       }
       release(&ptable.lock);
       return 0;
