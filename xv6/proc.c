@@ -416,7 +416,7 @@ waitpid(int childPid, int* status, int options)
 }
 
 int
-wait_stat(int* status, int* wtime, int* rtime, int* iotime)
+wait_stat(int* wtime, int* rtime, int* iotime, int* status)
 {
 	  struct proc *p;
 	  int havekids, pid;

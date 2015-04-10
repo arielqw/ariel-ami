@@ -55,17 +55,17 @@ sys_waitpid(void)
 int
 sys_wait_stat(void)
 {
-	int *status, *wtime, *rtime, *iotime;
+	int *wtime, *rtime, *iotime, *status;
 
-	if (	(argptr(0,(char**)&status, sizeof(int)) < 0) ||
-			(argptr(1,(char**)&wtime, sizeof(int)) < 0) ||
-			(argptr(2,(char**)&rtime, sizeof(int)) < 0) ||
-			(argptr(3,(char**)&iotime, sizeof(int)) < 0) ){
+	if (	(argptr(0,(char**)&wtime, sizeof(int)) < 0) ||
+			(argptr(1,(char**)&rtime, sizeof(int)) < 0) ||
+			(argptr(2,(char**)&iotime, sizeof(int)) < 0) ||
+			(argptr(3,(char**)&status, sizeof(int)) < 0) ){
 
 		return -1;
 	}
 
-	return wait_stat(status, wtime, rtime, iotime);
+	return wait_stat(wtime, rtime, iotime, status);
 }
 
 int

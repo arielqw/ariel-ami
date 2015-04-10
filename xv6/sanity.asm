@@ -212,14 +212,14 @@ main(int argc, char *argv[])
  1bc:	00 00 00 00 
  1c0:	e9 bf 00 00 00       	jmp    284 <main+0x214>
 		//status returned should be pid
-		pid = wait_stat(&status,&wtime,&rtime,&iotime);
- 1c5:	8d 44 24 78          	lea    0x78(%esp),%eax
- 1c9:	89 44 24 0c          	mov    %eax,0xc(%esp)
- 1cd:	8d 44 24 7c          	lea    0x7c(%esp),%eax
- 1d1:	89 44 24 08          	mov    %eax,0x8(%esp)
- 1d5:	8d 84 24 80 00 00 00 	lea    0x80(%esp),%eax
+		pid = wait_stat(&wtime,&rtime,&iotime,&status);
+ 1c5:	8d 84 24 84 00 00 00 	lea    0x84(%esp),%eax
+ 1cc:	89 44 24 0c          	mov    %eax,0xc(%esp)
+ 1d0:	8d 44 24 78          	lea    0x78(%esp),%eax
+ 1d4:	89 44 24 08          	mov    %eax,0x8(%esp)
+ 1d8:	8d 44 24 7c          	lea    0x7c(%esp),%eax
  1dc:	89 44 24 04          	mov    %eax,0x4(%esp)
- 1e0:	8d 84 24 84 00 00 00 	lea    0x84(%esp),%eax
+ 1e0:	8d 84 24 80 00 00 00 	lea    0x80(%esp),%eax
  1e7:	89 04 24             	mov    %eax,(%esp)
  1ea:	e8 1d 04 00 00       	call   60c <wait_stat>
  1ef:	89 84 24 88 00 00 00 	mov    %eax,0x88(%esp)
@@ -241,7 +241,7 @@ main(int argc, char *argv[])
  220:	8b 94 24 80 00 00 00 	mov    0x80(%esp),%edx
  227:	8b 44 24 7c          	mov    0x7c(%esp),%eax
  22b:	01 c2                	add    %eax,%edx
-		pid = wait_stat(&status,&wtime,&rtime,&iotime);
+		pid = wait_stat(&wtime,&rtime,&iotime,&status);
 		if (pid<0){
 			printf(1, "\nERROR: Not enought waits.\n");
 			exit(EXIT_STATUS_FAILURE);

@@ -57,7 +57,7 @@ main(int argc, char *argv[])
 
 	for (i = 0; i < NUM_OF_CHLIDREN; ++i){
 		//status returned should be pid
-		pid = wait_stat(&status,&wtime,&rtime,&iotime);
+		pid = wait_stat(&wtime,&rtime,&iotime,&status);
 		if (pid<0){
 			printf(1, "\nERROR: Not enought waits.\n");
 			exit(EXIT_STATUS_FAILURE);
