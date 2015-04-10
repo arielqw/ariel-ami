@@ -416,7 +416,7 @@ waitpid(int childPid, int* status, int options)
 }
 
 int
-wait_stat(int* wtime, int* rtime, int* iotime)
+wait_stat(int* status, int* wtime, int* rtime, int* iotime)
 {
 	  struct proc *p;
 	  int havekids, pid;
@@ -437,9 +437,9 @@ wait_stat(int* wtime, int* rtime, int* iotime)
 
 	        pid = clean_proc_entry(p);
 
-	     //   if(status){ // if user did not send status=0 (do not care)
-	     //       *status = p->status; //return status to caller
-	     //   }
+	        if(status){ // if user did not send status=0 (do not care)
+	            *status = p->status; //return status to caller
+	        }
 
 	        release(&ptable.lock);
 

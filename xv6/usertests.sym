@@ -12,13 +12,13 @@
 00000000 .debug_loc
 00000000 .debug_ranges
 00000000 usertests.c
-000068a0 args.1289
+000068a0 args.1290
 00000000 ulib.c
 000041f8 stosb
 00000000 printf.c
 00004524 putc
 0000454c printint
-00006888 digits.922
+00006888 digits.923
 00000000 umalloc.c
 00006920 base
 00006928 freep

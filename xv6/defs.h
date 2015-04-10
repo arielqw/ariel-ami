@@ -117,7 +117,7 @@ void            sleep(void*, struct spinlock*);
 void            userinit(void);
 int             wait(int*);
 int             waitpid(int, int*, int);
-int             wait_stat(int*, int*, int*);
+int             wait_stat(int*, int*, int*, int*);
 int             list_pgroup(int, process_info_entry*, int* size);
 int             foreground(int);
 int 			set_priority(int);

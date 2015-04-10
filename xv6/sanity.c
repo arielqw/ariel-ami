@@ -28,7 +28,7 @@ long getTheNPrimeNumber(int n)
 int
 main(int argc, char *argv[])
 {
-	int i, pid;
+	int i, pid, status;
 	int wtime, rtime, iotime;
 	int presence[NUM_OF_CHLIDREN];
 
@@ -43,7 +43,7 @@ main(int argc, char *argv[])
 			printf(1, "(fork:%d)",pid);
 		}
 		else if (pid == 0){	//child
-			set_priority((i%3));
+			set_priority((i%3)+1);
 			sleep(100);
 			getTheNPrimeNumber(CALC_SIZE);
 			exit(getpid());
@@ -56,16 +56,15 @@ main(int argc, char *argv[])
 	printf(1,"\n");
 
 	for (i = 0; i < NUM_OF_CHLIDREN; ++i){
-
-		pid = wait_stat(&wtime,&rtime,&iotime);
+		//status returned should be pid
+		pid = wait_stat(&status,&wtime,&rtime,&iotime);
 		if (pid<0){
 			printf(1, "\nERROR: Not enought waits.\n");
 			exit(EXIT_STATUS_FAILURE);
 		}
-		//printf(1, "Done(%d) ; ", pid);
 		printf(1,"Done(%d): waiting (RUNNABLE): %d | running: %d | turnaround : %d\n",
-				pid, wtime, rtime, wtime+rtime+iotime);
-		presence[i] = pid;
+				status, wtime, rtime, wtime+rtime+iotime);
+		presence[i] = status;
 	}
 
 	for (i = 0; i < NUM_OF_CHLIDREN; ++i){

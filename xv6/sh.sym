@@ -13,13 +13,13 @@
 00000000 sh.c
 00001f80 jobs_table
 0001df80 jobs_counter
-0001dfa0 buf.998
+0001dfa0 buf.999
 00000000 ulib.c
 00001168 stosb
 00000000 printf.c
 00001494 putc
 000014bc printint
-00001f60 digits.922
+00001f60 digits.923
 00000000 umalloc.c
 0001e004 base
 0001e00c freep
