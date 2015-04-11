@@ -20,3 +20,9 @@
 #define SYS_link   19
 #define SYS_mkdir  20
 #define SYS_close  21
+#define SYS_waitpid   22
+#define SYS_wait_stat 23
+#define SYS_list_pgroup 24
+#define SYS_foreground 25
+#define SYS_set_priority 26
+

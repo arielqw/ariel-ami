@@ -96,8 +96,14 @@ extern int sys_sbrk(void);
 extern int sys_sleep(void);
 extern int sys_unlink(void);
 extern int sys_wait(void);
+extern int sys_waitpid(void);
+extern int sys_wait_stat(void);
+extern int sys_list_pgroup(void);
 extern int sys_write(void);
 extern int sys_uptime(void);
+extern int sys_foreground(void);
+extern int sys_set_priority(void);
+
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -121,6 +127,11 @@ static int (*syscalls[])(void) = {
 [SYS_link]    sys_link,
 [SYS_mkdir]   sys_mkdir,
 [SYS_close]   sys_close,
+[SYS_waitpid]    sys_waitpid,
+[SYS_wait_stat]    sys_wait_stat,
+[SYS_list_pgroup]    sys_list_pgroup,
+[SYS_foreground]    sys_foreground,
+[SYS_set_priority]	sys_set_priority,
 };
 
 void

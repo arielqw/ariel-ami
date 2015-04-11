@@ -13,7 +13,7 @@ start:
   movl $SYS_exec, %eax
   int $T_SYSCALL
 
-# for(;;) exit();
+# for(;;) exit(EXIT_STATUS_DEFAULT);
 exit:
   movl $SYS_exit, %eax
   int $T_SYSCALL

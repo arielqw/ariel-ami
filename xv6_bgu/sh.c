@@ -10,8 +10,20 @@
 #define PIPE  3
 #define LIST  4
 #define BACK  5
+#define JOBS  6
 
 #define MAXARGS 10
+
+struct job {
+  int num;
+  char cmd[100];
+  int gid;
+  int active;
+};
+
+static struct job jobs_table[1024];
+static int jobs_counter = 0;
+
 
 struct cmd {
   int type;
@@ -53,11 +65,19 @@ int fork1(void);  // Fork but panics on failure.
 void panic(char*);
 struct cmd *parsecmd(char*);
 
+//copies string without \n
+void copyString(char* dst, char* src){
+	int i = 0;
+	while(src[i] != 0 && src[i] != '\n'){
+		dst[i] = src[i];
+		i++;
+	}
+}
 // Execute cmd.  Never returns.
 void
 runcmd(struct cmd *cmd)
 {
-  int p[2];
+  int p[2], left, right;
   struct backcmd *bcmd;
   struct execcmd *ecmd;
   struct listcmd *lcmd;
@@ -65,7 +85,7 @@ runcmd(struct cmd *cmd)
   struct redircmd *rcmd;
 
   if(cmd == 0)
-    exit();
+    exit(EXIT_STATUS_DEFAULT);
   
   switch(cmd->type){
   default:
@@ -74,7 +94,7 @@ runcmd(struct cmd *cmd)
   case EXEC:
     ecmd = (struct execcmd*)cmd;
     if(ecmd->argv[0] == 0)
-      exit();
+      exit(EXIT_STATUS_DEFAULT);
     exec(ecmd->argv[0], ecmd->argv);
     printf(2, "exec %s failed\n", ecmd->argv[0]);
     break;
@@ -84,7 +104,7 @@ runcmd(struct cmd *cmd)
     close(rcmd->fd);
     if(open(rcmd->file, rcmd->mode) < 0){
       printf(2, "open %s failed\n", rcmd->file);
-      exit();
+      exit(EXIT_STATUS_DEFAULT);
     }
     runcmd(rcmd->cmd);
     break;
@@ -93,7 +113,7 @@ runcmd(struct cmd *cmd)
     lcmd = (struct listcmd*)cmd;
     if(fork1() == 0)
       runcmd(lcmd->left);
-    wait();
+    wait(0);
     runcmd(lcmd->right);
     break;
 
@@ -101,14 +121,16 @@ runcmd(struct cmd *cmd)
     pcmd = (struct pipecmd*)cmd;
     if(pipe(p) < 0)
       panic("pipe");
-    if(fork1() == 0){
+
+    if( (left = fork1()) == 0){
       close(1);
       dup(p[1]);
       close(p[0]);
       close(p[1]);
       runcmd(pcmd->left);
     }
-    if(fork1() == 0){
+
+    if( (right = fork1() ) == 0){
       close(0);
       dup(p[0]);
       close(p[0]);
@@ -117,8 +139,8 @@ runcmd(struct cmd *cmd)
     }
     close(p[0]);
     close(p[1]);
-    wait();
-    wait();
+    wait(0);
+    wait(0);
     break;
     
   case BACK:
@@ -127,7 +149,7 @@ runcmd(struct cmd *cmd)
       runcmd(bcmd->cmd);
     break;
   }
-  exit();
+  exit(EXIT_STATUS_DEFAULT);
 }
 
 int
@@ -141,12 +163,86 @@ getcmd(char *buf, int nbuf)
   return 0;
 }
 
+void listJobs(){
+	int i,j;
+	int size;
+	int hasJobs = 0;
+	process_info_entry arr[64];
+
+	for(i=0; i< jobs_counter; i++){
+		if(jobs_table[i].active){
+			list_pgroup(jobs_table[i].gid, arr, &size);
+			if( size > 0){
+				hasJobs = 1;
+				printf(1,"Job %d: %s (%d) \n", i, jobs_table[i].cmd, jobs_table[i].gid);
+				for(j=0; j< size; j++){
+					printf(1,"%d: %s \n", arr[j].pid, arr[j].name);
+				}
+			}
+			else{
+				jobs_table[i].active = 0;
+			}
+		}
+	}
+	if(!hasJobs){
+		printf(1, "There are no jobs\n");
+	}
+}
+
+int move_to_foreground(int job_id){
+	int i;//, desired_job_idx;
+	int fgRet = -1;
+	//printf(1," asked to fg %d \n", job_id);
+
+	if(job_id == -1){
+		for (i = 0; i < jobs_counter; i++) {
+			if( jobs_table[i].active){
+				fgRet = foreground(jobs_table[i].gid);
+				jobs_table[i].active = 0;
+				if (fgRet != -1) return 0;
+			}
+		}
+	}
+	else if( jobs_table[job_id].active){
+		foreground(jobs_table[job_id].gid);
+		jobs_table[job_id].active = 0;
+		return 0;
+	}
+
+	return -1;
+}
+//	if(job_id == -1){
+//		for (i = 0; i < !found && jobs_counter; i++) {
+//			if( jobs_table[i].active){
+//				job_id = i;
+//				found = 1;
+//				break;
+//			}
+//		}
+//	}
+
+//	if(job_id != -1 && jobs_table[job_id].active ){
+//		while(  ret != -1){
+//			ret = foreground(jobs_table[i].gid);
+//		};
+//		foreground(jobs_table[i].gid);
+//		found = 1;
+////	}
+//
+//	printf(1," asta la vista babe ;\n");
+//	return (found? 0 : -1);
+//}
 int
 main(void)
 {
   static char buf[100];
   int fd;
+  int child_pid;
+  int job_id;
   
+  jobs_table[0].active = 0;
+  if(jobs_table[0].active) printf(1, " just so it wont cry on unused");
+
   // Assumes three file descriptors open.
   while((fd = open("console", O_RDWR)) >= 0){
     if(fd >= 3){
@@ -165,18 +261,44 @@ main(void)
         printf(2, "cannot cd %s\n", buf+3);
       continue;
     }
-    if(fork1() == 0)
-      runcmd(parsecmd(buf));
-    wait();
+
+    if(buf[0] == 'j' && buf[1] == 'o' && buf[2] == 'b' && buf[3] == 's' && buf[4] == '\n'){
+      listJobs();
+	  continue;
+	}
+
+    if(buf[0] == 'f' && buf[1] == 'g' ){
+		if( buf[2] == '\n' ){
+			job_id = -1;
+		}
+		else if( buf[2] == ' ' ){
+			job_id = atoi(buf+3);
+		}
+
+		move_to_foreground(job_id);
+		continue;
+	}
+
+    if((child_pid = fork1()) == 0){
+        runcmd(parsecmd(buf));
+    }
+    //keep track on jobs
+    jobs_table[jobs_counter].gid = child_pid;
+    jobs_table[jobs_counter].num = jobs_counter;
+    jobs_table[jobs_counter].active = 1;
+    copyString(jobs_table[jobs_counter].cmd, buf);
+	jobs_counter++;
+
+    wait(0);
   }
-  exit();
+  exit(EXIT_STATUS_DEFAULT);
 }
 
 void
 panic(char *s)
 {
   printf(2, "%s\n", s);
-  exit();
+  exit(EXIT_STATUS_DEFAULT);
 }
 
 int

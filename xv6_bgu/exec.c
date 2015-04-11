@@ -7,6 +7,9 @@
 #include "x86.h"
 #include "elf.h"
 
+extern void implicit_exit();
+extern void implicit_exit_end();
+
 int
 exec(char *path, char **argv)
 {
@@ -53,13 +56,22 @@ exec(char *path, char **argv)
   end_op();
   ip = 0;
 
+	//calculating implicit return function size
+  int retFuncSize = implicit_exit_end - implicit_exit;
   // Allocate two pages at the next page boundary.
   // Make the first inaccessible.  Use the second as the user stack.
   sz = PGROUNDUP(sz);
-  if((sz = allocuvm(pgdir, sz, sz + 2*PGSIZE)) == 0)
+
+  if((sz = allocuvm(pgdir, sz, sz + (2*PGSIZE + retFuncSize))) == 0)
     goto bad;
-  clearpteu(pgdir, (char*)(sz - 2*PGSIZE));
-  sp = sz;
+  clearpteu(pgdir, (char*)(sz - (2*PGSIZE + retFuncSize)));
+
+	//setting sp to function start place
+  sp = sz - retFuncSize;
+  if(copyout(pgdir, sp, implicit_exit, retFuncSize) < 0)
+    goto bad;
+
+  uint userRetFuncAddress = sp;
 
   // Push argument strings, prepare rest of stack in ustack.
   for(argc = 0; argv[argc]; argc++) {
@@ -72,7 +84,9 @@ exec(char *path, char **argv)
   }
   ustack[3+argc] = 0;
 
-  ustack[0] = 0xffffffff;  // fake return PC
+
+
+  ustack[0] = userRetFuncAddress;  // fake return PC
   ustack[1] = argc;
   ustack[2] = sp - (argc+1)*4;  // argv pointer
 
@@ -85,7 +99,6 @@ exec(char *path, char **argv)
     if(*s == '/')
       last = s+1;
   safestrcpy(proc->name, last, sizeof(proc->name));
-
   // Commit to the user image.
   oldpgdir = proc->pgdir;
   proc->pgdir = pgdir;

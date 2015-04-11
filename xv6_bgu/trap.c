@@ -32,17 +32,44 @@ idtinit(void)
   lidt(idt, sizeof(idt));
 }
 
+struct {
+  struct spinlock lock;
+  struct proc proc[NPROC];
+} ptable;
+
+void updateStats()
+{
+	struct proc* p;
+    for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+		switch (p->state) {
+			case SLEEPING:
+				p->stime++;
+				break;
+			case RUNNABLE:
+				p->retime++;
+				break;
+			case RUNNING:
+				p->rutime++;
+				p->vruntime += p->priority;
+				break;
+			default:
+				break;
+		}
+    }
+}
+
+
 //PAGEBREAK: 41
 void
 trap(struct trapframe *tf)
 {
   if(tf->trapno == T_SYSCALL){
     if(proc->killed)
-      exit();
+      exit(EXIT_STATUS_DEFAULT);
     proc->tf = tf;
     syscall();
     if(proc->killed)
-      exit();
+      exit(EXIT_STATUS_DEFAULT);
     return;
   }
 
@@ -53,6 +80,8 @@ trap(struct trapframe *tf)
       ticks++;
       wakeup(&ticks);
       release(&tickslock);
+
+      updateStats();
     }
     lapiceoi();
     break;
@@ -98,14 +127,18 @@ trap(struct trapframe *tf)
   // (If it is still executing in the kernel, let it keep running 
   // until it gets to the regular system call return.)
   if(proc && proc->killed && (tf->cs&3) == DPL_USER)
-    exit();
+    exit(EXIT_STATUS_DEFAULT);
 
-  // Force process to give up CPU on clock tick.
+//only for preemptive schedualing
+#ifndef FCFS //all policies are preemptive besides FCFS
+  // Force process to give up CPU on <QUANTA> clock tick.
   // If interrupts were on while locks held, would need to check nlock.
-  if(proc && proc->state == RUNNING && tf->trapno == T_IRQ0+IRQ_TIMER)
-    yield();
+  if(proc && proc->state == RUNNING && tf->trapno == T_IRQ0+IRQ_TIMER){
+	    if( !(ticks % QUANTA) ) yield();
+  }
+#endif
 
   // Check if the process has been killed since we yielded
   if(proc && proc->killed && (tf->cs&3) == DPL_USER)
-    exit();
+    exit(EXIT_STATUS_DEFAULT);
 }
