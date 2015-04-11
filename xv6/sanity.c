@@ -44,7 +44,6 @@ main(int argc, char *argv[])
 		}
 		else if (pid == 0){	//child
 			set_priority((i%3)+1);
-			sleep(100);
 			getTheNPrimeNumber(CALC_SIZE);
 			exit(getpid());
 		}
