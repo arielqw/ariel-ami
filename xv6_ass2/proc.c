@@ -62,7 +62,7 @@ allocproc(void)
   struct thread *t;
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
 	t = getThreadInStateOf(p,UNUSED);
-	if(!t)
+	if(t)
 	  goto found;
   }
 
@@ -108,9 +108,9 @@ userinit(void)
   struct proc *p;
   extern char _binary_initcode_start[], _binary_initcode_size[];
   
-  cprintf("before allocproc");
+  cprintf("before allocproc\n");
   p = allocproc();
-  cprintf("after allocproc");
+  cprintf("after allocproc\n");
   initproc = p;
   if((p->pgdir = setupkvm()) == 0)
     panic("userinit: out of memory?");
