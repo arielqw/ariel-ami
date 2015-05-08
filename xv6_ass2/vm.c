@@ -36,7 +36,7 @@ seginit(void)
   
   // Initialize cpu-local storage.
   cpu = c;
-  proc = 0;
+  thread = 0;
 }
 
 // Return the address of the PTE in page table pgdir

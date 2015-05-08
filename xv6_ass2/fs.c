@@ -612,7 +612,7 @@ namex(char *path, int nameiparent, char *name)
   if(*path == '/')
     ip = iget(ROOTDEV, ROOTINO);
   else
-    ip = idup(proc->cwd);
+    ip = idup(thread->process->cwd);
 
   while((path = skipelem(path, name)) != 0){
     ilock(ip);

@@ -14,7 +14,7 @@ struct thread {
   enum threadstate state;        // Process state
   int tid;                     // Thread ID
   struct proc *process;         // Parent process
-//  struct trapframe *tf;        // Trap frame for current syscall
+  struct trapframe *tf;        // Trap frame for current syscall
   struct context *context;     // swtch() here to run process
   void *chan;                  // If non-zero, sleeping on chan
 //  int killed;                  // If non-zero, have been killed

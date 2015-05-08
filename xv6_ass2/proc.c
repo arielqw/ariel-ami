@@ -95,8 +95,8 @@ found:
   sp = t->kstack + KSTACKSIZE;
   
   // Leave room for trap frame.
-  sp -= sizeof *p->tf;
-  p->tf = (struct trapframe*)sp;
+  sp -= sizeof *t->tf;
+  t->tf = (struct trapframe*)sp;
   
   // Set up new context to start executing at forkret,
   // which returns to trapret.
@@ -122,20 +122,21 @@ userinit(void)
   
   cprintf("before allocproc\n");
   p = allocproc();
+  struct thread* t = &(p->ttable.thread[0]);
   cprintf("after allocproc\n");
   initproc = p;
   if((p->pgdir = setupkvm()) == 0)
     panic("userinit: out of memory?");
   inituvm(p->pgdir, _binary_initcode_start, (int)_binary_initcode_size);
   p->sz = PGSIZE;
-  memset(p->tf, 0, sizeof(*p->tf));
-  p->tf->cs = (SEG_UCODE << 3) | DPL_USER;
-  p->tf->ds = (SEG_UDATA << 3) | DPL_USER;
-  p->tf->es = p->tf->ds;
-  p->tf->ss = p->tf->ds;
-  p->tf->eflags = FL_IF;
-  p->tf->esp = PGSIZE;
-  p->tf->eip = 0;  // beginning of initcode.S
+  memset(t->tf, 0, sizeof(*t->tf));
+  t->tf->cs = (SEG_UCODE << 3) | DPL_USER;
+  t->tf->ds = (SEG_UDATA << 3) | DPL_USER;
+  t->tf->es = t->tf->ds;
+  t->tf->ss = t->tf->ds;
+  t->tf->eflags = FL_IF;
+  t->tf->esp = PGSIZE;
+  t->tf->eip = 0;  // beginning of initcode.S
 
   safestrcpy(p->name, "initcode", sizeof(p->name));
   p->cwd = namei("/");
@@ -153,16 +154,16 @@ growproc(int n)
 {
   uint sz;
   
-  sz = proc->sz;
+  sz = thread->process->sz;
   if(n > 0){
-    if((sz = allocuvm(proc->pgdir, sz, sz + n)) == 0)
+    if((sz = allocuvm(thread->process->pgdir, sz, sz + n)) == 0)
       return -1;
   } else if(n < 0){
-    if((sz = deallocuvm(proc->pgdir, sz, sz + n)) == 0)
+    if((sz = deallocuvm(thread->process->pgdir, sz, sz + n)) == 0)
       return -1;
   }
-  proc->sz = sz;
-  switchuvm(proc);
+  thread->process->sz = sz;
+  switchuvm(thread->process);
   return 0;
 }
 
@@ -181,25 +182,25 @@ fork(void)
 
   struct thread* nt = &(np->ttable.thread[0]);
   // Copy process state from p.
-  if((np->pgdir = copyuvm(proc->pgdir, proc->sz)) == 0){
+  if((np->pgdir = copyuvm(thread->process->pgdir, thread->process->sz)) == 0){
     kfree(nt->kstack);
     nt->kstack = 0;
     nt->state = UNUSED;
     return -1;
   }
-  np->sz = proc->sz;
-  np->parent = proc;
-  *np->tf = *proc->tf;
+  np->sz = thread->process->sz;
+  np->parent = thread->process;
+  *nt->tf = *thread->tf;
 
   // Clear %eax so that fork returns 0 in the child.
-  np->tf->eax = 0;
+  nt->tf->eax = 0;
 
   for(i = 0; i < NOFILE; i++)
-    if(proc->ofile[i])
-      np->ofile[i] = filedup(proc->ofile[i]);
-  np->cwd = idup(proc->cwd);
+    if(thread->process->ofile[i])
+      np->ofile[i] = filedup(thread->process->ofile[i]);
+  np->cwd = idup(thread->process->cwd);
 
-  safestrcpy(np->name, proc->name, sizeof(proc->name));
+  safestrcpy(np->name, thread->process->name, sizeof(thread->process->name));
  
   pid = np->pid;
 
@@ -225,30 +226,30 @@ exit(void)
   struct proc *p;
   int fd;
 
-  if(proc == initproc)
+  if(thread->process == initproc)
     panic("init exiting");
 
   // Close all open files.
   for(fd = 0; fd < NOFILE; fd++){
-    if(proc->ofile[fd]){
-      fileclose(proc->ofile[fd]);
-      proc->ofile[fd] = 0;
+    if(thread->process->ofile[fd]){
+      fileclose(thread->process->ofile[fd]);
+      thread->process->ofile[fd] = 0;
     }
   }
 
   begin_op();
-  iput(proc->cwd);
+  iput(thread->process->cwd);
   end_op();
-  proc->cwd = 0;
+  thread->process->cwd = 0;
 
   acquire(&ptable.lock);
 
   // Parent might be sleeping in wait().
-  wakeup1(proc->parent);
+  wakeup1(thread->process->parent);
 
   // Pass abandoned children to init.
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-    if(p->parent == proc){
+    if(p->parent == thread->process){
       p->parent = initproc;
       if(isZombie(p))
         wakeup1(initproc);
@@ -256,10 +257,10 @@ exit(void)
   }
 
   // Jump into the scheduler, never to return.
-  //proc->state = ZOMBIE; //TODO : CHECK HERE
+  //thread->process->state = ZOMBIE; //TODO : CHECK HERE
   struct thread* t;
   // cleaning threads and freeing used stacks
-  for(t = proc->ttable.thread; t < &proc->ttable.thread[NTHREAD]; t++){
+  for(t = thread->process->ttable.thread; t < &thread->process->ttable.thread[NTHREAD]; t++){
 	  if (t->state != UNUSED)	t->state = ZOMBIE;
   }
   sched();
@@ -279,7 +280,7 @@ wait(void)
     // Scan through table looking for zombie children.
     havekids = 0;
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->parent != proc)
+      if(p->parent != thread->process)
         continue;
       havekids = 1;
       if( isZombie(p) ){
@@ -308,13 +309,13 @@ wait(void)
     }
 
     // No point waiting if we don't have any children.
-    if(!havekids || proc->killed){
+    if(!havekids || thread->process->killed){
       release(&ptable.lock);
       return -1;
     }
 
     // Wait for children to exit.  (See wakeup1 call in proc_exit.)
-    sleep(proc, &ptable.lock);  //DOC: wait-sleep
+    sleep(thread->process, &ptable.lock);  //DOC: wait-sleep
   }
 }
 
@@ -347,7 +348,7 @@ scheduler(void)
 		  // Switch to chosen process.  It is the process's job
 		  // to release ptable.lock and then reacquire it
 		  // before jumping back to us.
-		  proc = p;
+		  //thread->process = p;
 		  thread = t;
 
 		  switchuvm(p);
@@ -357,7 +358,6 @@ scheduler(void)
 
 		  // Process is done running for now.
 		  // It should have changed its p->state before coming back.
-		  proc = 0;
 		  thread = 0;
     	}
 
@@ -368,7 +368,7 @@ scheduler(void)
 }
 
 // Enter scheduler.  Must hold only ptable.lock
-// and have changed proc->state.
+// and have changed thread->process->state.
 void
 sched(void)
 {
@@ -422,7 +422,7 @@ forkret(void)
 void
 sleep(void *chan, struct spinlock *lk)
 {
-  if(proc == 0)
+  if(thread->process == 0)
     panic("sleep");
 
   if(lk == 0)
@@ -440,12 +440,12 @@ sleep(void *chan, struct spinlock *lk)
   }
 
   // Go to sleep.
-  proc->chan = chan;
+  thread->process->chan = chan;
   thread->state = SLEEPING;
   sched();
 
   // Tidy up.
-  proc->chan = 0;
+  thread->process->chan = 0;
 
   // Reacquire original lock.
   if(lk != &ptable.lock){  //DOC: sleeplock2
