@@ -47,6 +47,15 @@ int isZombie(struct proc* p){
 	return 1;
 }
 
+int isUnused(struct proc* p){
+	struct thread* t;
+
+	for(t = p->ttable.thread; t < &p->ttable.thread[NTHREAD]; t++){
+		if (t->state != UNUSED) return 0;
+	}
+	return 1;
+}
+
 //PAGEBREAK: 32
 // Look in the process table for an UNUSED proc.
 // If found, change state to EMBRYO and initialize
@@ -61,18 +70,21 @@ allocproc(void)
   acquire(&ptable.lock);
   struct thread *t;
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-	t = getThreadInStateOf(p,UNUSED);
-	if(t)
-	  goto found;
+    if(isUnused(p))
+    {
+    	t = &(p->ttable.thread[0]);
+        goto found;
+    }
   }
-
   release(&ptable.lock);
   return 0;
+
 
 found:
   t->state = EMBRYO;
   t->tid = nexttid++;	//TODO: synchronize this?
   p->pid = nextpid++;
+  t->process = p;
   release(&ptable.lock);
 
   // Allocate kernel stack.	//THREAD
@@ -129,7 +141,7 @@ userinit(void)
   p->cwd = namei("/");
 
   //cprintf("got here");
-
+  //p->parent = p;
   p->ttable.thread[0].state = RUNNABLE;
 
 }
@@ -194,7 +206,9 @@ fork(void)
   // lock to force the compiler to emit the np->state write last.
   acquire(&ptable.lock);
 
-  *nt = *thread;	//copy all fields
+  //int
+  //*nt = *thread;	//copy all fields
+  //*(nt->context) = *thread->context;
 
   nt->state = RUNNABLE;	//TODO: synchronize this
   release(&ptable.lock);
@@ -457,7 +471,7 @@ wakeup1(void *chan)
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     	struct thread* t;
     	for(t = p->ttable.thread; t < &p->ttable.thread[NTHREAD]; t++){
-    		if(t->state == SLEEPING && t->chan == chan)
+    		if(t->state == SLEEPING && (t->chan == chan || p->chan == chan))
     		      t->state = RUNNABLE;
     	}
 	}
