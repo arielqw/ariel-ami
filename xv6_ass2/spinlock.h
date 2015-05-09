@@ -1,5 +1,6 @@
 
 #ifndef SPIN_LOCK
+#define SPIN_LOCK
 
 
 	// Mutual exclusion lock.
@@ -16,4 +17,3 @@
 
 #endif
 
-#define SPIN_LOCK

@@ -29,3 +29,16 @@ SYSCALL(getpid)
 SYSCALL(sbrk)
 SYSCALL(sleep)
 SYSCALL(uptime)
+
+
+SYSCALL(kthread_create)
+SYSCALL(kthread_id)
+SYSCALL(kthread_exit)
+SYSCALL(kthread_join)
+
+SYSCALL(kthread_mutex_alloc)
+SYSCALL(kthread_mutex_dealloc)
+SYSCALL(kthread_mutex_lock)
+SYSCALL(kthread_mutex_unlock)
+SYSCALL(kthread_mutex_yieldlock)
+

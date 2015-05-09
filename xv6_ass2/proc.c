@@ -4,8 +4,9 @@
 #include "memlayout.h"
 #include "mmu.h"
 #include "x86.h"
-#include "proc.h"
 #include "spinlock.h"
+
+#include "proc.h"
 
 struct {
   struct spinlock lock;
@@ -25,6 +26,14 @@ void
 pinit(void)
 {
   initlock(&ptable.lock, "ptable");
+  int i = 0;
+  struct proc* p;
+  char* names[] = {"ttable0","ttable1", "ttable2", "ttable3", "ttable4", "ttable5", "ttable6", "ttable7",
+		  	  	  "ttable8","ttable9", "ttable10", "ttable11", "ttable12","ttable13", "ttable14", "ttable15"};
+
+  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+	  initlock(&p->ttable.lock, names[i++]);
+  }
 }
 
 // retrieves the first thread of the process with matching state
@@ -260,6 +269,7 @@ exit(void)
   //thread->process->state = ZOMBIE; //TODO : CHECK HERE
   struct thread* t;
   // cleaning threads and freeing used stacks
+
   for(t = thread->process->ttable.thread; t < &thread->process->ttable.thread[NTHREAD]; t++){
 	  if (t->state != UNUSED)	t->state = ZOMBIE;
   }
@@ -294,8 +304,9 @@ wait(void)
             {
             	kfree(t->kstack);	//TODO: should make sure we are not deleting a running thread!
                 t->kstack = 0;
+                t->state = UNUSED;
+                memset(t,0,sizeof(struct thread));
             }
-            memset(t,0,sizeof(struct thread));
         }
 
         freevm(p->pgdir);
@@ -344,7 +355,7 @@ scheduler(void)
     	for(t = p->ttable.thread; t < &p->ttable.thread[NTHREAD]; t++){
 
 		  if(t->state != RUNNABLE) continue; // if there is no RUNNABLE thread in process
-
+		  acquire(&p->ttable.lock);
 		  // Switch to chosen process.  It is the process's job
 		  // to release ptable.lock and then reacquire it
 		  // before jumping back to us.
@@ -359,6 +370,8 @@ scheduler(void)
 		  // Process is done running for now.
 		  // It should have changed its p->state before coming back.
 		  thread = 0;
+		  release(&p->ttable.lock);
+
     	}
 
     }
@@ -376,7 +389,7 @@ sched(void)
 
   if(!holding(&ptable.lock))
     panic("sched ptable.lock");
-  if(cpu->ncli != 1)
+  if(cpu->ncli != 1 && cpu->ncli != 2)	//TODO: might not work well
     panic("sched locks");
   if(thread->state == RUNNING)
     panic("sched running");

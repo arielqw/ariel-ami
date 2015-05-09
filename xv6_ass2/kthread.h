@@ -1,5 +1,10 @@
+#ifndef THREAD_HEADER
+#define THREAD_HEADER
 
+#include "types.h"
 #include "spinlock.h"
+//#include "proc.h"
+
 
 #define MAX_STACK_SIZE 4000
 #define MAX_MUTEXES 64
@@ -17,7 +22,7 @@ struct thread {
   struct trapframe *tf;        // Trap frame for current syscall
   struct context *context;     // swtch() here to run process
   void *chan;                  // If non-zero, sleeping on chan
-//  int killed;                  // If non-zero, have been killed
+  int killed;                  // If non-zero, have been killed
 //  struct file *ofile[NOFILE];  // Open files
 //  struct inode *cwd;           // Current directory
 //  char name[16];               // Process name (debugging)
@@ -31,6 +36,9 @@ struct ttable{
   struct spinlock lock;
   struct thread thread[NTHREAD];	//threads
 };
+
+
+extern struct thread *thread asm("%gs:4");     // cpus[cpunum()].kthread
 
 /********************************
         The API of the KLT package
@@ -47,3 +55,4 @@ int kthread_mutex_lock(int mutex_id);
 int kthread_mutex_unlock(int mutex_id);
 int kthread_mutex_yieldlock(int mutex_id1, int mutex_id2);
 
+#endif
