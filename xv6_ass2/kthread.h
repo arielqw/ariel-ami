@@ -33,7 +33,7 @@ struct thread {
 //struct spinlock lock;
 
 struct ttable{
-  struct spinlock lock;
+  //struct spinlock lock;
   struct thread thread[NTHREAD];	//threads
 };
 

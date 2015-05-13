@@ -94,6 +94,10 @@ trap(struct trapframe *tf)
     thread->process->killed = 1;
   }
 
+  if(thread && thread->killed && (tf->cs&3) == DPL_USER){
+	  killThread();
+	  return;
+  }
   // Force process exit if it has been killed and is in user space.
   // (If it is still executing in the kernel, let it keep running 
   // until it gets to the regular system call return.)

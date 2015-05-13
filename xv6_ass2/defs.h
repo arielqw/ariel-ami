@@ -118,6 +118,7 @@ void            userinit(void);
 int             wait(void);
 void            wakeup(void*);
 void            yield(void);
+void            killThread(void);
 
 //kthread.c
 int kthread_create(void*(*start_func)(), void* stack, uint stack_size);

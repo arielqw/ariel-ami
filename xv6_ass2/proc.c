@@ -26,14 +26,14 @@ void
 pinit(void)
 {
   initlock(&ptable.lock, "ptable");
-  int i = 0;
-  struct proc* p;
-  char* names[] = {"ttable0","ttable1", "ttable2", "ttable3", "ttable4", "ttable5", "ttable6", "ttable7",
-		  	  	  "ttable8","ttable9", "ttable10", "ttable11", "ttable12","ttable13", "ttable14", "ttable15"};
-
-  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-	  initlock(&p->ttable.lock, names[i++]);
-  }
+//  int i = 0;
+//  struct proc* p;
+//  char* names[] = {"ttable0","ttable1", "ttable2", "ttable3", "ttable4", "ttable5", "ttable6", "ttable7",
+//		  	  	  "ttable8","ttable9", "ttable10", "ttable11", "ttable12","ttable13", "ttable14", "ttable15"};
+//
+//  for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
+//	  initlock(&p->ttable.lock, names[i++]);
+//  }
 }
 
 // retrieves the first thread of the process with matching state
@@ -197,6 +197,8 @@ fork(void)
     nt->state = UNUSED;
     return -1;
   }
+
+  nt->killed = 0;
   np->sz = thread->process->sz;
   np->parent = thread->process;
   *nt->tf = *thread->tf;
@@ -225,13 +227,32 @@ fork(void)
   
   return pid;
 }
-
 // Exit the current process.  Does not return.
 // An exited process remains in the zombie state
 // until its parent calls wait() to find out it exited.
 void
-exit(void)
+exit(void){
+	//todo : check if we need to lock this
+	if(thread->process->isDying){
+		return;
+	}
+	thread->process->isDying = 1;
+    //kill all threads
+	struct thread* t;
+	for(t = thread->process->ttable.thread; t < &thread->process->ttable.thread[NTHREAD]; t++){
+		t->killed = 1;
+	}
+
+}
+
+
+void
+killThread(void)
 {
+  thread->state = ZOMBIE;
+  //if all threads are killed we can proceed with exit, otherwise not
+  if( !isZombie(thread->process) ) return;
+
   struct proc *p;
   int fd;
 
@@ -266,13 +287,7 @@ exit(void)
   }
 
   // Jump into the scheduler, never to return.
-  //thread->process->state = ZOMBIE; //TODO : CHECK HERE
-  struct thread* t;
-  // cleaning threads and freeing used stacks
 
-  for(t = thread->process->ttable.thread; t < &thread->process->ttable.thread[NTHREAD]; t++){
-	  if (t->state != UNUSED)	t->state = ZOMBIE;
-  }
   sched();
   panic("zombie exit");
 }
@@ -355,7 +370,7 @@ scheduler(void)
     	for(t = p->ttable.thread; t < &p->ttable.thread[NTHREAD]; t++){
 
 		  if(t->state != RUNNABLE) continue; // if there is no RUNNABLE thread in process
-		  acquire(&p->ttable.lock);
+		  //acquire(&p->ttable.lock);
 		  // Switch to chosen process.  It is the process's job
 		  // to release ptable.lock and then reacquire it
 		  // before jumping back to us.
@@ -370,7 +385,7 @@ scheduler(void)
 		  // Process is done running for now.
 		  // It should have changed its p->state before coming back.
 		  thread = 0;
-		  release(&p->ttable.lock);
+		  //release(&p->ttable.lock);
 
     	}
 
@@ -389,7 +404,7 @@ sched(void)
 
   if(!holding(&ptable.lock))
     panic("sched ptable.lock");
-  if(cpu->ncli != 1 && cpu->ncli != 2)	//TODO: might not work well
+  if(cpu->ncli != 1)	//TODO: might not work well
     panic("sched locks");
   if(thread->state == RUNNING)
     panic("sched running");
