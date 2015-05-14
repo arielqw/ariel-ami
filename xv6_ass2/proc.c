@@ -93,6 +93,7 @@ found:
   t->state = EMBRYO;
   t->tid = nexttid++;	//TODO: synchronize this?
   p->pid = nextpid++;
+  p->isDying = 0;
   t->process = p;
   release(&ptable.lock);
 
@@ -232,26 +233,41 @@ fork(void)
 // until its parent calls wait() to find out it exited.
 void
 exit(void){
+
 	//todo : check if we need to lock this
+	acquire(&ptable.lock);
 	if(thread->process->isDying){
+		release(&ptable.lock);
 		return;
 	}
+	cprintf("exiting pid:%d...\n", thread->process->pid);
+
 	thread->process->isDying = 1;
     //kill all threads
 	struct thread* t;
 	for(t = thread->process->ttable.thread; t < &thread->process->ttable.thread[NTHREAD]; t++){
 		t->killed = 1;
 	}
+	//thread->state = RUNNABLE;
 
+	//release(&ptable.lock);
+
+	//sched();
+	//panic("exit didnt go to sched");
+	release(&ptable.lock);
+	killThread();
 }
 
 
 void
 killThread(void)
 {
+	cprintf("killing thread\n");
   thread->state = ZOMBIE;
   //if all threads are killed we can proceed with exit, otherwise not
   if( !isZombie(thread->process) ) return;
+
+	cprintf("last thread dead. killing process\n");
 
   struct proc *p;
   int fd;
@@ -266,6 +282,7 @@ killThread(void)
       thread->process->ofile[fd] = 0;
     }
   }
+
 
   begin_op();
   iput(thread->process->cwd);
@@ -317,8 +334,11 @@ wait(void)
         for(t = p->ttable.thread; t < &p->ttable.thread[NTHREAD]; t++){
             if (t->state != UNUSED)	//zombie
             {
+            	cprintf("wait cleaning thread\n");
+
             	kfree(t->kstack);	//TODO: should make sure we are not deleting a running thread!
                 t->kstack = 0;
+                t->killed = 0;
                 t->state = UNUSED;
                 memset(t,0,sizeof(struct thread));
             }
