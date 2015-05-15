@@ -87,34 +87,6 @@ found:
 	return 0;
 }
 
-int kthread_mutex_alloc()
-{
-	return 0;
-}
-
-int kthread_mutex_dealloc(int mutex_id)
-{
-	return 0;
-
-}
-
-int kthread_mutex_lock(int mutex_id)
-{
-	return 0;
-
-}
-
-int kthread_mutex_unlock(int mutex_id)
-{
-	return 0;
-
-}
-
-int kthread_mutex_yieldlock(int mutex_id1, int mutex_id2)
-{
-	return 0;
-
-}
 
 
 

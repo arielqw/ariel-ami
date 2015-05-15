@@ -119,6 +119,7 @@ int             wait(void);
 void            wakeup(void*);
 void            yield(void);
 void            killThread(void);
+void			initMutexes(void);
 
 //kthread.c
 int kthread_create(void*(*start_func)(), void* stack, uint stack_size);

@@ -26,6 +26,7 @@ void
 pinit(void)
 {
   initlock(&ptable.lock, "ptable");
+  initMutexes();
 //  int i = 0;
 //  struct proc* p;
 //  char* names[] = {"ttable0","ttable1", "ttable2", "ttable3", "ttable4", "ttable5", "ttable6", "ttable7",
@@ -503,7 +504,7 @@ forkret(void)
 void
 sleep(void *chan, struct spinlock *lk)
 {
-  if(thread->process == 0)
+  if(thread == 0)
     panic("sleep");
 
   if(lk == 0)
@@ -635,3 +636,5 @@ procdump(void)
 }
 
 #include "kthread.c"
+#include "mutex.c"
+

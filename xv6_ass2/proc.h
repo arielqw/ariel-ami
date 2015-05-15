@@ -4,6 +4,8 @@
 
 //#include "spinlock.h"
 #include "kthread.h"
+#include "mutex.h"
+
 
 // Segments in thread->process->gdt.
 #define NSEGS     7

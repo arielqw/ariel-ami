@@ -10,7 +10,7 @@
 #define MAX_MUTEXES 64
 
 
-enum threadstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };	//TODO: check what is here
+enum threadstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE, BLOCKED };	//TODO: check what is here
 
 struct thread {
 //  uint sz;                     // Size of thread memory (bytes)

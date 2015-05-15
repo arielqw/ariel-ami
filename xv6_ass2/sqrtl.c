@@ -2,27 +2,43 @@
 #include "types.h"
 #include "user.h"
 
-void* printHelloWorld(){
-	int i;
-	for(i = 0; i < 3; i++){
-		printf(1," aa %d\n",i);
+
+
+void* ariel(){
+	while(1){
+		kthread_mutex_lock(1);
+		printf(1,"ariel\n");
+		kthread_mutex_unlock(1);
 	}
-	printf(1,"hello scumbag world, tid: %d \n", kthread_id());
-	kthread_exit();
 	return 0;
 }
+
+void* ami(){
+	while(1){
+		kthread_mutex_lock(1);
+		printf(1,"ami\n");
+		kthread_mutex_unlock(1);
+	}
+	return 0;
+}
+
 
 int
 main(void)
 {
   printf(1,"testing create thread");
-  void* stk = malloc(MAX_STACK_SIZE);
-  int id = kthread_create(printHelloWorld, stk, MAX_STACK_SIZE);
+  //void* stk1 = malloc(MAX_STACK_SIZE);
+  //void* stk2 = malloc(MAX_STACK_SIZE);
 
-  printf(1,"joining %d \n",id);
-  kthread_join(id);
+  kthread_mutex_alloc();
 
-  printf(1,"done joining %d \n");
+  //int id1 = kthread_create(ariel, stk1, MAX_STACK_SIZE);
+  //int id2 = kthread_create(ami, stk2, MAX_STACK_SIZE);
+//
+  //kthread_join(id1);
+  //kthread_join(id2);
+
+  //printf(1,"done joining %d \n");
 
   kthread_exit();
   return 0;
