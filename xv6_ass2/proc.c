@@ -247,6 +247,7 @@ exit(void){ //todo: fix 2 paralel exits bug
 	cprintf("exiting pid:%d...\n", thread->process->pid);
 
 	thread->process->isDying = 1;
+
     //kill all threads
 	struct thread* t;
 	for(t = thread->process->ttable.thread; t < &thread->process->ttable.thread[NTHREAD]; t++){
@@ -290,7 +291,7 @@ killThread(void)
   //if all threads are killed we can proceed with exit, otherwise not
   if( !isZombie(thread->process) ){
 	  acquire(&ptable.lock);
-	  sched();
+	  goto done;
 	  cprintf("sched failed 1");
 	  //return;
   }
@@ -332,6 +333,10 @@ killThread(void)
   }
 
   // Jump into the scheduler, never to return.
+done:
+	cprintf("trying to wake-up");
+	wakeup1(thread->chan);
+	cprintf("done trying to wake-up");
 
   sched();
   panic("zombie exit");

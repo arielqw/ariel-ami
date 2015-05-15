@@ -59,41 +59,37 @@ int kthread_create(void*(*start_func)(), void* stack, uint stack_size)
 
 void kthread_exit()
 {
-	thread->state = ZOMBIE;
+	killThread();
 
-//	struct ttable a;
-//	a.thread[0].state = UNUSED;
-//	a.lock
-	thread->process->killed = 1;
-
-	//acquire(&(thread->process->ttable.lock));
-	/*
-	thread->state = ZOMBIE;
-	wakeup1(thread->chan);
-	release(thread->process->ttable.lock);
-*/
 }
 
 int kthread_join(int thread_id)
 {
-	/*
-	acquire(thread->process->ttable.lock);
+
+	acquire(&ptable.lock);
 	struct proc* p = thread->process;
 	struct thread* t;
 	for(t = p->ttable.thread; t < &p->ttable.thread[NTHREAD]; t++){
-
+		if(t->tid == thread_id){
+			goto found;
+		}
 	}
-	thread->state = ZOMBIE;
-	wakeup1(thread->chan);
-	release(thread->process->ttable.lock);
-*/
+	cprintf("error invalid tid to join");
+	release(&ptable.lock);
+
+	return -1;
+found:
+	cprintf("going to sleep");
+	sleep(t->chan,&ptable.lock);
+	release(&ptable.lock);
+	cprintf("woke up!");
+
 	return 0;
 }
 
 int kthread_mutex_alloc()
 {
 	return 0;
-
 }
 
 int kthread_mutex_dealloc(int mutex_id)
