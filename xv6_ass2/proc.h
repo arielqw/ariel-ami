@@ -64,7 +64,10 @@ struct context {
 //enum threadstate { UNUSED, EMBRYO, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
 
-
+//struct execData {
+//	int isPendingExec;
+//	struct thread* threadThatCalledExec;
+//};
 
 // Per-process state
 struct proc {
@@ -79,6 +82,9 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
   struct ttable ttable;
+  int isPendingExec;
+  struct thread* threadThatCalledExec;
+
 };
 
 // Process memory is laid out contiguously, low addresses first:

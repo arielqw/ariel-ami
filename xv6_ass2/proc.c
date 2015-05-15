@@ -95,6 +95,9 @@ found:
   p->pid = nextpid++;
   p->isDying = 0;
   t->process = p;
+  p->isPendingExec = 0;
+  p->threadThatCalledExec = 0;
+
   release(&ptable.lock);
 
   // Allocate kernel stack.	//THREAD
@@ -254,7 +257,7 @@ exit(void){
 
 	//sched();
 	//panic("exit didnt go to sched");
-	release(&ptable.lock);
+	release(&ptable.lock);	//should release after killThread
 	killThread();
 }
 
@@ -262,8 +265,27 @@ exit(void){
 void
 killThread(void)
 {
-	cprintf("killing thread\n");
+  //todo: add lock
+  cprintf("killing thread\n");
   thread->state = ZOMBIE;
+
+  //in case we are in exec mode
+  if (thread->process->isPendingExec){
+	  //saving and switching the state of the thread who called exec
+	  enum threadstate previousState = thread->process->threadThatCalledExec->state;
+	  thread->process->threadThatCalledExec->state = ZOMBIE;
+
+	  if( !isZombie(thread->process) ){
+		  thread->process->threadThatCalledExec->state = previousState;
+		  return;
+	  }
+	  else{
+		  thread->process->threadThatCalledExec->state = previousState;
+		  wakeup(thread->process->threadThatCalledExec->chan);
+		  return;
+	  }
+  }
+
   //if all threads are killed we can proceed with exit, otherwise not
   if( !isZombie(thread->process) ) return;
 
