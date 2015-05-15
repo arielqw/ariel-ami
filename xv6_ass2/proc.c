@@ -235,13 +235,14 @@ fork(void)
 // An exited process remains in the zombie state
 // until its parent calls wait() to find out it exited.
 void
-exit(void){
+exit(void){ //todo: fix 2 paralel exits bug
 
 	//todo : check if we need to lock this
 	acquire(&ptable.lock);
 	if(thread->process->isDying){
-		release(&ptable.lock);
-		return;
+		//release(&ptable.lock);
+		sched();
+		cprintf("sched not working! buuz \n");
 	}
 	cprintf("exiting pid:%d...\n", thread->process->pid);
 
@@ -287,7 +288,12 @@ killThread(void)
   }
 
   //if all threads are killed we can proceed with exit, otherwise not
-  if( !isZombie(thread->process) ) return;
+  if( !isZombie(thread->process) ){
+	  acquire(&ptable.lock);
+	  sched();
+	  cprintf("sched failed 1");
+	  //return;
+  }
 
 	cprintf("last thread dead. killing process\n");
 
@@ -622,3 +628,5 @@ procdump(void)
 
   }
 }
+
+#include "kthread.c"

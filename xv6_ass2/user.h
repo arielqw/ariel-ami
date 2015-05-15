@@ -27,6 +27,7 @@ int uptime(void);
 /********************************
         The API of the KLT package
  ********************************/
+#define MAX_STACK_SIZE 4000
 
 int kthread_create(void*(*start_func)(), void* stack, uint stack_size);
 int kthread_id();
