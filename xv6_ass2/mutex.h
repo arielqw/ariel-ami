@@ -8,4 +8,6 @@ struct mutex
 	int isUsed;
 	int isLocked;
 	linkedList waitingThreadsQueue;
+	struct mutex* reservedMutex;
+	struct thread* lockingThread;
 };

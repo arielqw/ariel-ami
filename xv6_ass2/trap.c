@@ -95,7 +95,6 @@ trap(struct trapframe *tf)
   }
 
   if(thread && thread->killed ){
-	  cprintf("thread->killed == 1\n");
 	  killThread();
   }
 
