@@ -124,21 +124,23 @@ int kthread_mutex_lock(int mutex_id)
 		retVal = 0;
 		m->lockingThread = thread;
 	}
-	cprintf("%d | %s got mutex %d (%d|%d) \n", thread->tid, LOG_TAG, m->id, m->isUsed, m->isLocked);
+	cprintf("%d | %s got mutex %d (%d|%d|%d) \n", thread->tid, LOG_TAG, m->id, m->isUsed, m->isLocked, m->lockingThread->tid);
 
 	release(&mtable.lock);
 	return retVal;
 }
 
-int kthread_mutex_unlock(int mutex_id)
+
+int kthread_mutex_unlock1(int mutex_id)
 {
 	char* LOG_TAG = "[kthread_mutex_unlock] ";
 
 	int retVal = -1;
-	acquire(&mtable.lock);
-	cprintf("%d | %s start received mutex id: %d \n", thread->tid, LOG_TAG, mutex_id);
+	cprintf("%d | %s start , mutex id: %d \n", thread->tid, LOG_TAG, mutex_id);
 
 	struct mutex* m = getMutexById(mutex_id);
+	cprintf("%d | %s current owner of mutex: %d is: %d \n", thread->tid, LOG_TAG, m->id, m->lockingThread->tid);
+
 	if (m && m->isUsed && m->isLocked)
 	{
 		if (m->waitingThreadsQueue.size > 0)
@@ -153,29 +155,37 @@ int kthread_mutex_unlock(int mutex_id)
 			cprintf("%d | %s no one waiting for mutex %d, no need to wakeup threads \n", thread->tid, LOG_TAG, mutex_id);
 			m->isLocked = 0;
 		}
+
 		m->lockingThread = 0;
 		retVal = 0;
 	}
 	else{
 		cprintf("%d | %s error unlocking mutex %d (%d|%d)\n", thread->tid, LOG_TAG, mutex_id , m->isUsed , m->isLocked);
 	}
-	release(&mtable.lock);
 	return retVal;
 
+}
+
+int kthread_mutex_unlock(int mutex_id){
+    int retVal;
+	acquire(&mtable.lock);
+	retVal = kthread_mutex_unlock1(mutex_id);
+    release(&mtable.lock);
+    return retVal;
 }
 
 int kthread_mutex_yieldlock(int mutex_id1, int mutex_id2)
 {
 	int retVal = -1;
 	acquire(&mtable.lock);
-	struct mutex* m1 = getMutexById(mutex_id1);
-	struct mutex* m2 = getMutexById(mutex_id2);
-
-	if (m1 && m1->isUsed && m1->isLocked && m2)
-	{
-		m2->reservedMutex = m1;
-		retVal = 0;
-	}
+//	struct mutex* m1 = getMutexById(mutex_id1);
+//	struct mutex* m2 = getMutexById(mutex_id2);
+//
+//	if (m1 && m1->isUsed && m1->isLocked && m2)
+//	{
+//		m2->reservedMutex = m1;
+//		retVal = 0;
+//	}
 	release(&mtable.lock);
 	return retVal;
 

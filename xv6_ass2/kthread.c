@@ -8,6 +8,16 @@ void clean_thread(struct thread* t){
     t->kstack = 0;
     t->killed = 0;
     t->state = UNUSED;
+
+    acquire(&mtable.lock);
+    struct mutex* m;
+	for(m = mtable.mutexes; m < &mtable.mutexes[MAX_MUTEXES]; m++){
+		if(m->lockingThread == t){
+			kthread_mutex_unlock1(m->id);
+		}
+	}
+
+    release(&mtable.lock);
     memset(t,0,sizeof(struct thread));
 }
 

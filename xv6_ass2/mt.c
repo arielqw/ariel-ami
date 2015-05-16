@@ -325,10 +325,10 @@ void senaty(int count){
 
 int main(){
   senaty(2);
-//  stressTest1(15);
+  stressTest1(15);
 //  mutexYieldTest();
-//  stressTest2Fail(15);
-//  stressTest3toMuchTreads(15); //this test must be the last
+  stressTest2Fail(15);
+  stressTest3toMuchTreads(15); //this test must be the last
 
 
 

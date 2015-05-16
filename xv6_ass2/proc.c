@@ -649,7 +649,7 @@ procdump(void)
 
   }
 }
+#include "mutex.c"
 
 #include "kthread.c"
-#include "mutex.c"
 
