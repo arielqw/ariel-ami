@@ -131,8 +131,8 @@ void stressTest2Fail(int count){
 
   for (i = 0 ; i < count; i++){
     stack = malloc(STACK_SIZE);
-    tid[i] = kthread_create(&unsafeThread, stack+STACK_SIZE, STACK_SIZE);
-    sleep(i %3);   // make some more troubles
+    tid[i] = kthread_create(unsafeThread, stack, STACK_SIZE);
+    //sleep(i %3);   // make some more troubles
     ASSERT((tid[i] <= 0), "kthread_create return with: %d, for index:%d", tid[i], i);
     c += tid[i];
   }
@@ -159,11 +159,11 @@ void stressTest3toMuchTreads(int count){
 
   for (i = 0 ; i < count; i++){
     stack = malloc(STACK_SIZE);
-    tid[i] = kthread_create(&loopThread, stack+STACK_SIZE, STACK_SIZE);
+    tid[i] = kthread_create(loopThread, stack, STACK_SIZE);
     ASSERT((tid[i] <= 0), "kthread_create return with: %d, for index:%d", tid[i], i);
   }
 
-  if(kthread_create(&loopThread, stack+STACK_SIZE, STACK_SIZE) >= 0){
+  if(kthread_create(loopThread, stack, STACK_SIZE) >= 0){
     printf(1, "%s test FAIL!\n", __FUNCTION__);
   } else {
     printf(1, "%s test PASS!\n", __FUNCTION__);
@@ -324,11 +324,11 @@ void senaty(int count){
 
 
 int main(){
-  //senaty(MAX_MUTEXES);
+  senaty(MAX_MUTEXES);
   stressTest1(15);
 //  mutexYieldTest();
-//  stressTest2Fail(15);
-//  stressTest3toMuchTreads(15); //this test must be the last
+  stressTest2Fail(15);
+  stressTest3toMuchTreads(15); //this test must be the last
 
 
 

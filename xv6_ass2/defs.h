@@ -8,6 +8,7 @@ struct rtcdate;
 struct spinlock;
 struct stat;
 struct superblock;
+struct thread;
 
 // bio.c
 void            binit(void);
@@ -120,6 +121,7 @@ void            wakeup(void*);
 void            yield(void);
 void            killThread(void);
 void			initMutexes(void);
+void 			clean_thread(struct thread* t);
 
 //kthread.c
 int kthread_create(void*(*start_func)(), void* stack, uint stack_size);

@@ -386,11 +386,7 @@ wait(void)
         for(t = p->ttable.thread; t < &p->ttable.thread[NTHREAD]; t++){
             if (t->state != UNUSED)	//zombie
             {
-            	kfree(t->kstack);	//TODO: should make sure we are not deleting a running thread!
-                t->kstack = 0;
-                t->killed = 0;
-                t->state = UNUSED;
-                memset(t,0,sizeof(struct thread));
+            	clean_thread(t);
                 count++;
             }
         }

@@ -3,6 +3,13 @@
 
 int nexttid = 1;
 
+void clean_thread(struct thread* t){
+	kfree(t->kstack);
+    t->kstack = 0;
+    t->killed = 0;
+    t->state = UNUSED;
+    memset(t,0,sizeof(struct thread));
+}
 
 int kthread_create(void*(*start_func)(), void* stack, uint stack_size)
 {
@@ -84,6 +91,8 @@ int kthread_join(int thread_id)
 		}
 	}
 	cprintf("error invalid tid to join");
+	cprintf("%d | %s error invalid tid (%d) to join \n", thread->tid, LOG_TAG, thread_id);
+
 	release(&ptable.lock);
 
 	return -1;
@@ -97,6 +106,10 @@ found:
 	}
 	cprintf("%d | %s woke up from sleep on tid %d (%s) \n", thread->tid, LOG_TAG, t->tid, getStatusString(t->state));
 
+	if(t->state == ZOMBIE){
+		//cleanup
+		clean_thread(t);
+	}
 	release(&ptable.lock);
 
 	return 0;
