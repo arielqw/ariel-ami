@@ -2,7 +2,8 @@
 #define	MESA_COND_H
 
 typedef struct mesa_cond {
-	//Your code here...
+	int inner_mutex_id;
+	int numOfThreadsWaiting;
 } mesa_cond_t;
 
 mesa_cond_t* mesa_cond_alloc();

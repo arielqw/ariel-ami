@@ -139,7 +139,7 @@ int kthread_mutex_unlock1(int mutex_id)
 	cprintf("%d | %s start , mutex id: %d \n", thread->tid, LOG_TAG, mutex_id);
 
 	struct mutex* m = getMutexById(mutex_id);
-	cprintf("%d | %s current owner of mutex: %d is: %d \n", thread->tid, LOG_TAG, m->id, m->lockingThread->tid);
+//	cprintf("%d | %s current owner of mutex: %d is: %d \n", thread->tid, LOG_TAG, m->id, m->lockingThread->tid);
 
 	if (m && m->isUsed && m->isLocked)
 	{
@@ -176,7 +176,7 @@ int kthread_mutex_unlock(int mutex_id){
 
 int kthread_mutex_yieldlock(int mutex_id1, int mutex_id2)
 {
-	cprintf("%d | %s start m1:%d m2:%s \n", thread->tid, __FUNCTION__, mutex_id1, mutex_id2);
+	cprintf("%d | %s start m1:%d m2:%d \n", thread->tid, __FUNCTION__, mutex_id1, mutex_id2);
 	int retVal = -1;
 	acquire(&mtable.lock);
 	struct mutex* m1 = getMutexById(mutex_id1);
