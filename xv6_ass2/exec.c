@@ -15,16 +15,20 @@ struct {
 int
 exec(char *path, char **argv)
 {
+	char* LOG_TAG = "[exec] ";
+	cprintf("%d | %s start \n", thread->tid, LOG_TAG);
+
 	// invalid path to exec file
 	if(namei(path) == 0){
 		return -1;
 	}
 
-	cprintf("exec called, pid: %s \n", thread->process->name);
+	cprintf("%d | %s called, pid: %d \n", thread->tid, LOG_TAG, thread->process->pid);
+
 	acquire(&ptable.lock);
 	//if other thread already exec'ed
 	if(thread->process->isPendingExec){
-		cprintf("exec already called. returning \n");
+		cprintf("%d | %s already called on pid %d. returning \n", thread->tid, LOG_TAG, thread->process->pid);
 		release(&ptable.lock);
 		return -1;
 	}
@@ -42,16 +46,15 @@ exec(char *path, char **argv)
 		}
 
 	}
-
-	cprintf("exec , we got %d other threads. \n", numOfOtherThreads);
+	cprintf("%d | %s we got %d other threads in pid %d \n", thread->tid, LOG_TAG, numOfOtherThreads, thread->process->pid);
 
 	//if there are other threads, wait for them
 	if(numOfOtherThreads > 0){ //todo: do in while loop
-		cprintf("exec , going to sleep. \n");
-		sleep(thread->chan,&ptable.lock);
+		cprintf("%d | %s going to sleep on thread (pid %d) \n", thread->tid, LOG_TAG, thread->tid, thread->process->pid);
+		sleep(thread,&ptable.lock);
 	}
 	release(&ptable.lock);
-	cprintf("exec , starting exec code. \n");
+	cprintf("%d | %s starting exec code (pid %d) \n", thread->tid, LOG_TAG, thread->process->pid);
 
 	  char *s, *last;
 	  int i, off;
@@ -139,7 +142,7 @@ exec(char *path, char **argv)
 	  freevm(oldpgdir);
 
 	  thread->process->isPendingExec = 0;
-		cprintf("exec , done successfully. \n");
+	  cprintf("%d | %s done successfully (pid %d) \n", thread->tid, LOG_TAG, thread->process->pid);
 
 	  return 0;
 
@@ -152,7 +155,7 @@ exec(char *path, char **argv)
 	  }
 
 	  thread->process->isPendingExec = 0;
-		cprintf("exec , done with error. \n");
+	  cprintf("%d | %s done with error (pid %d) \n", thread->tid, LOG_TAG, thread->process->pid);
 
 	  return -1;
 }

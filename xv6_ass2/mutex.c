@@ -43,10 +43,13 @@ int kthread_mutex_alloc()
 	int mid = -1;
 	acquire(&ptable.lock);
 	struct mutex* m = getUnusedMutex();
-	clean_list(&m->waitingThreadsQueue);
-	m->isUsed = 1;
-	m->id = nextmutexid++;
-	mid = m->id;
+	if (m)
+	{
+		clean_list(&m->waitingThreadsQueue);
+		m->isUsed = 1;
+		m->id = nextmutexid++;
+		mid = m->id;
+	}
 	release(&ptable.lock);
 	return mid;
 }
@@ -56,11 +59,12 @@ int kthread_mutex_dealloc(int mutex_id)
 	int retVal = -1;
 	acquire(&ptable.lock);
 	struct mutex* m = getMutexById(mutex_id);
-	if(!m || m->isUsed || m->isLocked){
+	if(!m || !m->isUsed || m->isLocked){
 		goto dealloc_done;
 	}
-
 	m->isUsed = 0;
+	retVal = 0;
+
 dealloc_done:
 	release(&ptable.lock);
 	return retVal;

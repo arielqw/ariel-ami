@@ -22,6 +22,19 @@ extern void trapret(void);
 
 static void wakeup1(void *chan);
 
+char* getStatusString(enum threadstate state){
+	  static char *tstates[] = {
+	  [UNUSED]    "unused",
+	  [EMBRYO]    "embryo",
+	  [SLEEPING]  "sleep ",
+	  [RUNNABLE]  "runnable",
+	  [RUNNING]   "run   ",
+	  [ZOMBIE]    "zombie",
+	  [BLOCKED]    "blocked"
+	  };
+
+	  return tstates[state];
+}
 void
 pinit(void)
 {
@@ -237,6 +250,8 @@ fork(void)
 // until its parent calls wait() to find out it exited.
 void
 exit(void){ //todo: fix 2 paralel exits bug
+	char* LOG_TAG = "[exit] ";
+	cprintf("%d | %s start \n", thread->tid, LOG_TAG);
 
 	//todo : check if we need to lock this
 	acquire(&ptable.lock);
@@ -245,7 +260,7 @@ exit(void){ //todo: fix 2 paralel exits bug
 		sched();
 		cprintf("sched not working! buuz \n");
 	}
-	cprintf("exiting pid:%d...\n", thread->process->pid);
+	cprintf("%d | %s exiting pid %d \n", thread->tid, LOG_TAG, thread->process->pid);
 
 	thread->process->isDying = 1;
 
@@ -253,13 +268,11 @@ exit(void){ //todo: fix 2 paralel exits bug
 	struct thread* t;
 	for(t = thread->process->ttable.thread; t < &thread->process->ttable.thread[NTHREAD]; t++){
 		t->killed = 1;
+		if (t->state == SLEEPING || t->state == BLOCKED)
+		{
+			t->state = RUNNABLE;
+		}
 	}
-	//thread->state = RUNNABLE;
-
-	//release(&ptable.lock);
-
-	//sched();
-	//panic("exit didnt go to sched");
 	release(&ptable.lock);	//should release after killThread
 	killThread();
 }
@@ -268,8 +281,10 @@ exit(void){ //todo: fix 2 paralel exits bug
 void
 killThread(void)
 {
+  char* LOG_TAG = "[killThread] ";
+  cprintf("%d | %s start \n", thread->tid, LOG_TAG);
+
   //todo: add lock
-  cprintf("killing thread\n");
   thread->state = ZOMBIE;
 
   //in case we are in exec mode
@@ -294,10 +309,9 @@ killThread(void)
 	  acquire(&ptable.lock);
 	  goto done;
 	  cprintf("sched failed 1");
-	  //return;
   }
 
-	cprintf("last thread dead. killing process\n");
+  cprintf("%d | %s last thread dead. killing process (%d) \n", thread->tid, LOG_TAG, thread->process->pid);
 
   struct proc *p;
   int fd;
@@ -335,9 +349,10 @@ killThread(void)
 
   // Jump into the scheduler, never to return.
 done:
-	cprintf("trying to wake-up");
-	wakeup1(thread->chan);
-	cprintf("done trying to wake-up");
+	cprintf("%d | %s trying to wake-up threads sleeping on thread %d \n", thread->tid, LOG_TAG, thread->tid);
+
+	wakeup1(thread);
+	cprintf("%d | %s done trying to wake-up threads sleeping on thread %d \n", thread->tid, LOG_TAG, thread->tid);
 
   sched();
   panic("zombie exit");
@@ -348,6 +363,8 @@ done:
 int
 wait(void)
 {
+  char* LOG_TAG = "[wait] ";
+
   struct proc *p;
   int havekids, pid;
 
@@ -364,19 +381,20 @@ wait(void)
         pid = p->pid;
 
         struct thread* t;
+        int count = 0;
         // cleaning threads and freeing used stacks
         for(t = p->ttable.thread; t < &p->ttable.thread[NTHREAD]; t++){
             if (t->state != UNUSED)	//zombie
             {
-            	cprintf("wait cleaning thread\n");
-
             	kfree(t->kstack);	//TODO: should make sure we are not deleting a running thread!
                 t->kstack = 0;
                 t->killed = 0;
                 t->state = UNUSED;
                 memset(t,0,sizeof(struct thread));
+                count++;
             }
         }
+    	cprintf("%d | %s cleaned %d threads \n", thread->tid, LOG_TAG, count);
 
         freevm(p->pgdir);
         p->pid = 0;
@@ -522,12 +540,12 @@ sleep(void *chan, struct spinlock *lk)
   }
 
   // Go to sleep.
-  thread->process->chan = chan;
+  thread->chan = chan;
   thread->state = SLEEPING;
   sched();
 
   // Tidy up.
-  thread->process->chan = 0;
+  thread->chan = 0;
 
   // Reacquire original lock.
   if(lk != &ptable.lock){  //DOC: sleeplock2
@@ -553,7 +571,7 @@ wakeup1(void *chan)
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
     	struct thread* t;
     	for(t = p->ttable.thread; t < &p->ttable.thread[NTHREAD]; t++){
-    		if(t->state == SLEEPING && (t->chan == chan || p->chan == chan))
+    		if(t->state == SLEEPING && t->chan == chan)
     		      t->state = RUNNABLE;
     	}
 	}

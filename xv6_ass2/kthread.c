@@ -6,13 +6,14 @@ int nexttid = 1;
 
 int kthread_create(void*(*start_func)(), void* stack, uint stack_size)
 {
-	cprintf("creating thread...");
+	char* LOG_TAG = "[kthread_create] ";
+	cprintf("%d | %s start \n", thread->tid, LOG_TAG);
 	  acquire(&ptable.lock);
 
 	  //find a free thread to use
 	  struct thread *t = getThreadInStateOf(thread->process,UNUSED);
 	  if(t == 0){
-		  cprintf("threads limit for this process exceeded. pid: %d ", thread->process->pid);
+		  cprintf("threads limit for this process exceeded. pid: %d \n", thread->process->pid);
 		  release(&ptable.lock);
 		  return -1;
 	  }
@@ -25,6 +26,7 @@ int kthread_create(void*(*start_func)(), void* stack, uint stack_size)
 
 	  if((t->kstack = kalloc()) == 0){
 	    t->state = UNUSED;
+		cprintf("kthread_create failed kalloc thread stack for pid: %d \n", thread->process->pid);
 	    return -1;
 	  }
 
@@ -54,17 +56,24 @@ int kthread_create(void*(*start_func)(), void* stack, uint stack_size)
 	  t->state = RUNNABLE;
 	  release(&ptable.lock);
 
+	  cprintf("%d | %s done. new thread id is %d \n", thread->tid, LOG_TAG, t->tid);
+
 	  return t->tid;
 }
 
 void kthread_exit()
 {
+	char* LOG_TAG = "[kthread_exit] ";
+	cprintf("%d | %s start \n", thread->tid, LOG_TAG);
+
 	killThread();
 
 }
 
 int kthread_join(int thread_id)
 {
+	char* LOG_TAG = "[kthread_join] ";
+	cprintf("%d | %s start \n", thread->tid, LOG_TAG);
 
 	acquire(&ptable.lock);
 	struct proc* p = thread->process;
@@ -79,10 +88,16 @@ int kthread_join(int thread_id)
 
 	return -1;
 found:
-	cprintf("going to sleep");
-	sleep(t->chan,&ptable.lock);
+	cprintf("%d | %s trying to sleep on tid %d (%s) \n", thread->tid, LOG_TAG, t->tid, getStatusString(t->state));
+
+	while (t->state != UNUSED && t->state != ZOMBIE)
+	{
+		cprintf("%d | %s going to sleep on tid %d (%s) \n", thread->tid, LOG_TAG, t->tid, getStatusString(t->state));
+		sleep(t,&ptable.lock);
+	}
+	cprintf("%d | %s woke up from sleep on tid %d (%s) \n", thread->tid, LOG_TAG, t->tid, getStatusString(t->state));
+
 	release(&ptable.lock);
-	cprintf("woke up!");
 
 	return 0;
 }

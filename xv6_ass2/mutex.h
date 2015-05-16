@@ -1,6 +1,5 @@
 
 #include "linkedList.h"
-//#define MAX_MUTEXES 16
 
 
 struct mutex

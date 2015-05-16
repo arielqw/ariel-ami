@@ -77,7 +77,7 @@ struct proc {
   pde_t* pgdir;                // Page table
   int pid;                     // Process ID
   struct proc *parent;         // Parent process
-  void *chan;                  // If non-zero, sleeping on chan
+//  void *chan;                  // If non-zero, sleeping on chan
   int killed;                  // If non-zero, have been killed
   int isDying;
   struct file *ofile[NOFILE];  // Open files
