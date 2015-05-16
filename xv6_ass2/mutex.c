@@ -176,16 +176,33 @@ int kthread_mutex_unlock(int mutex_id){
 
 int kthread_mutex_yieldlock(int mutex_id1, int mutex_id2)
 {
+	cprintf("%d | %s start m1:%d m2:%s \n", thread->tid, __FUNCTION__, mutex_id1, mutex_id2);
 	int retVal = -1;
 	acquire(&mtable.lock);
-//	struct mutex* m1 = getMutexById(mutex_id1);
-//	struct mutex* m2 = getMutexById(mutex_id2);
+	struct mutex* m1 = getMutexById(mutex_id1);
+	struct mutex* m2 = getMutexById(mutex_id2);
 //
-//	if (m1 && m1->isUsed && m1->isLocked && m2)
-//	{
-//		m2->reservedMutex = m1;
-//		retVal = 0;
-//	}
+	if (m1  && m2
+			&& m1->isUsed
+			&& m1->isLocked
+			&& m1->lockingThread == thread)
+	{
+		if(m2->waitingThreadsQueue.size > 0){
+			cprintf("%d | %s moving mutex %d from %d to %d \n", thread->tid, __FUNCTION__, m1->id, thread->tid, m2->waitingThreadsQueue.head->data->tid);
+
+			m1->lockingThread = m2->waitingThreadsQueue.head->data;
+			retVal = 0;
+		}
+		else{
+			//locks going to be lost forever
+			cprintf("%d | %s no one is waiting on %d, locks are lost \n", thread->tid, __FUNCTION__, m2->id);
+		}
+
+	}
+	else{
+		cprintf("%d | %s error ..  \n", thread->tid, __FUNCTION__);
+
+	}
 	release(&mtable.lock);
 	return retVal;
 
