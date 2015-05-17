@@ -133,7 +133,7 @@ int mesa_slots_monitor_stopadding(mesa_slots_monitor_t* monitor)
 	if( kthread_mutex_lock(monitor->innerMutex)  < 0 ) return -1;
 	printf(1,"%d | [%s] start \n",kthread_id(), __FUNCTION__);
 	monitor->shouldStopAddingSlots = 1;
-	mesa_cond_signal(monitor->event_noSlotsAvailable);	//TODO: show ariel. wake up grader
+	mesa_cond_signal(monitor->event_noSlotsAvailable);
 	printf(1,"%d | [%s] success. done \n",kthread_id(), __FUNCTION__);
 	if(  kthread_mutex_unlock(monitor->innerMutex) < 0) return -1;
 	return 0;

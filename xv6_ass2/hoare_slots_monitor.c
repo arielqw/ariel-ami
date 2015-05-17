@@ -133,7 +133,7 @@ int hoare_slots_monitor_stopadding(hoare_slots_monitor_t* monitor)
 	if( kthread_mutex_lock(monitor->innerMutex)  < 0 ) return -1;
 	printf(1,"%d | [%s] start \n",kthread_id(), __FUNCTION__);
 	monitor->shouldStopAddingSlots = 1;
-	hoare_cond_signal(monitor->event_noSlotsAvailable, monitor->innerMutex);	//TODO: show ariel. wake up grader
+	hoare_cond_signal(monitor->event_noSlotsAvailable, monitor->innerMutex);
 	printf(1,"%d | [%s] success. done \n",kthread_id(), __FUNCTION__);
 	if(  kthread_mutex_unlock(monitor->innerMutex) < 0) return -1;
 	return 0;

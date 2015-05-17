@@ -106,7 +106,7 @@ allocproc(void)
 
 found:
   t->state = EMBRYO;
-  t->tid = nexttid++;	//TODO: synchronize this?
+  t->tid = nexttid++;
   p->pid = nextpid++;
   p->isDying = 0;
   t->process = p;
@@ -241,7 +241,7 @@ fork(void)
   //*nt = *thread;	//copy all fields
   //*(nt->context) = *thread->context;
 
-  nt->state = RUNNABLE;	//TODO: synchronize this
+  nt->state = RUNNABLE;
   release(&ptable.lock);
   
   return pid;
@@ -469,7 +469,7 @@ sched(void)
 
   if(!holding(&ptable.lock))
     panic("sched ptable.lock");
-  if(cpu->ncli != 1)	//TODO: might not work well
+  if(cpu->ncli != 1)
     panic("sched locks");
   if(thread->state == RUNNING)
     panic("sched running");

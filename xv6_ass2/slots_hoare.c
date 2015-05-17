@@ -6,9 +6,10 @@
 hoare_slots_monitor_t* monitor;
 //int isGraderRunning = 1;
 
-#define M 2	//num of students
+#define M 10		//num of students
 #define N 3		//num of slots added each time
 
+int isGraderRunning = 1;
 
 void* student(){
 	printf(1,"student | started..\n");
@@ -20,7 +21,7 @@ void* student(){
 
 void* grader(){
 	printf(1,"grader | started..\n");
-	while (!monitor->shouldStopAddingSlots)
+	while (isGraderRunning)
 	{
 		hoare_slots_monitor_addslots(monitor, N);
 	}
@@ -48,7 +49,9 @@ main(void)
 
   for (i = 0; i < M; ++i) {
 	  kthread_join(studentsThreadIds[i]);
+	  free(studentsStacks[i]);
   }
+  isGraderRunning = 0;
   hoare_slots_monitor_stopadding(monitor);
   kthread_join(graderThreadId);
 

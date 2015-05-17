@@ -36,7 +36,7 @@ int kthread_create(void*(*start_func)(), void* stack, uint stack_size)
 
 	  memset(t, 0, sizeof *t);
 	  t->state = EMBRYO;
-	  t->tid = nexttid++;	//TODO: synchronize this?
+	  t->tid = nexttid++;
 	  t->process = thread->process;
 	  t->killed = 0;
 
