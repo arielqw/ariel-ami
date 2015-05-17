@@ -134,7 +134,7 @@ int mesa_slots_monitor_takeslot(mesa_slots_monitor_t* monitor)
 		printf(1, "%d | [%s] signal Grader that we need more slots \n",kthread_id(), __FUNCTION__);
 
 		//signaling grader, i will continue running with lock so i could go to sleep before she signals back
-		if (mesa_cond_signal(monitor->event_noSlotsAvailable)) {
+		if (mesa_cond_signal(monitor->event_noSlotsAvailable) < 0) {
 			if (kthread_mutex_unlock(monitor->innerMutex) < 0) return -1;
 			return -1;
 		}

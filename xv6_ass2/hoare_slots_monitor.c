@@ -69,14 +69,14 @@ int hoare_slots_monitor_addslots(hoare_slots_monitor_t* monitor, int n)
 	//go to sleep if there are free slots (and there are more students that wants to take)
 	while(!monitor->shouldStopAddingSlots && ( (slotsNum =monitor->numOfFreeSlots) > 0) ){
 		printf(1,"%d | [%s] %d free slots available, waiting for full or stopped \n",kthread_id(), __FUNCTION__, slotsNum);
-		if(hoare_cond_wait(monitor->event_noSlotsAvailable, monitor->innerMutex) < 0) return -1;
+		hoare_cond_wait(monitor->event_noSlotsAvailable, monitor->innerMutex);
 	}
 
 	//if left waiting because no more students available (shouldStop = 1)
 	if(monitor->shouldStopAddingSlots){
 		printf(1,"%d | [%s] got shouldStopAddingSlots=1 \n",kthread_id(), __FUNCTION__);
 		printf(1,"%d | [%s] success. done \n",kthread_id(), __FUNCTION__);
-		if(kthread_mutex_unlock(monitor->innerMutex) < 0) return -1;
+		kthread_mutex_unlock(monitor->innerMutex);
 		return 0;
 	}
 
@@ -84,12 +84,13 @@ int hoare_slots_monitor_addslots(hoare_slots_monitor_t* monitor, int n)
 	monitor->numOfFreeSlots = n;
 	printf(1,"%d | [%s] added %d slots \n",kthread_id(), __FUNCTION__,n);
 
-	if(hoare_cond_signal(monitor->event_freeSlotsAvailable, monitor->innerMutex) < 0) return -1;
+	hoare_cond_signal(monitor->event_freeSlotsAvailable, monitor->innerMutex);
+
+	printf(1,"%d | [%s] success. done \n",kthread_id(), __FUNCTION__);
 
 	//notify a student free slots available
 	if(  kthread_mutex_unlock(monitor->innerMutex) < 0) return -1;
 
-	printf(1,"%d | [%s] success. done \n",kthread_id(), __FUNCTION__);
 	return 0;
 
 }
@@ -104,9 +105,9 @@ int hoare_slots_monitor_takeslot(hoare_slots_monitor_t* monitor)
 		printf(1,"%d | [%s] no free slots available, waiting for Grader to add \n",kthread_id(), __FUNCTION__);
 		printf(1,"%d | [%s] signal Grader that we need more slots \n",kthread_id(), __FUNCTION__);
 		//signaling grader, i will continue running with lock so i could go to sleep before she signals back
-		if(hoare_cond_signal(monitor->event_noSlotsAvailable, monitor->innerMutex)) return -1;
+		hoare_cond_signal(monitor->event_noSlotsAvailable, monitor->innerMutex);
 		//going to sleep till free slots available
-		if(hoare_cond_wait(monitor->event_freeSlotsAvailable, monitor->innerMutex) < 0) return -1;
+		hoare_cond_wait(monitor->event_freeSlotsAvailable, monitor->innerMutex);
 	}
 	monitor->numOfFreeSlots--;
 	printf(1,"%d | [%s] took a slot, %d slots remain \n",kthread_id(), __FUNCTION__, monitor->numOfFreeSlots);
@@ -114,12 +115,12 @@ int hoare_slots_monitor_takeslot(hoare_slots_monitor_t* monitor)
 	//if there are more free slots, wakeup another student
 	if(monitor->numOfFreeSlots > 0){
 		printf(1,"%d | [%s] signaling another student \n",kthread_id(), __FUNCTION__);
-		if(hoare_cond_signal(monitor->event_freeSlotsAvailable, monitor->innerMutex) < 0) return -1;
+		hoare_cond_signal(monitor->event_freeSlotsAvailable, monitor->innerMutex);
 	}
 	//otherwise , wakeup grader for more slots
 	else{
 		printf(1,"%d | [%s] signaling grader \n",kthread_id(), __FUNCTION__);
-		if(hoare_cond_signal(monitor->event_noSlotsAvailable, monitor->innerMutex) < 0) return -1;
+		hoare_cond_signal(monitor->event_noSlotsAvailable, monitor->innerMutex);
 	}
 
 	printf(1,"%d | [%s] success. done \n",kthread_id(), __FUNCTION__);

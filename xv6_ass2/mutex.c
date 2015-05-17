@@ -192,12 +192,16 @@ int kthread_mutex_yieldlock(int mutex_id1, int mutex_id2)
 		else{
 			//locks going to be lost forever
 			debug_print("%d | [%s] no one is waiting on %d, locks are lost \n", thread->tid, __FUNCTION__, m2->id);
+
 		}
 
 	}
 	else{
 		cprintf("%d | %s error ..  \n", thread->tid, __FUNCTION__);
 
+	}
+	if(retVal == -1){
+		kthread_mutex_unlock1(mutex_id1);
 	}
 	release(&mtable.lock);
 	return retVal;
