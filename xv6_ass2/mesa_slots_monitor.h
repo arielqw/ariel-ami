@@ -1,8 +1,13 @@
 #ifndef MESA_SLOTS_MONITOR_H
 #define	MESA_SLOTS_MONITOR_H
+#include "mesa_cond.h"
 
 typedef struct mesa_slots_monitor {
-    //Your code here...
+    mesa_cond_t* event_noSlotsAvailable;
+    mesa_cond_t* event_freeSlotsAvailable;
+    int numOfFreeSlots;
+    int innerMutex;
+    int shouldStopAddingSlots;
 } mesa_slots_monitor_t;
 
 mesa_slots_monitor_t* mesa_slots_monitor_alloc();
