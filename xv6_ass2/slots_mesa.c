@@ -6,7 +6,6 @@
 mesa_slots_monitor_t* monitor;
 
 void* student(){
-
 	printf(1,"student | started..");
 	int i;
 	for(i = 0; i< 6; i++){
