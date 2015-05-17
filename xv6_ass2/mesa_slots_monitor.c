@@ -84,10 +84,11 @@ int mesa_slots_monitor_addslots(mesa_slots_monitor_t* monitor, int n)
 	monitor->numOfFreeSlots = n;
 	printf(1,"%d | [%s] added %d slots \n",kthread_id(), __FUNCTION__,n);
 
+	if(mesa_cond_signal(monitor->event_freeSlotsAvailable) < 0) return -1;
+
 	//notify a student free slots available
 	if(  kthread_mutex_unlock(monitor->innerMutex) < 0) return -1;
 
-	if(mesa_cond_signal(monitor->event_freeSlotsAvailable) < 0) return -1;
 	printf(1,"%d | [%s] success. done \n",kthread_id(), __FUNCTION__);
 	return 0;
 
@@ -113,17 +114,17 @@ int mesa_slots_monitor_takeslot(mesa_slots_monitor_t* monitor)
 	//if there are more free slots, wakeup another student
 	if(monitor->numOfFreeSlots > 0){
 		printf(1,"%d | [%s] signaling another student \n",kthread_id(), __FUNCTION__);
-		if(  kthread_mutex_unlock(monitor->innerMutex) < 0) return -1;
 		if(mesa_cond_signal(monitor->event_freeSlotsAvailable) < 0) return -1;
 	}
 	//otherwise , wakeup grader for more slots
 	else{
 		printf(1,"%d | [%s] signaling grader \n",kthread_id(), __FUNCTION__);
-		if(  kthread_mutex_unlock(monitor->innerMutex) < 0) return -1;
 		if(mesa_cond_signal(monitor->event_noSlotsAvailable) < 0) return -1;
 	}
 
 	printf(1,"%d | [%s] success. done \n",kthread_id(), __FUNCTION__);
+	if(  kthread_mutex_unlock(monitor->innerMutex) < 0) return -1;
+
 	return 0;
 }
 

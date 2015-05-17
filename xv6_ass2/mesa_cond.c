@@ -74,12 +74,13 @@ int mesa_cond_wait(mesa_cond_t* cond, int mutex_id)
 	return 0;
 }
 
+//got here with mutex_id locked!
 int mesa_cond_signal(mesa_cond_t* cond)
 {
 	printf(1,"%d | [%s] start \n",kthread_id(), __FUNCTION__);
 
-	if( kthread_mutex_unlock(cond->inner_mutex_id) < 0){
-		printf(1,"%d | [%s] failed, unlocking of  inner mutex %d failed \n",kthread_id(), __FUNCTION__, cond->inner_mutex_id);
+	if( cond->numOfThreadsWaiting>0 && kthread_mutex_unlock(cond->inner_mutex_id) < 0){
+		printf(1,"%d | [%s] unlock failed, probably no one is waiting, locking again \n",kthread_id(), __FUNCTION__);
 		return -1;
 	}
 	printf(1,"%d | [%s] success \n",kthread_id(), __FUNCTION__);
