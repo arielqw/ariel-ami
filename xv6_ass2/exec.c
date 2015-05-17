@@ -15,20 +15,19 @@ struct {
 int
 exec(char *path, char **argv)
 {
-	char* LOG_TAG = "[exec] ";
-	cprintf("%d | %s start \n", thread->tid, LOG_TAG);
+	debug_print("%d | [%s] startAA \n", thread->tid, __FUNCTION__);
 
 	// invalid path to exec file
 	if(namei(path) == 0){
 		return -1;
 	}
 
-	cprintf("%d | %s called, pid: %d \n", thread->tid, LOG_TAG, thread->process->pid);
+	debug_print("%d | [%s] called, pid: %d \n", thread->tid, __FUNCTION__, thread->process->pid);
 
 	acquire(&ptable.lock);
 	//if other thread already exec'ed
 	if(thread->process->isPendingExec){
-		cprintf("%d | %s already called on pid %d. returning \n", thread->tid, LOG_TAG, thread->process->pid);
+		cprintf("%d | %s already called on pid %d. returning \n", thread->tid, __FUNCTION__, thread->process->pid);
 		release(&ptable.lock);
 		return -1;
 	}
@@ -46,15 +45,15 @@ exec(char *path, char **argv)
 		}
 
 	}
-	cprintf("%d | %s we got %d other threads in pid %d \n", thread->tid, LOG_TAG, numOfOtherThreads, thread->process->pid);
+	debug_print("%d | [%s] we got %d other threads in pid %d \n", thread->tid, __FUNCTION__, numOfOtherThreads, thread->process->pid);
 
 	//if there are other threads, wait for them
 	if(numOfOtherThreads > 0){ //todo: do in while loop
-		cprintf("%d | %s going to sleep on thread (pid %d) \n", thread->tid, LOG_TAG, thread->tid, thread->process->pid);
+		debug_print("%d | [%s] going to sleep on thread (pid %d) \n", thread->tid, __FUNCTION__, thread->tid, thread->process->pid);
 		sleep(thread,&ptable.lock);
 	}
 	release(&ptable.lock);
-	cprintf("%d | %s starting exec code (pid %d) \n", thread->tid, LOG_TAG, thread->process->pid);
+	debug_print("%d | [%s] starting exec code (pid %d) \n", thread->tid, __FUNCTION__, thread->process->pid);
 
 	  char *s, *last;
 	  int i, off;
@@ -142,7 +141,7 @@ exec(char *path, char **argv)
 	  freevm(oldpgdir);
 
 	  thread->process->isPendingExec = 0;
-	  cprintf("%d | %s done successfully (pid %d) \n", thread->tid, LOG_TAG, thread->process->pid);
+	  debug_print("%d | [%s] done successfully (pid %d) \n", thread->tid, __FUNCTION__, thread->process->pid);
 
 	  return 0;
 
@@ -155,7 +154,7 @@ exec(char *path, char **argv)
 	  }
 
 	  thread->process->isPendingExec = 0;
-	  cprintf("%d | %s done with error (pid %d) \n", thread->tid, LOG_TAG, thread->process->pid);
+	  debug_print("%d | [%s] done with error (pid %d) \n", thread->tid, __FUNCTION__, thread->process->pid);
 
 	  return -1;
 }

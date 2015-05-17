@@ -13,7 +13,7 @@ void clean_thread(struct thread* t){
     struct mutex* m;
 	for(m = mtable.mutexes; m < &mtable.mutexes[MAX_MUTEXES]; m++){
 		if(m->lockingThread == t){
-			kthread_mutex_unlock1(m->id);
+//			kthread_mutex_unlock1(m->id); //todo: dont unlock cond_ mutex
 		}
 	}
 
@@ -23,8 +23,7 @@ void clean_thread(struct thread* t){
 
 int kthread_create(void*(*start_func)(), void* stack, uint stack_size)
 {
-	char* LOG_TAG = "[kthread_create] ";
-	cprintf("%d | %s start \n", thread->tid, LOG_TAG);
+	debug_print("%d | [%s] start \n", thread->tid, __FUNCTION__);
 	  acquire(&ptable.lock);
 
 	  //find a free thread to use
@@ -73,15 +72,14 @@ int kthread_create(void*(*start_func)(), void* stack, uint stack_size)
 	  t->state = RUNNABLE;
 	  release(&ptable.lock);
 
-	  cprintf("%d | %s done. new thread id is %d \n", thread->tid, LOG_TAG, t->tid);
+	  debug_print("%d | [%s] done. new thread id is %d \n", thread->tid, __FUNCTION__, t->tid);
 
 	  return t->tid;
 }
 
 void kthread_exit()
 {
-	char* LOG_TAG = "[kthread_exit] ";
-	cprintf("%d | %s start \n", thread->tid, LOG_TAG);
+	debug_print("%d | [%s] start \n", thread->tid, __FUNCTION__);
 
 	killThread();
 
@@ -89,8 +87,7 @@ void kthread_exit()
 
 int kthread_join(int thread_id)
 {
-	char* LOG_TAG = "[kthread_join] ";
-	cprintf("%d | %s start \n", thread->tid, LOG_TAG);
+	debug_print("%d | [%s] start \n", thread->tid, __FUNCTION__);
 
 	acquire(&ptable.lock);
 	struct proc* p = thread->process;
@@ -100,21 +97,20 @@ int kthread_join(int thread_id)
 			goto found;
 		}
 	}
-	cprintf("error invalid tid to join");
-	cprintf("%d | %s error invalid tid (%d) to join \n", thread->tid, LOG_TAG, thread_id);
+	debug_print("%d | [%s] error invalid tid (%d) to join \n", thread->tid, __FUNCTION__, thread_id);
 
 	release(&ptable.lock);
 
 	return -1;
 found:
-	cprintf("%d | %s trying to sleep on tid %d (%s) \n", thread->tid, LOG_TAG, t->tid, getStatusString(t->state));
+	debug_print("%d | [%s] trying to sleep on tid %d (%s) \n", thread->tid, __FUNCTION__, t->tid, getStatusString(t->state));
 
 	while (t->state != UNUSED && t->state != ZOMBIE)
 	{
-		cprintf("%d | %s going to sleep on tid %d (%s) \n", thread->tid, LOG_TAG, t->tid, getStatusString(t->state));
+		debug_print("%d | %s going to sleep on tid %d (%s) \n", thread->tid, __FUNCTION__, t->tid, getStatusString(t->state));
 		sleep(t,&ptable.lock);
 	}
-	cprintf("%d | %s woke up from sleep on tid %d (%s) \n", thread->tid, LOG_TAG, t->tid, getStatusString(t->state));
+	debug_print("%d | [%s] woke up from sleep on tid %d (%s) \n", thread->tid, __FUNCTION__, t->tid, getStatusString(t->state));
 
 	if(t->state == ZOMBIE){
 		//cleanup

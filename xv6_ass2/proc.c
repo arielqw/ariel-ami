@@ -148,10 +148,10 @@ userinit(void)
   struct proc *p;
   extern char _binary_initcode_start[], _binary_initcode_size[];
   
-  cprintf("before allocproc\n");
+  //cprintf("before allocproc\n");
   p = allocproc();
   struct thread* t = &(p->ttable.thread[0]);
-  cprintf("after allocproc\n");
+  //cprintf("after allocproc\n");
   initproc = p;
   if((p->pgdir = setupkvm()) == 0)
     panic("userinit: out of memory?");
@@ -251,8 +251,7 @@ fork(void)
 // until its parent calls wait() to find out it exited.
 void
 exit(void){ //todo: fix 2 paralel exits bug
-	char* LOG_TAG = "[exit] ";
-	cprintf("%d | %s start \n", thread->tid, LOG_TAG);
+	debug_print("%d | [%s] start \n", thread->tid, __FUNCTION__);
 
 	//todo : check if we need to lock this
 	acquire(&ptable.lock);
@@ -261,7 +260,7 @@ exit(void){ //todo: fix 2 paralel exits bug
 		sched();
 		cprintf("sched not working! buuz \n");
 	}
-	cprintf("%d | %s exiting pid %d \n", thread->tid, LOG_TAG, thread->process->pid);
+	debug_print("%d | [%s] exiting pid %d \n", thread->tid, __FUNCTION__, thread->process->pid);
 
 	thread->process->isDying = 1;
 
@@ -282,8 +281,7 @@ exit(void){ //todo: fix 2 paralel exits bug
 void
 killThread(void)
 {
-  char* LOG_TAG = "[killThread] ";
-  cprintf("%d | %s start \n", thread->tid, LOG_TAG);
+	debug_print("%d | [%s] start \n", thread->tid, __FUNCTION__);
 
   //todo: add lock
   thread->state = ZOMBIE;
@@ -312,7 +310,7 @@ killThread(void)
 	  cprintf("sched failed 1");
   }
 
-  cprintf("%d | %s last thread dead. killing process (%d) \n", thread->tid, LOG_TAG, thread->process->pid);
+  debug_print("%d | %s last thread dead. killing process (%d) \n", thread->tid, __FUNCTION__, thread->process->pid);
 
   struct proc *p;
   int fd;
@@ -350,10 +348,10 @@ killThread(void)
 
   // Jump into the scheduler, never to return.
 done:
-	cprintf("%d | %s trying to wake-up threads sleeping on thread %d \n", thread->tid, LOG_TAG, thread->tid);
+	debug_print("%d | [%s] trying to wake-up threads sleeping on thread %d \n", thread->tid, __FUNCTION__, thread->tid);
 
 	wakeup1(thread);
-	cprintf("%d | %s done trying to wake-up threads sleeping on thread %d \n", thread->tid, LOG_TAG, thread->tid);
+	debug_print("%d | [%s] done trying to wake-up threads sleeping on thread %d \n", thread->tid, __FUNCTION__, thread->tid);
 
   sched();
   panic("zombie exit");
@@ -364,8 +362,6 @@ done:
 int
 wait(void)
 {
-  char* LOG_TAG = "[wait] ";
-
   struct proc *p;
   int havekids, pid;
 
@@ -391,7 +387,7 @@ wait(void)
                 count++;
             }
         }
-    	cprintf("%d | %s cleaned %d threads \n", thread->tid, LOG_TAG, count);
+        debug_print("%d | [%s] cleaned %d threads \n", thread->tid, __FUNCTION__, count);
 
         freevm(p->pgdir);
         p->pid = 0;

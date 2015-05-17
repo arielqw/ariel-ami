@@ -1,22 +1,22 @@
 #include "types.h"
 #include "user.h"
-#include "mesa_slots_monitor.h"
+#include "hoare_slots_monitor.h"
 
-mesa_slots_monitor_t* mesa_slots_monitor_alloc()
+hoare_slots_monitor_t* hoare_slots_monitor_alloc()
 {
 	printf(1,"%d | [%s] start \n",kthread_id(), __FUNCTION__);
 
-	mesa_slots_monitor_t* monitor = malloc(sizeof(mesa_slots_monitor_t));
+	hoare_slots_monitor_t* monitor = malloc(sizeof(hoare_slots_monitor_t));
 	if(monitor == 0){
 		printf(1,"%d | [%s] malloc failed \n",kthread_id(), __FUNCTION__);
 		return 0;
 	}
-	if( (monitor->event_noSlotsAvailable = mesa_cond_alloc()) == 0){
-		printf(1,"%d | [%s] mesa_cond_alloc failed \n",kthread_id(), __FUNCTION__);
+	if( (monitor->event_noSlotsAvailable = hoare_cond_alloc()) == 0){
+		printf(1,"%d | [%s] hoare_cond_alloc failed \n",kthread_id(), __FUNCTION__);
 		return 0;
 	}
-	if( (monitor->event_freeSlotsAvailable = mesa_cond_alloc()) == 0){
-		printf(1,"%d | [%s] mesa_cond_alloc failed \n",kthread_id(), __FUNCTION__);
+	if( (monitor->event_freeSlotsAvailable = hoare_cond_alloc()) == 0){
+		printf(1,"%d | [%s] hoare_cond_alloc failed \n",kthread_id(), __FUNCTION__);
 		return 0;
 	}
 
@@ -32,17 +32,17 @@ mesa_slots_monitor_t* mesa_slots_monitor_alloc()
 	return monitor;
 }
 
-int mesa_slots_monitor_dealloc(mesa_slots_monitor_t* monitor)
+int hoare_slots_monitor_dealloc(hoare_slots_monitor_t* monitor)
 {
 	printf(1,"%d | [%s] start \n",kthread_id(), __FUNCTION__);
 
-	if( mesa_cond_dealloc(monitor->event_noSlotsAvailable) < 0){
-		printf(1,"%d | [%s] mesa_cond_dealloc failed \n",kthread_id(), __FUNCTION__);
+	if( hoare_cond_dealloc(monitor->event_noSlotsAvailable) < 0){
+		printf(1,"%d | [%s] hoare_cond_dealloc failed \n",kthread_id(), __FUNCTION__);
 		return -1;
 	}
 
-	if( mesa_cond_dealloc(monitor->event_freeSlotsAvailable) < 0){
-		printf(1,"%d | [%s] mesa_cond_dealloc failed \n",kthread_id(), __FUNCTION__);
+	if( hoare_cond_dealloc(monitor->event_freeSlotsAvailable) < 0){
+		printf(1,"%d | [%s] hoare_cond_dealloc failed \n",kthread_id(), __FUNCTION__);
 		return -1;
 	}
 
@@ -61,7 +61,7 @@ int mesa_slots_monitor_dealloc(mesa_slots_monitor_t* monitor)
 	return 0;
 }
 
-int mesa_slots_monitor_addslots(mesa_slots_monitor_t* monitor, int n)
+int hoare_slots_monitor_addslots(hoare_slots_monitor_t* monitor, int n)
 {
 	if( kthread_mutex_lock(monitor->innerMutex)  < 0 ) return -1;
 	printf(1,"%d | [%s] start \n",kthread_id(), __FUNCTION__);
@@ -69,7 +69,7 @@ int mesa_slots_monitor_addslots(mesa_slots_monitor_t* monitor, int n)
 	//go to sleep if there are free slots (and there are more students that wants to take)
 	while(!monitor->shouldStopAddingSlots && ( (slotsNum =monitor->numOfFreeSlots) > 0) ){
 		printf(1,"%d | [%s] %d free slots available, waiting for full or stopped \n",kthread_id(), __FUNCTION__, slotsNum);
-		if(mesa_cond_wait(monitor->event_noSlotsAvailable, monitor->innerMutex) < 0) return -1;
+		if(hoare_cond_wait(monitor->event_noSlotsAvailable, monitor->innerMutex) < 0) return -1;
 	}
 
 	//if left waiting because no more students available (shouldStop = 1)
@@ -84,7 +84,7 @@ int mesa_slots_monitor_addslots(mesa_slots_monitor_t* monitor, int n)
 	monitor->numOfFreeSlots = n;
 	printf(1,"%d | [%s] added %d slots \n",kthread_id(), __FUNCTION__,n);
 
-	if(mesa_cond_signal(monitor->event_freeSlotsAvailable) < 0) return -1;
+	if(hoare_cond_signal(monitor->event_freeSlotsAvailable, monitor->innerMutex) < 0) return -1;
 
 	//notify a student free slots available
 	if(  kthread_mutex_unlock(monitor->innerMutex) < 0) return -1;
@@ -94,7 +94,7 @@ int mesa_slots_monitor_addslots(mesa_slots_monitor_t* monitor, int n)
 
 }
 
-int mesa_slots_monitor_takeslot(mesa_slots_monitor_t* monitor)
+int hoare_slots_monitor_takeslot(hoare_slots_monitor_t* monitor)
 {
 	if( kthread_mutex_lock(monitor->innerMutex)  < 0 ) return -1;
 	printf(1,"%d | [%s] start \n",kthread_id(), __FUNCTION__);
@@ -104,9 +104,9 @@ int mesa_slots_monitor_takeslot(mesa_slots_monitor_t* monitor)
 		printf(1,"%d | [%s] no free slots available, waiting for Grader to add \n",kthread_id(), __FUNCTION__);
 		printf(1,"%d | [%s] signal Grader that we need more slots \n",kthread_id(), __FUNCTION__);
 		//signaling grader, i will continue running with lock so i could go to sleep before she signals back
-		if(mesa_cond_signal(monitor->event_noSlotsAvailable)) return -1;
+		if(hoare_cond_signal(monitor->event_noSlotsAvailable, monitor->innerMutex)) return -1;
 		//going to sleep till free slots available
-		if(mesa_cond_wait(monitor->event_freeSlotsAvailable, monitor->innerMutex) < 0) return -1;
+		if(hoare_cond_wait(monitor->event_freeSlotsAvailable, monitor->innerMutex) < 0) return -1;
 	}
 	monitor->numOfFreeSlots--;
 	printf(1,"%d | [%s] took a slot, %d slots remain \n",kthread_id(), __FUNCTION__, monitor->numOfFreeSlots);
@@ -114,12 +114,12 @@ int mesa_slots_monitor_takeslot(mesa_slots_monitor_t* monitor)
 	//if there are more free slots, wakeup another student
 	if(monitor->numOfFreeSlots > 0){
 		printf(1,"%d | [%s] signaling another student \n",kthread_id(), __FUNCTION__);
-		if(mesa_cond_signal(monitor->event_freeSlotsAvailable) < 0) return -1;
+		if(hoare_cond_signal(monitor->event_freeSlotsAvailable, monitor->innerMutex) < 0) return -1;
 	}
 	//otherwise , wakeup grader for more slots
 	else{
 		printf(1,"%d | [%s] signaling grader \n",kthread_id(), __FUNCTION__);
-		if(mesa_cond_signal(monitor->event_noSlotsAvailable) < 0) return -1;
+		if(hoare_cond_signal(monitor->event_noSlotsAvailable, monitor->innerMutex) < 0) return -1;
 	}
 
 	printf(1,"%d | [%s] success. done \n",kthread_id(), __FUNCTION__);
@@ -128,12 +128,12 @@ int mesa_slots_monitor_takeslot(mesa_slots_monitor_t* monitor)
 	return 0;
 }
 
-int mesa_slots_monitor_stopadding(mesa_slots_monitor_t* monitor)
+int hoare_slots_monitor_stopadding(hoare_slots_monitor_t* monitor)
 {
 	if( kthread_mutex_lock(monitor->innerMutex)  < 0 ) return -1;
 	printf(1,"%d | [%s] start \n",kthread_id(), __FUNCTION__);
 	monitor->shouldStopAddingSlots = 1;
-	mesa_cond_signal(monitor->event_noSlotsAvailable);	//TODO: show ariel. wake up grader
+	hoare_cond_signal(monitor->event_noSlotsAvailable, monitor->innerMutex);	//TODO: show ariel. wake up grader
 	printf(1,"%d | [%s] success. done \n",kthread_id(), __FUNCTION__);
 	if(  kthread_mutex_unlock(monitor->innerMutex) < 0) return -1;
 	return 0;

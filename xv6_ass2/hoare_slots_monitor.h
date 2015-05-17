@@ -1,8 +1,13 @@
 #ifndef HOARE_SLOTS_MONITOR_H
 #define	HOARE_SLOTS_MONITOR_H
+#include "hoare_cond.h"
 
 typedef struct hoare_slots_monitor {
-    //Your code here...
+	hoare_cond_t* event_noSlotsAvailable;
+	hoare_cond_t* event_freeSlotsAvailable;
+    int numOfFreeSlots;
+    int innerMutex;
+    int shouldStopAddingSlots;
 } hoare_slots_monitor_t;
 
 hoare_slots_monitor_t* hoare_slots_monitor_alloc();
