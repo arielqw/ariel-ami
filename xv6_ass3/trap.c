@@ -77,6 +77,38 @@ trap(struct trapframe *tf)
             cpu->id, tf->cs, tf->eip);
     lapiceoi();
     break;
+
+  case T_PGFLT:
+  {
+	uint va = rcr2();
+	//bad access from kernal
+	if( va <= proc->sz )
+	{
+		if( va >= KERNBASE ){
+			cprintf("memory out of bounds!\n");
+			proc->killed = 1;
+			break;
+		}
+		char *m;
+		uint tmp = PGROUNDDOWN(va);
+		if( ( m = kalloc() ) == 0 ){
+			//kalloc failed - kill proc
+			cprintf("kalloc failed!\n");
+			proc->killed = 1;
+			break;
+		}
+		memset(m, 0, PGSIZE);
+		if (mappages(proc->pgdir, (char*) tmp, PGSIZE, v2p(m), PTE_W|PTE_U) < 0)
+		{
+			cprintf("map pages failed!\n");
+			kfree(m);
+			proc->killed = 1;
+			break;
+		}
+		//cprintf("allocated page :)\n");
+		break;
+	}
+  }
    
   //PAGEBREAK: 13
   default:

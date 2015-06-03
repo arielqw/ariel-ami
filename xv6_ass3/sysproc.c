@@ -45,14 +45,25 @@ sys_getpid(void)
 int
 sys_sbrk(void)
 {
+
   int addr;
   int n;
 
   if(argint(0, &n) < 0)
     return -1;
   addr = proc->sz;
-  if(growproc(n) < 0)
-    return -1;
+  if (n<0)
+  {
+	  //will dealloc
+	  if(growproc(n) < 0)
+	    return -1;
+  }
+  else if (n>0)
+  {
+	  //will not really alloc
+	  proc->sz += n;
+  }
+
   return addr;
 }
 
