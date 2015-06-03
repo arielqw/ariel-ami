@@ -1492,23 +1492,26 @@ sbrktest(void)
     printf(stdout, "sbrk downsize failed, a %x c %x\n", a, c);
     exit();
   }
-  
+  printf(1,"ok here");
   // can we read the kernel's memory?
   for(a = (char*)(KERNBASE); a < (char*) (KERNBASE+2000000); a += 50000){
     ppid = getpid();
     pid = fork();
+    printf(1,"forked! %d \n", pid);
     if(pid < 0){
       printf(stdout, "fork failed\n");
       exit();
     }
     if(pid == 0){
+    	printf(1,"got here!");
       printf(stdout, "oops could read %x = %x\n", a, *a);
+      printf(1,"got here 2!");
       kill(ppid);
       exit();
     }
     wait();
   }
-
+  printf(1,"ok2 here");
   // if we run the system out of memory, does it clean up the last
   // failed allocation?
   if(pipe(fds) != 0){
@@ -1526,6 +1529,7 @@ sbrktest(void)
     if(pids[i] != -1)
       read(fds[0], &scratch, 1);
   }
+
   // if those failed allocations freed up the pages they did allocate,
   // we'll be able to allocate here
   c = sbrk(4096);

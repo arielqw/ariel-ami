@@ -6,7 +6,7 @@ typedef uint pde_t;
 
 struct tlb_entry_wrapper{
 	char isUsed;
-	uint* pte;
+	void* va;
 };
 
 struct tlb_t{

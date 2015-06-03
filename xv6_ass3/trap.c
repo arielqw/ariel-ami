@@ -80,9 +80,11 @@ trap(struct trapframe *tf)
 
   case T_PGFLT:
 	  //cprintf("%d | [%s] page fault trap!\n", proc->pid, __FUNCTION__);
+	  if( rcr2() <= proc->sz) {
+		  TLBhandlePageFault(proc,(void*)rcr2());
+		  break;
+	  }
 
-	  TLBhandlePageFault(proc,rcr2());
-	  break;
 
   //PAGEBREAK: 13
   default:

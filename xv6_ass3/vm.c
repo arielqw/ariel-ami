@@ -379,7 +379,7 @@ copyout(pde_t *pgdir, uint va, void *p, uint len)
   return 0;
 }
 
-void TLBhandlePageFault(struct proc* p, uint va){
+void TLBhandlePageFault(struct proc* p, void* va){
 //	cprintf("%d | [%s] page fault for process: %d with virtual address: 0x%x \n",proc->pid, __FUNCTION__, p->pid, va);
 
 	//Getting the pte from the process page directory
@@ -404,11 +404,11 @@ void TLBhandlePageFault(struct proc* p, uint va){
 	*emptySpaceInTLB = *desiredPageTableEntry;
 
 	//register in the TLB structure
-	tlb_insert(emptySpaceInTLB);
+	tlb_insert(va);
 }
 
 void TLBclear(){
-	//cprintf("%d | [%s] Clearing TLB (probably because of a context switch) \n",proc->pid, __FUNCTION__);
+//	cprintf("%d | [%s] Clearing TLB (probably because of a context switch) \n",proc->pid, __FUNCTION__);
 	tlb_clear();
 }
 //PAGEBREAK!

@@ -180,7 +180,7 @@ void            switchkvm(struct cpu*);
 int             copyout(pde_t*, uint, void*, uint);
 void            clearpteu(pde_t *, char *);
 int		mappages(pde_t *, void *, uint, uint, int);
-void TLBhandlePageFault(struct proc* p, uint va);
+void TLBhandlePageFault(struct proc* p, void* va);
 void TLBclear();
 
 // number of elements in fixed-size array
