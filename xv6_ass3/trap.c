@@ -84,11 +84,14 @@ trap(struct trapframe *tf)
 	//bad access from kernal
 	if( va <= proc->sz )
 	{
+		if (TLBhandlePageFault(proc,(void*)va) >= 0)	break;	//on success
+
 		if( va >= KERNBASE ){
 			cprintf("memory out of bounds!\n");
 			proc->killed = 1;
 			break;
 		}
+
 		char *m;
 		uint tmp = PGROUNDDOWN(va);
 		if( ( m = kalloc() ) == 0 ){
@@ -96,6 +99,10 @@ trap(struct trapframe *tf)
 			cprintf("kalloc failed!\n");
 			proc->killed = 1;
 			break;
+		}
+		else
+		{
+			//cprintf("page allocated!\n");
 		}
 		memset(m, 0, PGSIZE);
 		if (mappages(proc->pgdir, (char*) tmp, PGSIZE, v2p(m), PTE_W|PTE_U) < 0)
@@ -106,10 +113,11 @@ trap(struct trapframe *tf)
 			break;
 		}
 		//cprintf("allocated page :)\n");
+		TLBhandlePageFault(proc,(void*)va);
 		break;
 	}
   }
-   
+
   //PAGEBREAK: 13
   default:
     if(proc == 0 || (tf->cs&3) == 0){

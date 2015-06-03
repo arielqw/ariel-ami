@@ -6,9 +6,10 @@
 #include "mmu.h"
 #include "proc.h"
 #include "elf.h"
-
+#include "tbl.c"
 extern char data[];  // defined by kernel.ld
 struct segdesc gdt[NSEGS];
+
 
 // Set up CPU's kernel segment descriptors.
 // Run once on entry on each CPU.
@@ -172,7 +173,8 @@ switchuvm(struct proc *p)
   ltr(SEG_TSS << 3);
   if(p->pgdir == 0)
     panic("switchuvm: no pgdir");
-  lcr3(v2p(p->pgdir));  // switch to new address space
+  //lcr3(v2p(p->pgdir));  // switch to new address space
+  TLBclear();
   popcli();
 }
 
@@ -377,6 +379,39 @@ copyout(pde_t *pgdir, uint va, void *p, uint len)
   return 0;
 }
 
+int TLBhandlePageFault(struct proc* p, void* va){
+//	cprintf("%d | [%s] page fault for process: %d with virtual address: 0x%x \n",proc->pid, __FUNCTION__, p->pid, va);
+
+	//Getting the pte from the process page directory
+	pte_t* desiredPageTableEntry = walkpgdir(p->pgdir, (const void*)va, 0);
+
+	if(desiredPageTableEntry == 0 || ( (*desiredPageTableEntry & PTE_P)==0) ){ //todo : should panic?
+		//cprintf("%d | [%s] error finding page table entry \n",proc->pid, __FUNCTION__);
+		return - 1;
+	}
+
+//	cprintf("%d | [%s] found page table entry. loading into TLB \n",proc->pid, __FUNCTION__);
+
+	//Making space for the pte in the tlb
+	pte_t* emptySpaceInTLB = walkpgdir(cpu->kpgdir, (const void*)va, 1);
+
+	if(emptySpaceInTLB == 0){ //todo : should panic?
+		cprintf("%d | [%s] error - no free space in TLB! \n",proc->pid, __FUNCTION__);
+		return -1;
+	}
+
+	//Copying the pte to the TLB
+	*emptySpaceInTLB = *desiredPageTableEntry;
+
+	//register in the TLB structure
+	tlb_insert(va);
+	return 0;
+}
+
+void TLBclear(){
+//	cprintf("%d | [%s] Clearing TLB (probably because of a context switch) \n",proc->pid, __FUNCTION__);
+	tlb_clear();
+}
 //PAGEBREAK!
 // Blank page.
 //PAGEBREAK!
