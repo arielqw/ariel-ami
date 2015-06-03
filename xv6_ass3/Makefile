@@ -163,6 +163,7 @@ UPROGS=\
 	_grep\
 	_init\
 	_kill\
+	_lazytest\
 	_ln\
 	_ls\
 	_mkdir\
