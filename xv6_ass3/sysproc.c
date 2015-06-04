@@ -60,6 +60,9 @@ sys_sbrk(void)
   }
   else if (n>0)
   {
+	  if(proc->sz + n >= KERNBASE){
+		  return -1;
+	  }
 	  //will not really alloc
 	  proc->sz += n;
   }

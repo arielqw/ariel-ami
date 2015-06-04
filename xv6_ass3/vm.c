@@ -173,7 +173,7 @@ switchuvm(struct proc *p)
   ltr(SEG_TSS << 3);
   if(p->pgdir == 0)
     panic("switchuvm: no pgdir");
-  //lcr3(v2p(p->pgdir));  // switch to new address space
+  lcr3(v2p(cpu->kpgdir));  // switch to new address space
   TLBclear();
   popcli();
 }
@@ -321,8 +321,8 @@ copyuvm(pde_t *pgdir, uint sz)
   for(i = 0; i < sz; i += PGSIZE){
     if((pte = walkpgdir(pgdir, (void *) i, 0)) == 0)
       panic("copyuvm: pte should exist");
-    if(!(*pte & PTE_P))
-      panic("copyuvm: page not present");
+    if(!(*pte & PTE_P)) continue;
+//      panic("copyuvm: page not present");
     pa = PTE_ADDR(*pte);
     flags = PTE_FLAGS(*pte);
     if((mem = kalloc()) == 0)
