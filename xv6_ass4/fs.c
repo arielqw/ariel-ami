@@ -529,6 +529,8 @@ dirlookup(struct inode *dp, char *name, uint *poff)
         *poff = off;
       inum = de.inum;
       ip = iget(dp->dev, inum);
+     // cprintf("dirlookup %d,%d, %d\n", !(ip->flags & I_VALID) , dp->type == T_DEV , devsw[dp->major].iread);
+      //cprintf("major is: %d\n", dp->major);
       if (!(ip->flags & I_VALID) && dp->type == T_DEV && devsw[dp->major].iread) {
         devsw[dp->major].iread(dp, ip);
       }

@@ -158,6 +158,9 @@ fork(void)
  
   pid = np->pid;
 
+  //create("",0,0,0);
+  //mkdir();
+
   // lock to force the compiler to emit the np->state write last.
   acquire(&ptable.lock);
   np->state = RUNNABLE;
