@@ -118,6 +118,8 @@ void            userinit(void);
 int             wait(void);
 void            wakeup(void*);
 void            yield(void);
+struct proc* 	getProcById(uint pid);
+
 
 // procfs.c
 void 			procfsinit(void);

@@ -430,6 +430,22 @@ kill(int pid)
   return -1;
 }
 
+struct proc* getProcById(uint pid)
+{
+	struct proc* p = 0;
+	acquire(&ptable.lock);
+	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+	{
+		if(p->pid == pid)
+		{
+			break;
+		}
+	}
+	release(&ptable.lock);
+	return p;
+}
+
+
 //PAGEBREAK: 36
 // Print a process listing to console.  For debugging.
 // Runs when user types ^P on console.

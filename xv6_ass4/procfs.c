@@ -16,6 +16,8 @@
 #define PROCCFS_DIRECTORY 	0
 #define PROCCFS_FILE 		1
 
+#define PID_FROM_MINOR(a) (((a)) / 100)
+
 enum procfs_pid_cmd { VFILE_PID_FOLDER, VFILE_CMDLINE, VFILE_CWD, VFILE_EXE, VFILE_FDINFO, VFILE_STATUS };
 
 
@@ -61,7 +63,7 @@ int
 procfsisdir(struct inode *ip) {
 	//cprintf("procfsisdir isdir:%d\n", ip->minor == PROCCFS_DIRECTORY);
 	//todo: check if should bring from disk if not valid
-	return (ip->minor == PROCCFS_DIRECTORY);
+	return (ip->minor % 10 == PROCCFS_DIRECTORY);
 }
 
 //fills dir at index
@@ -142,7 +144,7 @@ int buildProcFolder(struct dirent* dir)
 	return numOfEntries;
 }
 
-//fills dir
+//fills dir - ip is 'PID' folder
 int buildPidFolder(struct dirent* dir, struct inode *ip)
 {
 	int numOfEntries = 7;
@@ -151,7 +153,8 @@ int buildPidFolder(struct dirent* dir, struct inode *ip)
 	addDirent(dir, 1, "..", PROC_FOLDER_INUM);
 
 	addDirent(dir, 2, "cmdline", 	ip->inum + VFILE_CMDLINE);
-	addDirent(dir, 3, "cwd", 		ip->inum + VFILE_CWD);
+	struct proc* p = getProcById(ip->inum/100);
+	addDirent(dir, 3, "cwd", 		p->cwd->inum);
 	addDirent(dir, 4, "exe", 		ip->inum + VFILE_EXE);
 	addDirent(dir, 5, "fdinfo", 	ip->inum + VFILE_FDINFO);
 	addDirent(dir, 6, "status", 	ip->inum + VFILE_STATUS);
