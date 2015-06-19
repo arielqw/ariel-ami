@@ -85,18 +85,21 @@ procfsiread(struct inode* dp, struct inode *ip) {
 		ip->major = PROCFS;
 		ip->type = T_DEV;
 		ip->flags |= I_VALID;
-		if (dp->inum == PROC_FOLDER_INUM)	//dp is "proc" folder
+		if (	dp->inum == PROC_FOLDER_INUM 		|| 		//dp is 'proc' folder
+				dp->inum % 100 == VFILE_PID_FOLDER	||		//dp is 'pid' folder
+				dp->inum % 100 == VFILE_FDINFO			)	//dp is 'fdinfo' folder
 		{
-			ip->minor = PROCCFS_DIRECTORY;
-			ip->size = 512;
-		}
-		else if (dp->inum % 100 == 0)	//dp is "pid" folder
-		{
-			ip->minor = PROCCFS_DIRECTORY;
-			ip->size = 512;
-//			struct dirent dir[32] ;
-//			int numOfEntries = buildPidFolder(dp, ip, dir);
-//			memmove((void*)(ip->addrs[0]), dir, sizeof(struct dirent)*numOfEntries);
+			if (ip->inum % 100 == VFILE_STATUS)
+			{
+				ip->minor = PROCCFS_FILE;
+				ip->size = 4;
+				memmove((void*)ip->addrs[0], "kaki", 5);
+			}
+			else
+			{
+				ip->minor = PROCCFS_DIRECTORY;
+				ip->size = 512;
+			}
 		}
 		else								//children are files
 		{
@@ -162,6 +165,27 @@ int buildPidFolder(struct dirent* dir, struct inode *ip)
 	return numOfEntries;
 }
 
+//fills dir - ip is 'fdinfo' folder
+int buildFdinfoFolder(struct dirent* dir, struct inode *ip)
+{
+	addDirent(dir, 0, ".", 	ip->inum);
+	addDirent(dir, 1, "..", PROC_FOLDER_INUM);
+
+	int numOfEntries = 2;
+
+	struct proc* p = getProcById(ip->inum/100);
+	int fd;
+	for(fd = 0; fd < NOFILE; fd++){
+		if(p->ofile[fd]){
+			//active fd
+			char buff[4];
+			itoa(fd, buff);
+			addDirent(dir, numOfEntries++, buff, ip->inum - VFILE_FDINFO +10 + fd);
+		}
+	}
+	return numOfEntries;
+}
+
 int
 procfsread(struct inode *ip, char *dst, int off, int n) {
 	//cprintf("%s | [%s] start\n", proc->pid, __FUNCTION__);
@@ -175,9 +199,13 @@ procfsread(struct inode *ip, char *dst, int off, int n) {
 		{
 			numOfEntries = buildProcFolder(dir);
 		}
-		else								//"pid" or "fdinfo" dir
+		else if (ip->inum % 100 == VFILE_PID_FOLDER)	//"pid" dir
 		{
 			numOfEntries = buildPidFolder(dir, ip);
+		}
+		else	//"fdinfo" dir
+		{
+			numOfEntries = buildFdinfoFolder(dir, ip);
 		}
 		if ((off/16)+1 > numOfEntries)	return 0;	//out of bounds
 
@@ -186,6 +214,8 @@ procfsread(struct inode *ip, char *dst, int off, int n) {
 	else
 	{
 		//todo: implement read file
+		memmove(dst, (void*)ip->addrs[0], 5);
+		return 5;
 	}
 
 	return sizeof(struct dirent);
