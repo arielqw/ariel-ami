@@ -40,7 +40,7 @@ void reverse(char s[])
 }
 
 /* itoa:  convert n to characters in s */
-void itoa(int n, char s[])
+int itoa(int n, char s[])
 {
     int i, sign;
 
@@ -54,6 +54,7 @@ void itoa(int n, char s[])
         s[i++] = '-';
     s[i] = '\0';
     reverse(s);
+    return i+1;
 }
 
 
@@ -85,9 +86,9 @@ procfsiread(struct inode* dp, struct inode *ip) {
 		ip->major = PROCFS;
 		ip->type = T_DEV;
 		ip->flags |= I_VALID;
-		if (	dp->inum == PROC_FOLDER_INUM 		|| 		//dp is 'proc' folder
-				dp->inum % 100 == VFILE_PID_FOLDER	||		//dp is 'pid' folder
-				dp->inum % 100 == VFILE_FDINFO			)	//dp is 'fdinfo' folder
+		if (	ip->inum == PROC_FOLDER_INUM 		|| 		//dp is 'proc' folder
+				ip->inum % 100 == VFILE_PID_FOLDER	||		//dp is 'pid' folder
+				ip->inum % 100 == VFILE_FDINFO			)	//dp is 'fdinfo' folder
 		{
 //			if (ip->inum % 100 == VFILE_STATUS)
 //			{
@@ -103,14 +104,10 @@ procfsiread(struct inode* dp, struct inode *ip) {
 		}
 		else								//children are files
 		{
-			cprintf("IREAD FILE!!!\n");
+			ip->size = 512;
 			ip->minor = PROCCFS_FILE;
 		}
-		//todo: place prev folder in data
 	}
-
-
-
 
 }
 
@@ -191,6 +188,54 @@ int buildFdinfoFolder(struct dirent* dir, struct inode *ip)
 	return numOfEntries;
 }
 
+void appendStringToCharBuff(char* buff, int* index, char* string)
+{
+	int len = strlen(string);
+	memmove(buff + *index, string, len);
+	*index += len;
+}
+
+void appendIntToCharBuff(char* buff, int* index, int num)
+{
+	char itoa_buff[32];
+	itoa(num, itoa_buff);
+	appendStringToCharBuff(buff, index, itoa_buff);
+}
+
+int buildFdInfoFile(char* buff, int pid, int fd)
+{
+	struct proc* p = getProcById(pid);
+	static char* types[] = { "FD_NONE", "FD_PIPE", "FD_INODE" };
+
+	int i = 0;
+
+	//header
+	appendStringToCharBuff(buff, &i, "Information of fd ");
+	appendIntToCharBuff(buff, &i, fd);
+	appendStringToCharBuff(buff, &i, "\n");
+
+
+	//type
+	appendStringToCharBuff(buff, &i, "type: \n");
+	appendStringToCharBuff(buff, &i, "  ");
+	appendStringToCharBuff(buff, &i, types[p->ofile[fd]->type]);
+	appendStringToCharBuff(buff, &i, "\n");
+
+	//offset
+	appendStringToCharBuff(buff, &i, "offset: \n");
+	appendStringToCharBuff(buff, &i, "  ");
+	appendIntToCharBuff(buff, &i, p->ofile[fd]->off);
+	appendStringToCharBuff(buff, &i, "\n");
+
+	//flags
+	appendStringToCharBuff(buff, &i, "flags: \n");
+	if(p->ofile[fd]->readable) appendStringToCharBuff(buff, &i, "  *Readable\n");
+	if(p->ofile[fd]->writable) appendStringToCharBuff(buff, &i, "  *Writable\n");
+	appendStringToCharBuff(buff, &i, "\n\0");
+
+	return i;
+}
+
 int
 procfsread(struct inode *ip, char *dst, int off, int n) {
 	//cprintf("%s | [%s] start\n", proc->pid, __FUNCTION__);
@@ -218,9 +263,11 @@ procfsread(struct inode *ip, char *dst, int off, int n) {
 	}
 	else
 	{
-		//todo: implement read file
-		memmove(dst, (void*)ip->addrs[0], 5);
-		return 5;
+		char buff[64];
+		int size = buildFdInfoFile(buff, ip->inum / 100, ip->inum % 100 -10);
+		int readLength = (n < size-off)? n : size-off;
+		memmove(dst, buff+off, readLength);
+		return readLength;
 	}
 
 	return sizeof(struct dirent);
