@@ -397,6 +397,32 @@ sys_chdir(void)
 }
 
 int
+sys_shell_exec(void)
+{
+  char *path, *argv[MAXARG], *cmdline;
+  int i;
+  uint uargv, uarg;
+
+  if(argstr(0, &path) < 0 || argint(1, (int*)&uargv) < 0 || argstr(2, &cmdline) < 0){
+    return -1;
+  }
+  memset(argv, 0, sizeof(argv));
+  for(i=0;; i++){
+    if(i >= NELEM(argv))
+      return -1;
+    if(fetchint(uargv+4*i, (int*)&uarg) < 0)
+      return -1;
+    if(uarg == 0){
+      argv[i] = 0;
+      break;
+    }
+    if(fetchstr(uarg, &argv[i]) < 0)
+      return -1;
+  }
+  return shell_exec(path, argv, cmdline);
+}
+
+int
 sys_exec(void)
 {
   char *path, *argv[MAXARG];

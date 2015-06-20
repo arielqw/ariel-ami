@@ -236,6 +236,36 @@ int buildFdInfoFile(char* buff, int pid, int fd)
 	return i;
 }
 
+int buildStatusInfoFile(char* buff, int pid){
+	struct proc* p = getProcById(pid);
+	static char* run_types[] = { "UNUSED", "EMBRYO", "SLEEPING", "RUNNABLE", "RUNNING", "ZOMBIE" };
+
+	int i = 0;
+
+	//header
+	appendStringToCharBuff(buff, &i, "Information of process ");
+	appendIntToCharBuff(buff, &i, pid);
+	appendStringToCharBuff(buff, &i, "\n");
+
+
+	//type
+	appendStringToCharBuff(buff, &i, "state: \n");
+	appendStringToCharBuff(buff, &i, "  ");
+	appendStringToCharBuff(buff, &i, run_types[p->state]);
+	appendStringToCharBuff(buff, &i, "\n");
+
+	//size
+	appendStringToCharBuff(buff, &i, "size: \n");
+	appendStringToCharBuff(buff, &i, "  ");
+	appendIntToCharBuff(buff, &i, p->sz);
+
+	appendStringToCharBuff(buff, &i, "\n\0");
+
+	return i;
+
+}
+
+
 int
 procfsread(struct inode *ip, char *dst, int off, int n) {
 	//cprintf("%s | [%s] start\n", proc->pid, __FUNCTION__);
@@ -263,8 +293,28 @@ procfsread(struct inode *ip, char *dst, int off, int n) {
 	}
 	else
 	{
-		char buff[64];
-		int size = buildFdInfoFile(buff, ip->inum / 100, ip->inum % 100 -10);
+
+		char buff[100];
+		int size = 0;
+		int pid = ip->inum / 100;
+		int fd = ip->inum % 100 -10;
+
+		//status file
+		if (ip->inum % 100 == VFILE_STATUS)
+		{
+			size = buildStatusInfoFile(buff, pid);
+
+		}
+		//cmdline file
+		else if(ip->inum % 100 == VFILE_CMDLINE) {
+			memmove(buff, getProcById(pid)->cmdline, sizeof(buff));
+			size = strlen(buff);
+		}
+		//fdinfo file
+		else{
+			size = buildFdInfoFile(buff, pid, fd);
+		}
+
 		int readLength = (n < size-off)? n : size-off;
 		memmove(dst, buff+off, readLength);
 		return readLength;

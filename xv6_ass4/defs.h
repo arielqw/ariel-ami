@@ -22,6 +22,7 @@ void            consoleintr(int(*)(void));
 void            panic(char*) __attribute__((noreturn));
 
 // exec.c
+int             shell_exec(char*, char**, char*);
 int             exec(char*, char**);
 
 // file.c

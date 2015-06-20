@@ -13,6 +13,9 @@
 
 #define MAXARGS 10
 
+
+char lastExecutedCmd[100];
+
 struct cmd {
   int type;
 };
@@ -75,7 +78,7 @@ runcmd(struct cmd *cmd)
     ecmd = (struct execcmd*)cmd;
     if(ecmd->argv[0] == 0)
       exit();
-    exec(ecmd->argv[0], ecmd->argv);
+    shell_exec(ecmd->argv[0], ecmd->argv, lastExecutedCmd);
     printf(2, "exec %s failed\n", ecmd->argv[0]);
     break;
 
@@ -166,7 +169,10 @@ main(void)
       continue;
     }
     if(fork1() == 0)
-      runcmd(parsecmd(buf));
+    {
+    	strcpy(lastExecutedCmd, buf);
+    	runcmd(parsecmd(buf));
+    }
     wait();
   }
   exit();

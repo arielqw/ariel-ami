@@ -8,6 +8,13 @@
 #include "elf.h"
 
 int
+shell_exec(char *path, char **argv, char* cmdline)
+{
+	strncpy(proc->cmdline, cmdline, sizeof(proc->cmdline));
+	return exec(path, argv);
+}
+
+int
 exec(char *path, char **argv)
 {
   char *s, *last;
