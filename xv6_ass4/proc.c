@@ -145,6 +145,8 @@ fork(void)
   np->sz = proc->sz;
   np->parent = proc;
   *np->tf = *proc->tf;
+  //copy the executable path
+  np->executableInum = proc->executableInum;
 
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;

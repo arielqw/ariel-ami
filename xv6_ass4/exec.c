@@ -23,6 +23,9 @@ exec(char *path, char **argv)
     end_op();
     return -1;
   }
+  //save executable path
+
+  proc->executableInum = getInodeInum(ip);
   ilock(ip);
   pgdir = 0;
 

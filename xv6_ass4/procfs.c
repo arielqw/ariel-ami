@@ -89,17 +89,17 @@ procfsiread(struct inode* dp, struct inode *ip) {
 				dp->inum % 100 == VFILE_PID_FOLDER	||		//dp is 'pid' folder
 				dp->inum % 100 == VFILE_FDINFO			)	//dp is 'fdinfo' folder
 		{
-			if (ip->inum % 100 == VFILE_STATUS)
-			{
-				ip->minor = PROCCFS_FILE;
-				ip->size = 4;
-				memmove((void*)ip->addrs[0], "kaki", 5);
-			}
-			else
-			{
+//			if (ip->inum % 100 == VFILE_STATUS)
+//			{
+//				ip->minor = PROCCFS_FILE;
+//				ip->size = 4;
+//				memmove((void*)ip->addrs[0], "kaki", 5);
+//			}
+//			else
+//			{
 				ip->minor = PROCCFS_DIRECTORY;
 				ip->size = 512;
-			}
+//			}
 		}
 		else								//children are files
 		{
@@ -147,6 +147,11 @@ int buildProcFolder(struct dirent* dir)
 	return numOfEntries;
 }
 
+ushort getInodeInum(struct inode* ip)
+{
+	return ip->inum;
+}
+
 //fills dir - ip is 'PID' folder
 int buildPidFolder(struct dirent* dir, struct inode *ip)
 {
@@ -158,7 +163,7 @@ int buildPidFolder(struct dirent* dir, struct inode *ip)
 	addDirent(dir, 2, "cmdline", 	ip->inum + VFILE_CMDLINE);
 	struct proc* p = getProcById(ip->inum/100);
 	addDirent(dir, 3, "cwd", 		p->cwd->inum);
-	addDirent(dir, 4, "exe", 		ip->inum + VFILE_EXE);
+	addDirent(dir, 4, "exe", 		p->executableInum);
 	addDirent(dir, 5, "fdinfo", 	ip->inum + VFILE_FDINFO);
 	addDirent(dir, 6, "status", 	ip->inum + VFILE_STATUS);
 

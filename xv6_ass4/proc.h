@@ -67,6 +67,7 @@ struct proc {
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
   char cmdline[64];		//cmdline
+  ushort executableInum;
 };
 
 // Process memory is laid out contiguously, low addresses first:
