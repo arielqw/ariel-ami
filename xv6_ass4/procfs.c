@@ -80,7 +80,6 @@ void
 procfsiread(struct inode* dp, struct inode *ip) {
 	//cprintf("procfsiread\n:");
 
-
 	if (ip->inum > NINODE)	//some virtual folder/file i created
 	{
 		ip->major = PROCFS;
@@ -90,17 +89,8 @@ procfsiread(struct inode* dp, struct inode *ip) {
 				ip->inum % 100 == VFILE_PID_FOLDER	||		//dp is 'pid' folder
 				ip->inum % 100 == VFILE_FDINFO			)	//dp is 'fdinfo' folder
 		{
-//			if (ip->inum % 100 == VFILE_STATUS)
-//			{
-//				ip->minor = PROCCFS_FILE;
-//				ip->size = 4;
-//				memmove((void*)ip->addrs[0], "kaki", 5);
-//			}
-//			else
-//			{
-				ip->minor = PROCCFS_DIRECTORY;
-				ip->size = 512;
-//			}
+			ip->minor = PROCCFS_DIRECTORY;
+			ip->size = 512;
 		}
 		else								//children are files
 		{
